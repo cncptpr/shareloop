@@ -31,7 +31,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        colorSchemeSeed: const Color(0x00f2c069),
+        useMaterial3: true,
+      ),
+      themeMode: ThemeMode.system,
+      home: const MyHomePage(title: 'Shareloop'),
     );
   }
 }
@@ -119,7 +125,15 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(label: "Suche", icon: Icon(Icons.search)),
+          BottomNavigationBarItem(
+              label: "Nachrichten", icon: Icon(Icons.message)),
+          BottomNavigationBarItem(label: "Profil", icon: Icon(Icons.person)),
+        ],
+      ),
     );
   }
 }

@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import'package:shareloop/router.dart';
+import 'package:shareloop/app_theme.dart';
 
 /// This sample app shows an app with two screens.
 ///
@@ -23,6 +24,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(routerConfig: router);
+    return MaterialApp.router(
+      title: 'Shareloop',
+      routerConfig: router,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,);
   }
 }

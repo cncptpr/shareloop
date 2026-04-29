@@ -84,13 +84,11 @@ class _MyHomePageState extends State<Homescreen> {
           ],
         ),
       ),
-      
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
-      
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index) => context.go(routes[index]),
         items: const [
@@ -102,4 +100,3 @@ class _MyHomePageState extends State<Homescreen> {
     );
   }
 }
-

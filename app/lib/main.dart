@@ -1,10 +1,9 @@
-
 // Copyright 2013 The Flutter Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import'package:shareloop/router.dart';
+import 'package:shareloop/router.dart';
 import 'package:shareloop/app_theme.dart';
 
 /// This sample app shows an app with two screens.
@@ -29,6 +28,7 @@ class MyApp extends StatelessWidget {
       routerConfig: router,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,);
+      themeMode: ThemeMode.system,
+    );
   }
 }

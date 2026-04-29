@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
-final routes = ['/search', '/messages', '/profile'];
 
 /// The home screen
 class Homescreen extends StatefulWidget {
@@ -58,7 +55,6 @@ class _MyHomePageState extends State<Homescreen> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
-          
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
           // children horizontally, and tries to be as tall as its parent.
@@ -84,22 +80,11 @@ class _MyHomePageState extends State<Homescreen> {
           ],
         ),
       ),
-      
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
-      
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (index) => context.go(routes[index]),
-        items: const [
-          BottomNavigationBarItem(label: "Search", icon: Icon(Icons.search)),
-          BottomNavigationBarItem(label: "Messages", icon: Icon(Icons.message)),
-          BottomNavigationBarItem(label: "Profile", icon: Icon(Icons.person)),
-        ],
-      ),
     );
   }
 }
-

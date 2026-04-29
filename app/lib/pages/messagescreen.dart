@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:shareloop/router.dart';
 
 /// The details screen
 class MessageScreen extends StatelessWidget {
@@ -7,16 +7,15 @@ class MessageScreen extends StatelessWidget {
   const MessageScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(ctx) {
     return Scaffold(
       appBar: AppBar(title: const Text('Your Messages Screen')),
       body: Center(
         child: ElevatedButton(
-          onPressed: () => context.go('/'),
+          onPressed: () => Routes.home.go(ctx),
           child: const Text('Go back to the Home screen'),
         ),
       ),
     );
   }
 }
-

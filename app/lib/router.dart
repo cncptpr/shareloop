@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shareloop/pages/homescreen.dart';
-import 'package:shareloop/pages/messagescreen.dart';
-import 'package:shareloop/pages/profilescreen.dart';
-import 'package:shareloop/pages/searchscreen.dart';
+import 'package:shareloop/screens/home_screen.dart';
+import 'package:shareloop/screens/message_screen.dart';
+import 'package:shareloop/screens/profile_screen.dart';
+import 'package:shareloop/screens/search_screen.dart';
 
 enum Routes {
   home('/'),

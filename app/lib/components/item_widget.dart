@@ -13,16 +13,52 @@ class ItemWidget extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            width: double.infinity,
+            height: 300,
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(15),
+              ),
+              image: DecorationImage(
+                image: AssetImage("assets/images/placeholder_image.jpg"),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
           Text(item.title, textScaler: const TextScaler.linear(2)),
           Text(item.description),
-          Row(children: [const Icon(Icons.person), Text(item.author.name)]),
-          Image.asset(
-            "assets/images/placeholder_image.jpg",
-            width: 300,
-            height: 300,
-          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              person(item.author),
+              score(item.score),
+              distance(item.distance),
+            ],
+          )
         ],
       ),
     );
+  }
+
+  Widget person(Person person) {
+    return Row(children: [
+      const Icon(Icons.person),
+      Text(person.name),
+    ]);
+  }
+
+  Widget score(double score) {
+    return Row(children: [
+      const Icon(Icons.star),
+      Text(score.toString()),
+    ]);
+  }
+
+  Widget distance(Distance distance) {
+    return Row(children: [
+      const Icon(Icons.social_distance),
+      Text(distance.km.toString()),
+    ]);
   }
 }

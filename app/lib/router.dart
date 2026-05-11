@@ -3,11 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:shareloop/screens/home_screen.dart';
 import 'package:shareloop/screens/message_screen.dart';
 import 'package:shareloop/screens/profile_screen.dart';
-import 'package:shareloop/screens/search_screen.dart';
+import 'package:shareloop/screens/explore_screen.dart';
 
 enum Routes {
   home('/'),
-  search('/'),
+  expore('/'),
   message('/message'),
   profile('/profile'),
   couter('/counter');
@@ -27,7 +27,7 @@ final GoRouter router = GoRouter(
           currentIndex: navShell.currentIndex,
           onTap: (index) => navShell.goBranch(index),
           items: const [
-            BottomNavigationBarItem(label: "Search", icon: Icon(Icons.search)),
+            BottomNavigationBarItem(label: "Explore", icon: Icon(Icons.search)),
             BottomNavigationBarItem(
               label: "Messages",
               icon: Icon(Icons.message),
@@ -40,8 +40,8 @@ final GoRouter router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.search.route,
-              builder: (ctx, state) => const SearchScreen(),
+              path: Routes.expore.route,
+              builder: (ctx, state) => const ExploreScreen(),
               routes: [
                 GoRoute(
                   path: Routes.couter.route,

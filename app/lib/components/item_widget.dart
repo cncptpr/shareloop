@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shareloop/state/items.dart';
+import 'package:openapi/api.dart';
 
 class ItemWidget extends ConsumerWidget {
-  final Item item;
+  final FeaturedItem item;
 
   const ItemWidget(this.item, {super.key});
 

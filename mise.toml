@@ -2,6 +2,30 @@
 description = "Run the app in dev mode"
 run = "flutter run"
 dir = "app"
+depends = ["server:*:gen"]
+
+[tasks."server:api:gen"]
+description = "Generate the Gleam Bindings from the OpenAPI spec"
+run = "gleam run -m gilly -- ../api/shareloop.openapi.json --output ./src/server/api.gleam"
+dir = "server"
+sources = ["../api/*.openapi.json"]
+outputs = ["./src/server/api.gleam"]
+
+[tasks."server:dev"]
+description = "Run the server in dev mode"
+run = "gleam run"
+dir = "server"
+depends = ["app:*:gen"]
+
+[tasks."app:api:gen"]
+description = "Generate the Flutter API client from the OpenAPI spec"
+run = "mise exec -- openapi-generator generate -i ../api/shareloop.openapi.json -g dart -o ./gen/api"
+dir = "app"
+tools = { java = "corretto-21" }
+sources = ["../api/*.openapi.json"]
+outputs = ["./gen/api/**/*"]
 
 [tools]
 flutter = { version = "3.41.9", platforms = { linux-arm64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_arm64_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' }, linux-x64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' } }, url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version }}-stable.zip", version_expr = 'fromJSON(body).releases | filter({ #.channel == "stable" }) | map({ #.version }) | sortVersions()', version_list_url = "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json" }
+gleam = "latest"
+

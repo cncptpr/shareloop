@@ -34,9 +34,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 builder: (ctx, constraints) => Center(
                   child: ConstrainedBox(
                     constraints: BoxConstraints(maxWidth: constraints.maxWidth),
-                    child: Consumer(builder: (ctx, ref, _) {
-                      final items = ref.watch(itemProvider);
-                      return Column(children: [
+                      child: Consumer(builder: (ctx, ref, _) {
+                      final itemsAsync = ref.watch(itemProvider);
+                      return itemsAsync.when(
+                        data: (items) => Column(children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -55,8 +56,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             ),
                           ],
                         ),
-                        ...items.map((item) => ItemWidget(item)),
-                      ]);
+                          ...items.map((item) => ItemWidget(item)),
+                        ]),
+                        loading: () => const Center(child: CircularProgressIndicator()),
+                        error: (e, _) => Center(child: Text('Error: $e')),
+                      );
                     }),
                   ),
                 ),

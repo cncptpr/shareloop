@@ -14,9 +14,12 @@ class MessageScreen extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () => context.go('/'),
           child: const Text('Go back to the Home screen'),
+
         ),
-      ),
+      )
     );
   }
 }
+
+
 

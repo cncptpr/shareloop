@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shareloop/router.dart';
-import 'package:shareloop/app_theme.dart';
+import 'package:shareloop/theme/app_theme.dart';
 
 /// This sample app shows an app with two screens.
 ///
@@ -32,3 +32,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+

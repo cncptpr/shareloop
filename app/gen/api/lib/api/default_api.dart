@@ -18,6 +18,8 @@ class DefaultApi {
 
   /// Get featured items
   ///
+  /// Returns a list of featured items
+  ///
   /// Note: This method returns the HTTP [Response].
   Future<Response> getFeaturedItemsWithHttpInfo() async {
     // ignore: prefer_const_declarations
@@ -45,6 +47,8 @@ class DefaultApi {
   }
 
   /// Get featured items
+  ///
+  /// Returns a list of featured items
   Future<List<FeaturedItem>?> getFeaturedItems() async {
     final response = await getFeaturedItemsWithHttpInfo();
     if (response.statusCode >= HttpStatus.badRequest) {

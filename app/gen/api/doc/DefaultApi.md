@@ -17,6 +17,8 @@ Method | HTTP request | Description
 
 Get featured items
 
+Returns a list of featured items
+
 ### Example
 ```dart
 import 'package:openapi/api.dart';

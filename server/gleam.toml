@@ -3,7 +3,7 @@ version = "1.0.0"
 
 [dev_dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"
-gilly = ">= 0.3.1 and < 1.0.0"
+nori = ">= 1.0.0 and < 2.0.0"
 
 [dependencies]
 mist = ">= 6.0.3 and < 7.0.0"

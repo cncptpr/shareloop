@@ -47,10 +47,8 @@ class Person {
       // Note 1: the values aren't checked for validity beyond being non-null.
       // Note 2: this code is stripped in release mode!
       assert(() {
-        requiredKeys.forEach((key) {
-          assert(json.containsKey(key), 'Required key "Person[$key]" is missing from JSON.');
-          assert(json[key] != null, 'Required key "Person[$key]" has a null value in JSON.');
-        });
+        assert(json.containsKey(r'name'), 'Required key "Person[name]" is missing from JSON.');
+        assert(json[r'name'] != null, 'Required key "Person[name]" has a null value in JSON.');
         return true;
       }());
 

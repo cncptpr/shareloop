@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shareloop/app_config.dart';
 import 'package:shareloop/router.dart';
 
 /// The profile screen
@@ -11,9 +12,14 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Profile Screen')),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () => Routes.home.go(ctx),
-          child: const Text('Go back to the Home screen'),
+        child: Column(
+          children: [
+            const Text(AppConfig.apiBaseUrl),
+            ElevatedButton(
+              onPressed: () => Routes.home.go(ctx),
+              child: const Text('Go back to the Home screen'),
+            ),
+          ],
         ),
       ),
     );

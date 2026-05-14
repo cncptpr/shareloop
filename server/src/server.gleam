@@ -1,21 +1,23 @@
-import cigogne
-import cigogne/config
 import generated/routes
 import gleam/bytes_tree
 import gleam/erlang/process
-import gleam/http/request.{type Request}
+import gleam/http/request
 import gleam/http/response
-import gleam/result
+import gleam/io
 import mist
-import server/error
+import server/db
 import server/featured_items
+import server/migration
 
 pub fn main() {
-  // TODO: make mirgrations happen
-  let _ = run_migrations()
+  let assert Ok(conn) = db.start_pool()
+  io.println("Database pool started")
+
+  let assert Ok(_) = migration.run_all()
+  io.println("Migrations applied")
 
   let assert Ok(_) =
-    router
+    router(_, conn)
     |> mist.new
     |> mist.bind("0.0.0.0")
     |> mist.port(4000)
@@ -24,22 +26,16 @@ pub fn main() {
   process.sleep_forever()
 }
 
-fn run_migrations() {
-  use cfg <- error.try(config.get("server"), error.ConfigError)
-  use engine <- error.try(cigogne.create_engine(cfg), error.CigogneError)
-  cigogne.apply_all(engine) |> result.map_error(error.CigogneError)
-}
-
-fn router(req: Request(mist.Connection)) {
+fn router(req: request.Request(mist.Connection), conn) {
   case request.path_segments(req) {
-    ["api", ..segments] -> openapi_router(req.method, segments)
+    ["api", ..segments] -> openapi_router(req.method, segments, conn)
     _ -> handle404()
   }
 }
 
-fn openapi_router(method, segments) {
+fn openapi_router(method, segments, conn) {
   case routes.match_route(method, segments) {
-    routes.GetFeaturedItems -> featured_items.handle()
+    routes.GetFeaturedItems -> featured_items.handle(conn)
     routes.NotFound -> handle404()
   }
 }

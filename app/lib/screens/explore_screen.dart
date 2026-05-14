@@ -4,15 +4,15 @@ import 'package:shareloop/components/item_widget.dart';
 import 'package:shareloop/state/items.dart';
 
 /// The search screen
-class ExploreScreen extends StatefulWidget {
+class ExploreScreen extends ConsumerStatefulWidget {
   /// Constructs a [ExploreScreen]
   const ExploreScreen({super.key});
 
   @override
-  State<ExploreScreen> createState() => _ExploreScreenState();
+  ConsumerState<ExploreScreen> createState() => _ExploreScreenState();
 }
 
-class _ExploreScreenState extends State<ExploreScreen> {
+class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   String searchText = "";
 
   @override
@@ -29,39 +29,49 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
           if (searchText != "") Text("Du suchst nach '$searchText'"),
           Expanded(
-            child: SingleChildScrollView(
-              child: LayoutBuilder(
-                builder: (ctx, constraints) => Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: constraints.maxWidth),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(itemProvider);
+                await ref.read(itemProvider.future);
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: LayoutBuilder(
+                  builder: (ctx, constraints) => Center(
+                    child: ConstrainedBox(
+                      constraints:
+                          BoxConstraints(maxWidth: constraints.maxWidth),
                       child: Consumer(builder: (ctx, ref, _) {
-                      final itemsAsync = ref.watch(itemProvider);
-                      return itemsAsync.when(
-                        data: (items) => Column(children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "Featured Items",
-                              textScaler: TextScaler.linear(2),
+                        final itemsAsync = ref.watch(itemProvider);
+                        return itemsAsync.when(
+                          skipLoadingOnReload: true,
+                          data: (items) => Column(children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Featured Items",
+                                  textScaler: TextScaler.linear(2),
+                                ),
+                                TextButton(
+                                  child: const Row(
+                                    children: [
+                                      Text("View all"),
+                                      Icon(Icons.arrow_right_alt),
+                                    ],
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              ],
                             ),
-                            TextButton(
-                              child: const Row(
-                                children: [
-                                  Text("View all"),
-                                  Icon(Icons.arrow_right_alt),
-                                ],
-                              ),
-                              onPressed: () {},
-                            ),
-                          ],
-                        ),
-                          ...items.map((item) => ItemWidget(item)),
-                        ]),
-                        loading: () => const Center(child: CircularProgressIndicator()),
-                        error: (e, _) => Center(child: Text('Error: $e')),
-                      );
-                    }),
+                            ...items.map((item) => ItemWidget(item)),
+                          ]),
+                          loading: () =>
+                              const Center(child: CircularProgressIndicator()),
+                          error: (e, _) => Center(child: Text('Error: $e')),
+                        );
+                      }),
+                    ),
                   ),
                 ),
               ),

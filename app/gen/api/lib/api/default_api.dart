@@ -21,7 +21,15 @@ class DefaultApi {
   /// Returns a list of featured items
   ///
   /// Note: This method returns the HTTP [Response].
-  Future<Response> getFeaturedItemsWithHttpInfo() async {
+  ///
+  /// Parameters:
+  ///
+  /// * [double] lat:
+  ///   User's current latitude
+  ///
+  /// * [double] lng:
+  ///   User's current longitude
+  Future<Response> getFeaturedItemsWithHttpInfo({ double? lat, double? lng, }) async {
     // ignore: prefer_const_declarations
     final path = r'/featured-items';
 
@@ -31,6 +39,13 @@ class DefaultApi {
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
     final formParams = <String, String>{};
+
+    if (lat != null) {
+      queryParams.addAll(_queryParams('', 'lat', lat));
+    }
+    if (lng != null) {
+      queryParams.addAll(_queryParams('', 'lng', lng));
+    }
 
     const contentTypes = <String>[];
 
@@ -49,8 +64,16 @@ class DefaultApi {
   /// Get featured items
   ///
   /// Returns a list of featured items
-  Future<List<FeaturedItem>?> getFeaturedItems() async {
-    final response = await getFeaturedItemsWithHttpInfo();
+  ///
+  /// Parameters:
+  ///
+  /// * [double] lat:
+  ///   User's current latitude
+  ///
+  /// * [double] lng:
+  ///   User's current longitude
+  Future<List<FeaturedItem>?> getFeaturedItems({ double? lat, double? lng, }) async {
+    final response = await getFeaturedItemsWithHttpInfo( lat: lat, lng: lng, );
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }

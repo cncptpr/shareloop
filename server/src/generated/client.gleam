@@ -5,7 +5,11 @@ import gleam/http/request.{type Request}
 import gleam/http/response.{type Response}
 import gleam/dynamic/decode
 import gleam/json
+import gleam/option.{type Option}
+import gleam/float
+import gleam/string
 import gleam/list
+import gleam/uri
 import generated/types
 
 /// Client configuration for API requests.
@@ -25,8 +29,19 @@ pub type ClientError {
 }
 
 /// Get featured items
-pub fn get_featured_items_request(config: ClientConfig) -> Request(String) {
+pub fn get_featured_items_request(config: ClientConfig, lat: Option(Float), lng: Option(Float)) -> Request(String) {
   let path = "/featured-items"
+  let query = []
+  let query = case lat {
+    option.Some(v) -> list.append(query, [#("lat", float.to_string(v))])
+    option.None -> query
+  }
+  let query = case lng {
+    option.Some(v) -> list.append(query, [#("lng", float.to_string(v))])
+    option.None -> query
+  }
+  let query_string = uri.query_to_string(query)
+  let path = path <> "?" <> query_string
   request.new()
   |> request.set_method(Get)
   |> request.set_host(config.base_url)

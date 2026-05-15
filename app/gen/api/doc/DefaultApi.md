@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 
 # **getFeaturedItems**
-> List<FeaturedItem> getFeaturedItems()
+> List<FeaturedItem> getFeaturedItems(lat, lng)
 
 Get featured items
 
@@ -24,9 +24,11 @@ Returns a list of featured items
 import 'package:openapi/api.dart';
 
 final api_instance = DefaultApi();
+final lat = 1.2; // double | User's current latitude
+final lng = 1.2; // double | User's current longitude
 
 try {
-    final result = api_instance.getFeaturedItems();
+    final result = api_instance.getFeaturedItems(lat, lng);
     print(result);
 } catch (e) {
     print('Exception when calling DefaultApi->getFeaturedItems: $e\n');
@@ -34,7 +36,11 @@ try {
 ```
 
 ### Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **lat** | **double**| User's current latitude | [optional] 
+ **lng** | **double**| User's current longitude | [optional] 
 
 ### Return type
 

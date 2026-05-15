@@ -20,6 +20,7 @@ pub type GetFeaturedItemsRow {
     description: String,
     author_name: String,
     score: Float,
+    distance_km: Float,
   )
 }
 
@@ -31,6 +32,8 @@ pub type GetFeaturedItemsRow {
 ///
 pub fn get_featured_items(
   db: pog.Connection,
+  arg_1: Float,
+  arg_2: Float,
 ) -> Result(pog.Returned(GetFeaturedItemsRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -38,12 +41,14 @@ pub fn get_featured_items(
     use description <- decode.field(2, decode.string)
     use author_name <- decode.field(3, decode.string)
     use score <- decode.field(4, decode.float)
+    use distance_km <- decode.field(5, decode.float)
     decode.success(GetFeaturedItemsRow(
       id:,
       title:,
       description:,
       author_name:,
       score:,
+      distance_km:,
     ))
   }
 
@@ -52,13 +57,19 @@ pub fn get_featured_items(
   title,
   description,
   author_name,
-  score
+  score,
+  coalesce(
+    st_distance(location, st_setsrid(st_makepoint($2, $1), 4326)::geography) / 1000,
+    0.0
+  ) as distance_km
 from
   items
 order by
   score desc
 "
   |> pog.query
+  |> pog.parameter(pog.float(arg_1))
+  |> pog.parameter(pog.float(arg_2))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }

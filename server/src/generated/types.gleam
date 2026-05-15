@@ -14,7 +14,7 @@ pub type FeaturedItem {
   FeaturedItem(
     author: Person,
     description: String,
-    distance: Distance,
+    distance: Option(Distance),
     score: Float,
     title: String,
   )
@@ -34,7 +34,7 @@ pub fn distance_decoder() -> Decoder(Distance) {
 pub fn featured_item_decoder() -> Decoder(FeaturedItem) {
   use author <- decode.field("author", person_decoder())
   use description <- decode.field("description", decode.string)
-  use distance <- decode.field("distance", distance_decoder())
+  use distance <- decode.optional_field("distance", None, decode.optional(distance_decoder()))
   use score <- decode.field("score", decode.float)
   use title <- decode.field("title", decode.string)
   decode.success(FeaturedItem(author: author, description: description, distance: distance, score: score, title: title))
@@ -55,7 +55,10 @@ pub fn encode_featured_item(value: FeaturedItem) -> Json {
   json.object([
     #("author", encode_person(value.author)),
     #("description", json.string(value.description)),
-    #("distance", encode_distance(value.distance)),
+    #("distance", case value.distance {
+      Some(v) -> encode_distance(v)
+      None -> json.null()
+    }),
     #("score", json.float(value.score)),
     #("title", json.string(value.title)),
   ])

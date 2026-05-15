@@ -55,10 +55,10 @@ class ItemWidget extends ConsumerWidget {
     ]);
   }
 
-  Widget distance(Distance distance) {
+  Widget distance(Distance? distance) {
     return Row(children: [
       const Icon(Icons.social_distance),
-      Text(distance.km.toString()),
+      Text(distance?.km.toString() ?? "N/A"),
     ]);
   }
 }

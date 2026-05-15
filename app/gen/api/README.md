@@ -42,9 +42,11 @@ import 'package:openapi/api.dart';
 
 
 final api_instance = DefaultApi();
+final lat = 1.2; // double | User's current latitude
+final lng = 1.2; // double | User's current longitude
 
 try {
-    final result = api_instance.getFeaturedItems();
+    final result = api_instance.getFeaturedItems(lat, lng);
     print(result);
 } catch (e) {
     print('Exception when calling DefaultApi->getFeaturedItems: $e\n');

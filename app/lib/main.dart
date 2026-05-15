@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("[DEBUG] Print test");
     return MaterialApp.router(routerConfig: router);
   }
 }

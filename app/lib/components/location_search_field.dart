@@ -34,8 +34,9 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
     setState(() => _activeQuery = query);
   }
 
-  void _selectLocation(SearchedLocation location) {
-    ref.read(selectedLocationProvider.notifier).select(location);
+  Future<void> _selectLocation(SearchedLocation location) async {
+    await ref.read(selectedLocationProvider.notifier).select(location);
+    ref.invalidate(storedLocationsProvider);
     _cachedResults = null;
     _activeQuery = '';
     _controller.clear();
@@ -43,8 +44,8 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
     widget.onSelected?.call();
   }
 
-  void _clearLocation() {
-    ref.read(selectedLocationProvider.notifier).clear();
+  Future<void> _clearLocation() async {
+    await ref.read(selectedLocationProvider.notifier).clear();
     _cachedResults = null;
     _activeQuery = '';
     _controller.clear();
@@ -63,7 +64,6 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
   @override
   Widget build(BuildContext context) {
     final resultsAsync = ref.watch(locationSearchProvider(_activeQuery));
-    final selected = ref.watch(selectedLocationProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,11 +121,11 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
                   ),
                 );
               }
-              return _buildResultsList(results, selected, false);
+              return _buildResultsList(results, false);
             },
             loading: () {
               if (_cachedResults != null) {
-                return _buildResultsList(_cachedResults!, selected, true);
+                return _buildResultsList(_cachedResults!, true);
               }
               return const Padding(
                 padding: EdgeInsets.all(8),
@@ -134,7 +134,7 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
             },
             error: (e, _) {
               if (_cachedResults != null) {
-                return _buildResultsList(_cachedResults!, selected, false);
+                return _buildResultsList(_cachedResults!, false);
               }
               final msg = e is RateLimitException
                   ? 'Rate limit reached. Try again in a moment.'
@@ -150,53 +150,83 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
               );
             },
           ),
+        if (_activeQuery.isEmpty && _controller.text.isEmpty)
+          _buildDefaultView(),
       ],
     );
   }
 
   Widget _buildResultsList(
     List<SearchedLocation> results,
-    SearchedLocation? selected,
     bool isLoading,
   ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(
-          bottom: Divider.createBorderSide(context),
-          left: Divider.createBorderSide(context),
-          right: Divider.createBorderSide(context),
-        ),
-        borderRadius: const BorderRadius.vertical(
-          bottom: Radius.circular(8),
-        ),
-      ),
-      constraints: const BoxConstraints(maxHeight: 250),
-      child: ListView(
-        padding: EdgeInsets.zero,
-        shrinkWrap: true,
-        children: [
-          if (isLoading) const LinearProgressIndicator(),
-          _gpsTile(),
-          ...results.map(
-            (loc) => _SuggestionTile(
-              leading: const Icon(Icons.location_city),
-              title: loc.name,
-              subtitle: loc.displayName,
-              onTap: () => _selectLocation(loc),
-            ),
+    return Column(
+      children: [
+        if (isLoading) const LinearProgressIndicator(),
+        ...results.map(
+          (loc) => _SuggestionTile(
+            leading: const Icon(Icons.location_city),
+            title: loc.name,
+            subtitle: loc.displayName,
+            onTap: () => _selectLocation(loc),
           ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  Widget _buildDefaultView() {
+    final storedAsync = ref.watch(storedLocationsProvider);
+    final selected = ref.watch(selectedLocationProvider);
+
+    return storedAsync.when(
+      data: (stored) {
+        if (stored.isEmpty) return const SizedBox.shrink();
+        return Column(
+          children: [
+            _gpsTile(),
+            Padding(
+              padding: const EdgeInsets.only(left: 12, top: 8),
+              child: Text(
+                'Recent',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ),
+            ...stored.map((loc) => _SuggestionTile(
+                  leading: Icon(
+                    loc.lat == selected?.lat && loc.lng == selected?.lng
+                        ? Icons.check_circle
+                        : Icons.history,
+                  ),
+                  title: loc.name,
+                  subtitle: loc.displayName,
+                  onTap: () => _selectLocation(loc),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.close, size: 16),
+                    onPressed: () => _deleteStored(loc),
+                  ),
+                )),
+          ],
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+
+  Future<void> _deleteStored(SearchedLocation location) async {
+    await removeStoredLocation(location);
+    ref.invalidate(storedLocationsProvider);
   }
 
   Widget _gpsTile() {
     final canUseGps = !Platform.isLinux && !Platform.isWindows;
     final tile = _SuggestionTile(
       leading: Icon(Icons.my_location),
-      title: 'Use current location',
-      subtitle: canUseGps ? null : 'GPS not available on this device',
+      title: 'Aktuellen Standort verwenden',
+      subtitle: canUseGps ? null : 'GPS auf diesem Gerät nicht verfügbar',
       onTap: null,
       enabled: false,
     );
@@ -207,7 +237,7 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
 
     return _SuggestionTile(
       leading: const Icon(Icons.my_location),
-      title: 'Use current location',
+      title: 'Aktuellen Standort verwenden',
       subtitle: null,
       onTap: _clearLocation,
     );
@@ -220,6 +250,7 @@ class _SuggestionTile extends StatelessWidget {
   final String? subtitle;
   final VoidCallback? onTap;
   final bool enabled;
+  final Widget? trailing;
 
   const _SuggestionTile({
     required this.leading,
@@ -227,6 +258,7 @@ class _SuggestionTile extends StatelessWidget {
     this.subtitle,
     this.onTap,
     this.enabled = true,
+    this.trailing,
   });
 
   @override
@@ -252,6 +284,7 @@ class _SuggestionTile extends StatelessWidget {
               ),
             )
           : null,
+      trailing: trailing,
       onTap: enabled ? onTap : null,
       enabled: enabled,
       dense: true,

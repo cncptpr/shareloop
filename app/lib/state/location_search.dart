@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shareloop/state/location.dart';
 
 class SearchedLocation {
@@ -17,6 +18,21 @@ class SearchedLocation {
     required this.displayName,
     required this.name,
   });
+
+  Map<String, dynamic> toJson() => {
+        'lat': lat,
+        'lng': lng,
+        'displayName': displayName,
+        'name': name,
+      };
+
+  factory SearchedLocation.fromJson(Map<String, dynamic> json) =>
+      SearchedLocation(
+        lat: (json['lat'] as num).toDouble(),
+        lng: (json['lng'] as num).toDouble(),
+        displayName: json['displayName'] as String,
+        name: json['name'] as String,
+      );
 }
 
 class RateLimitException implements Exception {
@@ -24,18 +40,90 @@ class RateLimitException implements Exception {
   const RateLimitException({this.retryAfterSeconds});
 }
 
+const _maxStoredLocations = 20;
+const _keySelectedLocation = 'selected_location';
+const _keyStoredLocations = 'stored_locations';
+
+Future<void> _saveSelectedLocation(SearchedLocation? location) async {
+  final prefs = await SharedPreferences.getInstance();
+  if (location == null) {
+    await prefs.remove(_keySelectedLocation);
+  } else {
+    await prefs.setString(
+      _keySelectedLocation,
+      jsonEncode(location.toJson()),
+    );
+  }
+}
+
+Future<void> _saveStoredLocations(List<SearchedLocation> locations) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString(
+    _keyStoredLocations,
+    jsonEncode(locations.map((l) => l.toJson()).toList()),
+  );
+}
+
+Future<List<SearchedLocation>> _loadStoredLocations() async {
+  final prefs = await SharedPreferences.getInstance();
+  final raw = prefs.getString(_keyStoredLocations);
+  if (raw == null) return [];
+  final list = jsonDecode(raw) as List;
+  return list
+      .map((e) => SearchedLocation.fromJson(e as Map<String, dynamic>))
+      .toList();
+}
+
 class SelectedLocationNotifier extends Notifier<SearchedLocation?> {
   @override
-  SearchedLocation? build() => null;
+  SearchedLocation? build() {
+    _loadFromPrefs();
+    return null;
+  }
 
-  void select(SearchedLocation location) => state = location;
-  void clear() => state = null;
+  Future<void> _loadFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_keySelectedLocation);
+    if (raw != null) {
+      final loc = SearchedLocation.fromJson(
+        jsonDecode(raw) as Map<String, dynamic>,
+      );
+      state = loc;
+    }
+  }
+
+  Future<void> select(SearchedLocation location) async {
+    state = location;
+    await _saveSelectedLocation(location);
+    final stored = await _loadStoredLocations();
+    stored.removeWhere((l) => l.lat == location.lat && l.lng == location.lng);
+    stored.insert(0, location);
+    if (stored.length > _maxStoredLocations) {
+      stored.removeLast();
+    }
+    await _saveStoredLocations(stored);
+  }
+
+  Future<void> clear() async {
+    state = null;
+    await _saveSelectedLocation(null);
+  }
 }
 
 final selectedLocationProvider =
     NotifierProvider<SelectedLocationNotifier, SearchedLocation?>(
   SelectedLocationNotifier.new,
 );
+
+final storedLocationsProvider = FutureProvider<List<SearchedLocation>>(
+  (ref) => _loadStoredLocations(),
+);
+
+Future<void> removeStoredLocation(SearchedLocation location) async {
+  final stored = await _loadStoredLocations();
+  stored.removeWhere((l) => l.lat == location.lat && l.lng == location.lng);
+  await _saveStoredLocations(stored);
+}
 
 Future<http.Response> _fetchWithRetry(
   Future<http.Response> Function() request, {

@@ -39,6 +39,8 @@ pub fn handle(
           True -> Some(types.Distance(km: row.distance_km))
           False -> None
         },
+        city: row.city,
+        postal_code: row.postal_code,
         score: row.score,
       )
     })

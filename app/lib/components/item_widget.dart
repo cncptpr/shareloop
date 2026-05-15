@@ -33,7 +33,7 @@ class ItemWidget extends ConsumerWidget {
             children: [
               person(item.author),
               score(item.score),
-              if (item.distance != null) distance(item.distance!),
+              locationWidget(),
             ],
           )
         ],
@@ -55,10 +55,19 @@ class ItemWidget extends ConsumerWidget {
     ]);
   }
 
-  Widget distance(Distance distance) {
+  Widget locationWidget() {
+    final parts = <String>[];
+    if (item.city != null && item.city!.isNotEmpty) {
+      parts.add(item.city!);
+    }
+    if (item.distance != null) {
+      parts.add('${item.distance!.km.toStringAsFixed(0)} km');
+    }
+    if (parts.isEmpty) return const SizedBox.shrink();
+
     return Row(children: [
-      const Icon(Icons.social_distance),
-      Text(distance.km.toString()),
+      const Icon(Icons.location_on, size: 16),
+      Text(parts.join(', ')),
     ]);
   }
 }

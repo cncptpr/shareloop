@@ -17,6 +17,8 @@ class FeaturedItem {
     required this.description,
     required this.author,
     this.distance,
+    this.city,
+    this.postalCode,
     required this.score,
   });
 
@@ -34,6 +36,22 @@ class FeaturedItem {
   ///
   Distance? distance;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? city;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  String? postalCode;
+
   double score;
 
   @override
@@ -42,6 +60,8 @@ class FeaturedItem {
     other.description == description &&
     other.author == author &&
     other.distance == distance &&
+    other.city == city &&
+    other.postalCode == postalCode &&
     other.score == score;
 
   @override
@@ -51,10 +71,12 @@ class FeaturedItem {
     (description.hashCode) +
     (author.hashCode) +
     (distance == null ? 0 : distance!.hashCode) +
+    (city == null ? 0 : city!.hashCode) +
+    (postalCode == null ? 0 : postalCode!.hashCode) +
     (score.hashCode);
 
   @override
-  String toString() => 'FeaturedItem[title=$title, description=$description, author=$author, distance=$distance, score=$score]';
+  String toString() => 'FeaturedItem[title=$title, description=$description, author=$author, distance=$distance, city=$city, postalCode=$postalCode, score=$score]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -65,6 +87,16 @@ class FeaturedItem {
       json[r'distance'] = this.distance;
     } else {
       json[r'distance'] = null;
+    }
+    if (this.city != null) {
+      json[r'city'] = this.city;
+    } else {
+      json[r'city'] = null;
+    }
+    if (this.postalCode != null) {
+      json[r'postalCode'] = this.postalCode;
+    } else {
+      json[r'postalCode'] = null;
     }
       json[r'score'] = this.score;
     return json;
@@ -97,6 +129,8 @@ class FeaturedItem {
         description: mapValueOfType<String>(json, r'description')!,
         author: Person.fromJson(json[r'author'])!,
         distance: Distance.fromJson(json[r'distance']),
+        city: mapValueOfType<String>(json, r'city'),
+        postalCode: mapValueOfType<String>(json, r'postalCode'),
         score: mapValueOfType<double>(json, r'score')!,
       );
     }

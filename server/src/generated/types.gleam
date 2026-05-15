@@ -13,8 +13,10 @@ pub type Distance {
 pub type FeaturedItem {
   FeaturedItem(
     author: Person,
+    city: Option(String),
     description: String,
     distance: Option(Distance),
+    postal_code: Option(String),
     score: Float,
     title: String,
   )
@@ -33,11 +35,13 @@ pub fn distance_decoder() -> Decoder(Distance) {
 
 pub fn featured_item_decoder() -> Decoder(FeaturedItem) {
   use author <- decode.field("author", person_decoder())
+  use city <- decode.optional_field("city", None, decode.optional(decode.string))
   use description <- decode.field("description", decode.string)
   use distance <- decode.optional_field("distance", None, decode.optional(distance_decoder()))
+  use postal_code <- decode.optional_field("postalCode", None, decode.optional(decode.string))
   use score <- decode.field("score", decode.float)
   use title <- decode.field("title", decode.string)
-  decode.success(FeaturedItem(author: author, description: description, distance: distance, score: score, title: title))
+  decode.success(FeaturedItem(author: author, city: city, description: description, distance: distance, postal_code: postal_code, score: score, title: title))
 }
 
 pub fn person_decoder() -> Decoder(Person) {
@@ -54,9 +58,17 @@ pub fn encode_distance(value: Distance) -> Json {
 pub fn encode_featured_item(value: FeaturedItem) -> Json {
   json.object([
     #("author", encode_person(value.author)),
+    #("city", case value.city {
+      Some(v) -> json.string(v)
+      None -> json.null()
+    }),
     #("description", json.string(value.description)),
     #("distance", case value.distance {
       Some(v) -> encode_distance(v)
+      None -> json.null()
+    }),
+    #("postalCode", case value.postal_code {
+      Some(v) -> json.string(v)
       None -> json.null()
     }),
     #("score", json.float(value.score)),

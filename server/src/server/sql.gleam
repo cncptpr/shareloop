@@ -5,6 +5,7 @@
 ////
 
 import gleam/dynamic/decode
+import gleam/option.{type Option}
 import pog
 
 /// A row you get from running the `get_featured_items` query
@@ -20,6 +21,8 @@ pub type GetFeaturedItemsRow {
     description: String,
     author_name: String,
     score: Float,
+    city: Option(String),
+    postal_code: Option(String),
     distance_km: Float,
   )
 }
@@ -41,13 +44,17 @@ pub fn get_featured_items(
     use description <- decode.field(2, decode.string)
     use author_name <- decode.field(3, decode.string)
     use score <- decode.field(4, decode.float)
-    use distance_km <- decode.field(5, decode.float)
+    use city <- decode.field(5, decode.optional(decode.string))
+    use postal_code <- decode.field(6, decode.optional(decode.string))
+    use distance_km <- decode.field(7, decode.float)
     decode.success(GetFeaturedItemsRow(
       id:,
       title:,
       description:,
       author_name:,
       score:,
+      city:,
+      postal_code:,
       distance_km:,
     ))
   }
@@ -58,6 +65,8 @@ pub fn get_featured_items(
   description,
   author_name,
   score,
+  city,
+  postal_code,
   coalesce(
     st_distance(location, st_setsrid(st_makepoint($2, $1), 4326)::geography) / 1000,
     0.0

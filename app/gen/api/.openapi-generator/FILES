@@ -1,11 +1,11 @@
 .gitignore
-.openapi-generator-ignore
 .travis.yml
 README.md
 analysis_options.yaml
 doc/DefaultApi.md
 doc/Distance.md
 doc/FeaturedItem.md
+doc/LatLng.md
 doc/Person.md
 git_push.sh
 lib/api.dart
@@ -20,9 +20,7 @@ lib/auth/http_bearer_auth.dart
 lib/auth/oauth.dart
 lib/model/distance.dart
 lib/model/featured_item.dart
+lib/model/lat_lng.dart
 lib/model/person.dart
 pubspec.yaml
-test/default_api_test.dart
-test/distance_test.dart
-test/featured_item_test.dart
-test/person_test.dart
+test/lat_lng_test.dart

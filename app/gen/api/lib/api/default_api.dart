@@ -24,35 +24,24 @@ class DefaultApi {
   ///
   /// Parameters:
   ///
-  /// * [double] lat:
-  ///   User's current latitude
-  ///
-  /// * [double] lng:
-  ///   User's current longitude
-  Future<Response> getFeaturedItemsWithHttpInfo({ double? lat, double? lng, }) async {
+  /// * [LatLng] latLng:
+  Future<Response> getFeaturedItemsWithHttpInfo({ LatLng? latLng, }) async {
     // ignore: prefer_const_declarations
     final path = r'/featured-items';
 
     // ignore: prefer_final_locals
-    Object? postBody;
+    Object? postBody = latLng;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
     final formParams = <String, String>{};
 
-    if (lat != null) {
-      queryParams.addAll(_queryParams('', 'lat', lat));
-    }
-    if (lng != null) {
-      queryParams.addAll(_queryParams('', 'lng', lng));
-    }
-
-    const contentTypes = <String>[];
+    const contentTypes = <String>['application/json'];
 
 
     return apiClient.invokeAPI(
       path,
-      'GET',
+      'POST',
       queryParams,
       postBody,
       headerParams,
@@ -67,13 +56,9 @@ class DefaultApi {
   ///
   /// Parameters:
   ///
-  /// * [double] lat:
-  ///   User's current latitude
-  ///
-  /// * [double] lng:
-  ///   User's current longitude
-  Future<List<FeaturedItem>?> getFeaturedItems({ double? lat, double? lng, }) async {
-    final response = await getFeaturedItemsWithHttpInfo( lat: lat, lng: lng, );
+  /// * [LatLng] latLng:
+  Future<List<FeaturedItem>?> getFeaturedItems({ LatLng? latLng, }) async {
+    final response = await getFeaturedItemsWithHttpInfo( latLng: latLng, );
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }

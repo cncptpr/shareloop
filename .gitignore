@@ -1,2 +1,4 @@
 .vscode
-data/db
+data/db.dart_tool
+.dart_tool
+openapi_generator_config.json

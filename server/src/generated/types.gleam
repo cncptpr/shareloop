@@ -22,6 +22,13 @@ pub type FeaturedItem {
   )
 }
 
+pub type LatLng {
+  LatLng(
+    lat: Float,
+    lng: Float,
+  )
+}
+
 pub type Person {
   Person(
     name: String,
@@ -42,6 +49,12 @@ pub fn featured_item_decoder() -> Decoder(FeaturedItem) {
   use score <- decode.field("score", decode.float)
   use title <- decode.field("title", decode.string)
   decode.success(FeaturedItem(author: author, city: city, description: description, distance: distance, postal_code: postal_code, score: score, title: title))
+}
+
+pub fn lat_lng_decoder() -> Decoder(LatLng) {
+  use lat <- decode.field("lat", decode.float)
+  use lng <- decode.field("lng", decode.float)
+  decode.success(LatLng(lat: lat, lng: lng))
 }
 
 pub fn person_decoder() -> Decoder(Person) {
@@ -73,6 +86,13 @@ pub fn encode_featured_item(value: FeaturedItem) -> Json {
     }),
     #("score", json.float(value.score)),
     #("title", json.string(value.title)),
+  ])
+}
+
+pub fn encode_lat_lng(value: LatLng) -> Json {
+  json.object([
+    #("lat", json.float(value.lat)),
+    #("lng", json.float(value.lng)),
   ])
 }
 

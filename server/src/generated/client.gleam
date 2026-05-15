@@ -1,15 +1,11 @@
 //// Generated HTTP client from Shareloop API v1.0.0
 
-import gleam/http.{Get}
+import gleam/http.{Post}
 import gleam/http/request.{type Request}
 import gleam/http/response.{type Response}
 import gleam/dynamic/decode
 import gleam/json
-import gleam/option.{type Option}
-import gleam/float
-import gleam/string
 import gleam/list
-import gleam/uri
 import generated/types
 
 /// Client configuration for API requests.
@@ -29,21 +25,10 @@ pub type ClientError {
 }
 
 /// Get featured items
-pub fn get_featured_items_request(config: ClientConfig, lat: Option(Float), lng: Option(Float)) -> Request(String) {
+pub fn get_featured_items_request(config: ClientConfig, body: types.LatLng) -> Request(String) {
   let path = "/featured-items"
-  let query = []
-  let query = case lat {
-    option.Some(v) -> list.append(query, [#("lat", float.to_string(v))])
-    option.None -> query
-  }
-  let query = case lng {
-    option.Some(v) -> list.append(query, [#("lng", float.to_string(v))])
-    option.None -> query
-  }
-  let query_string = uri.query_to_string(query)
-  let path = path <> "?" <> query_string
   request.new()
-  |> request.set_method(Get)
+  |> request.set_method(Post)
   |> request.set_host(config.base_url)
   |> request.set_path(path)
   |> fn(req) {
@@ -52,6 +37,7 @@ pub fn get_featured_items_request(config: ClientConfig, lat: Option(Float), lng:
     })
   }
   |> request.set_header("content-type", "application/json")
+  |> request.set_body(json.to_string(types.encode_lat_lng(body)))
 }
 
 pub fn decode_get_featured_items_response(resp: Response(String)) -> Result(List(types.FeaturedItem), ClientError) {

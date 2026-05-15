@@ -9,11 +9,11 @@ All URIs are relative to */api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**getFeaturedItems**](DefaultApi.md#getfeatureditems) | **GET** /featured-items | Get featured items
+[**getFeaturedItems**](DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 
 
 # **getFeaturedItems**
-> List<FeaturedItem> getFeaturedItems(lat, lng)
+> List<FeaturedItem> getFeaturedItems(latLng)
 
 Get featured items
 
@@ -24,11 +24,10 @@ Returns a list of featured items
 import 'package:openapi/api.dart';
 
 final api_instance = DefaultApi();
-final lat = 1.2; // double | User's current latitude
-final lng = 1.2; // double | User's current longitude
+final latLng = LatLng(); // LatLng | 
 
 try {
-    final result = api_instance.getFeaturedItems(lat, lng);
+    final result = api_instance.getFeaturedItems(latLng);
     print(result);
 } catch (e) {
     print('Exception when calling DefaultApi->getFeaturedItems: $e\n');
@@ -39,8 +38,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **lat** | **double**| User's current latitude | [optional] 
- **lng** | **double**| User's current longitude | [optional] 
+ **latLng** | [**LatLng**](LatLng.md)|  | [optional] 
 
 ### Return type
 
@@ -52,7 +50,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

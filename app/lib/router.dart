@@ -1,36 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shareloop/pages/messagescreen.dart';
-import 'package:shareloop/pages/homescreen.dart';
-import 'package:shareloop/pages/profilescreen.dart';
-import 'package:shareloop/pages/searchscreen.dart';
+import 'package:shareloop/screens/home_screen.dart';
+import 'package:shareloop/screens/message_screen.dart';
+import 'package:shareloop/screens/profile_screen.dart';
+import 'package:shareloop/screens/search_screen.dart';
+
+enum Routes {
+  home('/'),
+  search('/'),
+  message('/message'),
+  profile('/profile'),
+  couter('/counter');
+
+  final String route;
+  const Routes(this.route);
+
+  go(BuildContext ctx) => ctx.go(route);
+}
 
 final GoRouter router = GoRouter(
   routes: <RouteBase>[
-    GoRoute(
-      path: '/',
-      builder: (ctx, state) {
-        return const Homescreen();
-      },
-      routes: <RouteBase>[
-        GoRoute(
-          path: 'messages',
-          builder: (BuildContext context, GoRouterState state) {
-            return const MessageScreen();
-          },
+    StatefulShellRoute.indexedStack(
+      builder: (ctx, state, navShell) => Scaffold(
+        body: navShell,
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: navShell.currentIndex,
+          onTap: (index) => navShell.goBranch(index),
+          items: const [
+            BottomNavigationBarItem(label: "Search", icon: Icon(Icons.search)),
+            BottomNavigationBarItem(
+              label: "Messages",
+              icon: Icon(Icons.message),
+            ),
+            BottomNavigationBarItem(label: "Profile", icon: Icon(Icons.person)),
+          ],
         ),
-        GoRoute(
-          path: 'profile',
-          builder: (BuildContext context, GoRouterState state){
-            return const ProfileScreen();
-          }
+      ),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.search.route,
+              builder: (ctx, state) => const SearchScreen(),
+              routes: [
+                GoRoute(
+                  path: Routes.couter.route,
+                  builder: (ctx, state) => const Homescreen(),
+                ),
+              ],
+            ),
+          ],
         ),
-        GoRoute(
-          path: 'search',
-          builder: (BuildContext context, GoRouterState state){
-            return const SearchScreen();
-          }
-        )
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.message.route,
+              builder: (ctx, state) => const MessageScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.profile.route,
+              builder: (ctx, state) => const ProfileScreen(),
+            ),
+          ],
+        ),
       ],
     ),
   ],

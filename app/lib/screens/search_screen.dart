@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:shareloop/router.dart';
 
 /// The search screen
 class SearchScreen extends StatelessWidget {
@@ -7,13 +7,13 @@ class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(ctx) {
     return Scaffold(
       appBar: AppBar(title: const Text('Search Screen')),
       body: Center(
         child: ElevatedButton(
-          onPressed: () => context.go('/'),
-          child: const Text('Go back to the Home screen'),
+          onPressed: () => Routes.couter.go(ctx),
+          child: const Text('Goto Counter'),
         ),
       ),
     );

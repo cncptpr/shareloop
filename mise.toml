@@ -16,7 +16,7 @@ run = "gleam run -m squirrel"
 dir = "server"
 sources = ["src/**/sql/*.sql"]
 outputs = ["src/**/sql.gleam"]
-depends = ["server:migrate"]
+depends = ["server:db:migrate"]
 
 [tasks."server:db:migrate"]
 description = "Run database migrations"

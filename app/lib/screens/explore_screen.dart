@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shareloop/components/item_widget.dart';
+import 'package:shareloop/screens/location_picker_screen.dart';
 import 'package:shareloop/state/items.dart';
+import 'package:shareloop/state/location.dart';
+import 'package:shareloop/state/location_search.dart';
 
-/// The search screen
 class ExploreScreen extends ConsumerStatefulWidget {
-  /// Constructs a [ExploreScreen]
   const ExploreScreen({super.key});
 
   @override
@@ -15,10 +16,41 @@ class ExploreScreen extends ConsumerStatefulWidget {
 class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   String searchText = "";
 
+  String _locationLabel(WidgetRef ref) {
+    final manual = ref.watch(selectedLocationProvider);
+    if (manual != null) return manual.name;
+
+    final gps = ref.watch(currentPositionProvider).asData?.value;
+    if (gps == null) return 'Position wählen';
+
+    final reverse = ref.watch(
+      reverseLocationProvider((gps.latitude, gps.longitude)),
+    );
+    return reverse.when(
+      data: (loc) => loc?.name ?? 'Aktuelle Position',
+      loading: () => 'Aktuelle Position',
+      error: (_, __) => 'Aktuelle Position',
+    );
+  }
+
   @override
-  Widget build(ctx) {
+  Widget build(BuildContext context) {
+    final label = _locationLabel(ref);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Explore Screen')),
+      appBar: AppBar(
+        title: const Text('Explore Screen'),
+        actions: [
+          TextButton.icon(
+            onPressed: () =>
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => const LocationPickerScreen(),
+                )),
+            icon: const Icon(Icons.location_on),
+            label: Text(label),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           SearchBar(
@@ -68,7 +100,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           ]),
                           loading: () =>
                               const Center(child: CircularProgressIndicator()),
-                          error: (e, _) => Center(child: Text('Error: $e')),
+                          error: (e, _) =>
+                              Center(child: Text('Error: $e')),
                         );
                       }),
                     ),

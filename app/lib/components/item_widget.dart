@@ -33,7 +33,7 @@ class ItemWidget extends ConsumerWidget {
             children: [
               person(item.author),
               score(item.score),
-              distance(item.distance),
+              if (item.distance != null) distance(item.distance!),
             ],
           )
         ],
@@ -55,10 +55,10 @@ class ItemWidget extends ConsumerWidget {
     ]);
   }
 
-  Widget distance(Distance? distance) {
+  Widget distance(Distance distance) {
     return Row(children: [
       const Icon(Icons.social_distance),
-      Text(distance?.km.toString() ?? "N/A"),
+      Text(distance.km.toString()),
     ]);
   }
 }

@@ -53,6 +53,11 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
     widget.onSelected?.call();
   }
 
+  Future<void> _deleteStored(SearchedLocation location) async {
+    await removeStoredLocation(location);
+    ref.invalidate(storedLocationsProvider);
+  }
+
   void _reset() {
     setState(() {
       _activeQuery = '';
@@ -63,40 +68,11 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
 
   @override
   Widget build(BuildContext context) {
-    final resultsAsync = ref.watch(locationSearchProvider(_activeQuery));
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        TextField(
-          controller: _controller,
-          focusNode: _focusNode,
-          decoration: InputDecoration(
-            hintText: 'Search city or postal code...',
-            prefixIcon: const Icon(Icons.location_on_outlined),
-            suffixIcon: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (_controller.text.isNotEmpty)
-                  IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: _reset,
-                  ),
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: _search,
-                ),
-              ],
-            ),
-            border: const OutlineInputBorder(),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          ),
-          textInputAction: TextInputAction.search,
-          onSubmitted: (_) => _search(),
-          onChanged: (_) => setState(() {}),
-        ),
+        _buildTextField(),
         if (_controller.text.isNotEmpty && _activeQuery.isEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 4, left: 12),
@@ -107,107 +83,147 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
                   ),
             ),
           ),
-        if (_activeQuery.isNotEmpty)
-          resultsAsync.when(
-            skipLoadingOnReload: true,
-            data: (results) {
-              _cachedResults = results;
-              if (results.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    'No results found.',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                );
-              }
-              return _buildResultsList(results, false);
-            },
-            loading: () {
-              if (_cachedResults != null) {
-                return _buildResultsList(_cachedResults!, true);
-              }
-              return const Padding(
-                padding: EdgeInsets.all(8),
-                child: LinearProgressIndicator(),
-              );
-            },
-            error: (e, _) {
-              if (_cachedResults != null) {
-                return _buildResultsList(_cachedResults!, false);
-              }
-              final msg = e is RateLimitException
-                  ? 'Rate limit reached. Try again in a moment.'
-                  : 'Could not load results. Check your connection.';
-              return Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(
-                  msg,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                ),
-              );
-            },
-          ),
+        if (_activeQuery.isNotEmpty) _buildResultsView(),
         if (_activeQuery.isEmpty && _controller.text.isEmpty)
           _buildDefaultView(),
       ],
     );
   }
 
-  Widget _buildResultsList(
-    List<SearchedLocation> results,
-    bool isLoading,
-  ) {
+  Widget _buildTextField() {
+    return TextField(
+      controller: _controller,
+      focusNode: _focusNode,
+      decoration: InputDecoration(
+        hintText: 'Search city or postal code...',
+        prefixIcon: const Icon(Icons.location_on_outlined),
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_controller.text.isNotEmpty || _activeQuery.isNotEmpty)
+              IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: _reset,
+              ),
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: _search,
+            ),
+          ],
+        ),
+        border: const OutlineInputBorder(),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      ),
+      textInputAction: TextInputAction.search,
+      onSubmitted: (_) => _search(),
+      onChanged: (_) => setState(() {}),
+    );
+  }
+
+  Widget _buildResultsView() {
+    final resultsAsync = ref.watch(locationSearchProvider(_activeQuery));
     return Column(
       children: [
-        if (isLoading) const LinearProgressIndicator(),
-        ...results.map(
-          (loc) => _SuggestionTile(
-            leading: const Icon(Icons.location_city),
-            title: loc.name,
-            subtitle: loc.displayName,
-            onTap: () => _selectLocation(loc),
+        resultsAsync.when(
+          skipLoadingOnReload: true,
+          data: (results) {
+            _cachedResults = results;
+            return const SizedBox.shrink();
+          },
+          loading: () => const Padding(
+            padding: EdgeInsets.all(8),
+            child: LinearProgressIndicator(),
           ),
+          error: (e, _) {
+            final msg = e is RateLimitException
+                ? 'Rate limit reached. Try again in a moment.'
+                : 'Could not load results. Check your connection.';
+            var style = Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                );
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                msg,
+                style: style,
+              ),
+            );
+          },
         ),
+        _buildResultsList(_cachedResults),
       ],
+    );
+  }
+
+  Widget _buildResultsList(
+    List<SearchedLocation>? results,
+  ) {
+    if (results == null) {
+      return const SizedBox.shrink();
+    }
+    if (results.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: Text(
+          'No results found.',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      );
+    }
+    return Column(
+      children: results
+          .map(
+            (loc) => _SuggestionTile(
+              leading: const Icon(Icons.location_city),
+              title: loc.name,
+              subtitle: loc.displayName,
+              onTap: () => _selectLocation(loc),
+            ),
+          )
+          .toList(),
     );
   }
 
   Widget _buildDefaultView() {
     final storedAsync = ref.watch(storedLocationsProvider);
     final selected = ref.watch(selectedLocationProvider);
+    final recentTitle = Padding(
+      padding: const EdgeInsets.only(left: 12, top: 8),
+      child: Text(
+        'Recent',
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+      ),
+    );
 
     return storedAsync.when(
       data: (stored) {
-        if (stored.isEmpty) return const SizedBox.shrink();
+        if (stored.isEmpty && selected == null) {
+          return const SizedBox.shrink();
+        }
         return Column(
           children: [
             _gpsTile(),
-            Padding(
-              padding: const EdgeInsets.only(left: 12, top: 8),
-              child: Text(
-                'Recent',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+            if (stored.isNotEmpty) recentTitle,
+            ...stored.map(
+              (loc) => _SuggestionTile(
+                leading: Icon(
+                  selected is SearchedLocation &&
+                          loc.lat == selected.lat &&
+                          loc.lng == selected.lng
+                      ? Icons.check_circle
+                      : Icons.history,
+                ),
+                title: loc.name,
+                subtitle: loc.displayName,
+                onTap: () => _selectLocation(loc),
+                trailing: IconButton(
+                  icon: const Icon(Icons.close, size: 16),
+                  onPressed: () => _deleteStored(loc),
+                ),
               ),
             ),
-            ...stored.map((loc) => _SuggestionTile(
-                  leading: Icon(
-                    loc.lat == selected?.lat && loc.lng == selected?.lng
-                        ? Icons.check_circle
-                        : Icons.history,
-                  ),
-                  title: loc.name,
-                  subtitle: loc.displayName,
-                  onTap: () => _selectLocation(loc),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.close, size: 16),
-                    onPressed: () => _deleteStored(loc),
-                  ),
-                )),
           ],
         );
       },
@@ -216,15 +232,10 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
     );
   }
 
-  Future<void> _deleteStored(SearchedLocation location) async {
-    await removeStoredLocation(location);
-    ref.invalidate(storedLocationsProvider);
-  }
-
   Widget _gpsTile() {
     final canUseGps = !Platform.isLinux && !Platform.isWindows;
     final tile = _SuggestionTile(
-      leading: Icon(Icons.my_location),
+      leading: const Icon(Icons.my_location),
       title: 'Aktuellen Standort verwenden',
       subtitle: canUseGps ? null : 'GPS auf diesem Gerät nicht verfügbar',
       onTap: null,
@@ -268,9 +279,11 @@ class _SuggestionTile extends StatelessWidget {
       title: Text(
         title,
         overflow: TextOverflow.ellipsis,
-        style: enabled ? null : Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: Theme.of(context).disabledColor,
-        ),
+        style: enabled
+            ? null
+            : Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).disabledColor,
+                ),
       ),
       subtitle: subtitle != null
           ? Text(
@@ -278,10 +291,8 @@ class _SuggestionTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: enabled
-                    ? null
-                    : Theme.of(context).disabledColor,
-              ),
+                    color: enabled ? null : Theme.of(context).disabledColor,
+                  ),
             )
           : null,
       trailing: trailing,

@@ -6,7 +6,28 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shareloop/state/location.dart';
 
-class SearchedLocation {
+sealed class SelectedLocation {
+  Map<String, dynamic> selectedToJson();
+  factory SelectedLocation.selectedFromJson(Map<String, dynamic> json) {
+    if (json['type'] == 'GPSLocation') {
+      return GPSLocation();
+    } else if (json['type'] == 'SearchedLocation') {
+      return SearchedLocation.fromJson(json['loc'] as Map<String, dynamic>);
+    }
+    throw Exception(
+      'There must be a field "type" with either "GPSLocation" or "SearchedLocation"',
+    );
+  }
+}
+
+class GPSLocation implements SelectedLocation {
+  @override
+  Map<String, dynamic> selectedToJson() => {
+        'type': 'GPSLocation',
+      };
+}
+
+class SearchedLocation implements SelectedLocation {
   final double lat;
   final double lng;
   final String displayName;
@@ -33,6 +54,12 @@ class SearchedLocation {
         displayName: json['displayName'] as String,
         name: json['name'] as String,
       );
+
+  @override
+  Map<String, dynamic> selectedToJson() => {
+        'type': 'SearchedLocation',
+        'loc': toJson(),
+      };
 }
 
 class RateLimitException implements Exception {
@@ -44,14 +71,14 @@ const _maxStoredLocations = 20;
 const _keySelectedLocation = 'selected_location';
 const _keyStoredLocations = 'stored_locations';
 
-Future<void> _saveSelectedLocation(SearchedLocation? location) async {
+Future<void> _saveSelectedLocation(SelectedLocation? location) async {
   final prefs = await SharedPreferences.getInstance();
   if (location == null) {
     await prefs.remove(_keySelectedLocation);
   } else {
     await prefs.setString(
       _keySelectedLocation,
-      jsonEncode(location.toJson()),
+      jsonEncode(location.selectedToJson()),
     );
   }
 }
@@ -74,7 +101,12 @@ Future<List<SearchedLocation>> _loadStoredLocations() async {
       .toList();
 }
 
-class SelectedLocationNotifier extends Notifier<SearchedLocation?> {
+class SelectedLocationNotifier extends Notifier<SelectedLocation?> {
+  // The following variable lives inside Notifier:
+  // ```dart
+  // SelectedLocation? state;
+  // ```
+
   @override
   SearchedLocation? build() {
     _loadFromPrefs();
@@ -85,24 +117,28 @@ class SelectedLocationNotifier extends Notifier<SearchedLocation?> {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_keySelectedLocation);
     if (raw != null) {
-      final loc = SearchedLocation.fromJson(
+      final location = SelectedLocation.selectedFromJson(
         jsonDecode(raw) as Map<String, dynamic>,
       );
-      state = loc;
+      state = location;
     }
   }
 
-  Future<void> select(SearchedLocation location) async {
+  Future<void> select(SelectedLocation location) async {
     state = location;
     await _saveSelectedLocation(location);
     final stored = await _loadStoredLocations();
-    stored.removeWhere((l) => l.lat == location.lat && l.lng == location.lng);
-    stored.insert(0, location);
+    if (location is SearchedLocation) {
+      stored.removeWhere((l) => l.lat == location.lat && l.lng == location.lng);
+      stored.insert(0, location);
+    }
     if (stored.length > _maxStoredLocations) {
       stored.removeLast();
     }
     await _saveStoredLocations(stored);
   }
+
+  Future<void> selectGPS() async => select(GPSLocation());
 
   Future<void> clear() async {
     state = null;
@@ -111,7 +147,7 @@ class SelectedLocationNotifier extends Notifier<SearchedLocation?> {
 }
 
 final selectedLocationProvider =
-    NotifierProvider<SelectedLocationNotifier, SearchedLocation?>(
+    NotifierProvider<SelectedLocationNotifier, SelectedLocation?>(
   SelectedLocationNotifier.new,
 );
 
@@ -140,13 +176,14 @@ Future<http.Response> _fetchWithRetry(
     } on RateLimitException {
       rethrow;
     } catch (_) {
-      if (i == maxRetries - 1) rethrow;
+      if (i == maxRetries) rethrow;
       await Future.delayed(const Duration(seconds: 1));
     }
   }
   throw StateError('unreachable');
 }
 
+// TODO: extract nominatim request into other file
 final locationSearchProvider =
     FutureProvider.family<List<SearchedLocation>, String>(
   (ref, query) async {
@@ -191,11 +228,10 @@ final reverseLocationProvider =
     if (data.containsKey('error')) return null;
     final addr = data['address'] as Map<String, dynamic>;
     final city = (addr['city'] ??
-            addr['town'] ??
-            addr['village'] ??
-            addr['municipality'] ??
-            '')
-        as String;
+        addr['town'] ??
+        addr['village'] ??
+        addr['municipality'] ??
+        '') as String;
     final postcode = (addr['postcode'] ?? '') as String;
     final name = postcode.isNotEmpty ? '$postcode $city' : city;
     return SearchedLocation(
@@ -207,12 +243,21 @@ final reverseLocationProvider =
   },
 );
 
-final effectiveLatLngProvider = Provider<(double?, double?)>((ref) {
-  final manual = ref.watch(selectedLocationProvider);
-  if (manual != null) return (manual.lat, manual.lng);
+class LatLng {
+  final double lat;
+  final double lng;
 
-  final gps = ref.watch(currentPositionProvider).asData?.value;
-  if (gps != null) return (gps.latitude, gps.longitude);
+  const LatLng({required this.lat, required this.lng});
+}
 
-  return (null, null);
+final effectiveLatLngProvider = Provider<LatLng?>((ref) {
+  final selected = ref.watch(selectedLocationProvider);
+  if (selected is SearchedLocation) {
+    return LatLng(lat: selected.lat, lng: selected.lng);
+  } else if (selected is GPSLocation) {
+    final gps = ref.watch(currentPositionProvider).asData?.value;
+    if (gps != null) return LatLng(lat: gps.latitude, lng: gps.longitude);
+  }
+
+  return null;
 });

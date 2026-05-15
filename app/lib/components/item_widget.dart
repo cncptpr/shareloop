@@ -33,7 +33,7 @@ class ItemWidget extends ConsumerWidget {
             children: [
               person(item.author),
               score(item.score),
-              locationWidget(),
+              locationWidget(item.city, item.distance),
             ],
           )
         ],
@@ -55,13 +55,13 @@ class ItemWidget extends ConsumerWidget {
     ]);
   }
 
-  Widget locationWidget() {
+  Widget locationWidget(String? city, Distance? distance) {
     final parts = <String>[];
-    if (item.city != null && item.city!.isNotEmpty) {
-      parts.add(item.city!);
+    if (city != null && city.isNotEmpty) {
+      parts.add(city);
     }
-    if (item.distance != null) {
-      parts.add('${item.distance!.km.toStringAsFixed(0)} km');
+    if (distance != null) {
+      parts.add('${distance.km.toStringAsFixed(0)} km');
     }
     if (parts.isEmpty) return const SizedBox.shrink();
 

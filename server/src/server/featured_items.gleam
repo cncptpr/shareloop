@@ -15,14 +15,10 @@ pub fn handle(
   req: request.Request(mist.Connection),
   conn,
 ) -> response.Response(mist.ResponseData) {
-  let lat =
-    get_query_param(req, "lat") |> result.map(float.parse) |> result.flatten
-  let lng =
-    get_query_param(req, "lng") |> result.map(float.parse) |> result.flatten
-
-  let has_location = result.is_ok(lat) && result.is_ok(lng)
-  let lat_val = result.unwrap(lat, 0.0)
-  let lng_val = result.unwrap(lng, 0.0)
+  let parsed = parse_latlng(get_query_param(req, "location"))
+  let has_location = parsed.valid
+  let lat_val = parsed.lat
+  let lng_val = parsed.lng
 
   let rows =
     sql.get_featured_items(conn, lat_val, lng_val)
@@ -46,6 +42,37 @@ pub fn handle(
     })
 
   respond(items)
+}
+
+type ParsedLocation {
+  ParsedLocation(valid: Bool, lat: Float, lng: Float)
+}
+
+fn parse_latlng(raw: Result(String, Nil)) -> ParsedLocation {
+  case raw {
+    Ok(raw) -> {
+      let parts = string.split(raw, "lat=")
+      case parts {
+        [_, rest] -> {
+          let lat_lng_parts = string.split(rest, ", lng=")
+          case lat_lng_parts {
+            [lat_str, lng_rest] -> {
+              let lng_str = string.replace(lng_rest, "]", "")
+              let lat = float.parse(lat_str)
+              let lng = float.parse(lng_str)
+              case lat, lng {
+                Ok(l), Ok(n) -> ParsedLocation(True, l, n)
+                _, _ -> ParsedLocation(False, 0.0, 0.0)
+              }
+            }
+            _ -> ParsedLocation(False, 0.0, 0.0)
+          }
+        }
+        _ -> ParsedLocation(False, 0.0, 0.0)
+      }
+    }
+    _ -> ParsedLocation(False, 0.0, 0.0)
+  }
 }
 
 fn get_query_param(

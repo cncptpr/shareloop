@@ -17,20 +17,24 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   String searchText = "";
 
   String _locationLabel(WidgetRef ref) {
-    final manual = ref.watch(selectedLocationProvider);
-    if (manual != null) return manual.name;
-
-    final gps = ref.watch(currentPositionProvider).asData?.value;
-    if (gps == null) return 'Position wählen';
-
-    final reverse = ref.watch(
-      reverseLocationProvider((gps.latitude, gps.longitude)),
-    );
-    return reverse.when(
-      data: (loc) => loc?.name ?? 'Aktuelle Position',
-      loading: () => 'Aktuelle Position',
-      error: (_, __) => 'Aktuelle Position',
-    );
+    final selected = ref.watch(selectedLocationProvider);
+    switch (selected) {
+      case SearchedLocation manual:
+        return manual.name;
+      case GPSLocation _:
+        final gps = ref.watch(currentPositionProvider).asData?.value;
+        if (gps == null) return 'Position wählen';
+        final reverse = ref.watch(
+          reverseLocationProvider((gps.latitude, gps.longitude)),
+        );
+        return reverse.when(
+          data: (loc) => loc?.name ?? 'Aktuelle Position',
+          loading: () => 'Aktuelle Position',
+          error: (_, __) => 'Aktuelle Position',
+        );
+      default:
+        return 'Position wählen';
+    }
   }
 
   @override
@@ -42,8 +46,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         title: const Text('Explore Screen'),
         actions: [
           TextButton.icon(
-            onPressed: () =>
-                Navigator.push(context, MaterialPageRoute(
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
                   builder: (_) => const LocationPickerScreen(),
                 )),
             icon: const Icon(Icons.location_on),
@@ -100,8 +105,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           ]),
                           loading: () =>
                               const Center(child: CircularProgressIndicator()),
-                          error: (e, _) =>
-                              Center(child: Text('Error: $e')),
+                          error: (e, _) => Center(child: Text('Error: $e')),
                         );
                       }),
                     ),

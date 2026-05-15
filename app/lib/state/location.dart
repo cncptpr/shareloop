@@ -4,6 +4,8 @@ import 'dart:io' show Platform;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
+// TODO: introduce logging to replace print()
+// TODO: rename this file to something 'gps' or 'geolocator'
 final currentPositionProvider = FutureProvider<Position?>((ref) async {
   if (Platform.isLinux || Platform.isWindows) {
     print("[WARN] Geolocator does not support Linux and Windows");

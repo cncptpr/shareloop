@@ -19,7 +19,9 @@ void main() {
   group('tests for DefaultApi', () {
     // Get featured items
     //
-    //Future<List<FeaturedItem>> getFeaturedItems() async
+    // Returns a list of featured items
+    //
+    //Future<List<FeaturedItem>> getFeaturedItems({ double lat, double lng }) async
     test('test getFeaturedItems', () async {
       // TODO
     });

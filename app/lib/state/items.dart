@@ -4,10 +4,11 @@ import 'package:shareloop/app_config.dart';
 import 'package:shareloop/state/location_search.dart';
 
 final featuredItemsProvider = FutureProvider<List<FeaturedItem>>((ref) async {
-  final (lat, lng) = ref.watch(effectiveLatLngProvider);
+  final location = ref.watch(effectiveLatLngProvider);
 
   return (await AppConfig.apiClient.getFeaturedItems(
-    lat: lat,
-    lng: lng,
-  )) ?? [];
+        lat: location?.lat,
+        lng: location?.lng,
+      )) ??
+      [];
 });

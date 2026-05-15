@@ -23,4 +23,3 @@ lib/model/featured_item.dart
 lib/model/lat_lng.dart
 lib/model/person.dart
 pubspec.yaml
-test/lat_lng_test.dart

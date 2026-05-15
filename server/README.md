@@ -2,14 +2,13 @@
 
 This is the backend for [shareloop](/README.md).
 
-Coming Soon:
-If you are not actively developing this, maybe just [starting the backend as
-a Docker container](/docs/Docker.md) is enough.
+If you are not actively developing this, [starting the server as
+a Docker container](/docs/Docker.md) should be enough.
 
 ## Requirements
 
 - gleam (in mise.toml)
-- not yet: a running [Postgres Database](/docs/Docker.md)
+- a running [Postgres Database](/docs/Docker.md)
 
 ## Getting started
 
@@ -31,8 +30,8 @@ server/sql module.
 
 The schema is defined as migrations in `priv/migrations/<time>-<name>.sql`.
 Follow the patter of the exisiting migrations. Migrations will be applied
-when re-generating the SQL module, running *Seeding*, starting the server or
-with `$ mise run server:migrate`.
+when re-generating the SQL code, running *Seeding*, starting the server or
+with `$ mise run server:db:migrate`.
 
-To populate the Database with example data run `$ mise run server:seed`.
+To populate the Database with example data run `$ mise run server:db:seed`.
 Remember to add new example data when expanding the schema.

@@ -14,17 +14,16 @@ outputs = ["./src/generated/*.gleam"]
 description = "Generate Gleam SQL bindings from .sql queries with squirrel"
 run = "gleam run -m squirrel"
 dir = "server"
-# env = 
 sources = ["src/**/sql/*.sql"]
 outputs = ["src/**/sql.gleam"]
 depends = ["server:migrate"]
 
-[tasks."server:migrate"]
+[tasks."server:db:migrate"]
 description = "Run database migrations"
 run = "gleam run -m server/migration"
 dir = "server"
 
-[tasks."server:seed"]
+[tasks."server:db:seed"]
 description = "Run the database seed script"
 run = "gleam run -m server/seed"
 dir = "server"

@@ -31,8 +31,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
-                ref.invalidate(itemProvider);
-                await ref.read(itemProvider.future);
+                ref.invalidate(featuredItemsProvider);
+                await ref.read(featuredItemsProvider.future);
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -42,7 +42,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                       constraints:
                           BoxConstraints(maxWidth: constraints.maxWidth),
                       child: Consumer(builder: (ctx, ref, _) {
-                        final itemsAsync = ref.watch(itemProvider);
+                        final itemsAsync = ref.watch(featuredItemsProvider);
                         return itemsAsync.when(
                           skipLoadingOnReload: true,
                           data: (items) => Column(children: [

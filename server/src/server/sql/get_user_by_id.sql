@@ -1,0 +1,1 @@
+select id, email, password_hash, last_online_at from users where id = $1

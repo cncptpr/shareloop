@@ -1,6 +1,7 @@
 import gleam/io
 import gleam/result
 import pog
+import server/auth
 import server/db
 import server/migration
 import server/error
@@ -20,14 +21,38 @@ fn run() -> Result(Nil, String) {
     |> result.map_error(error.message),
   )
 
-  use _ <- result.try(clear_items(conn))
-  use _ <- result.try(insert_item(conn, "Inserat 1", "Ganz tolles Inserat", "Ich", 4.9, 13.4050, 52.5200, "Berlin", "10115"))
+use _ <- result.try(clear_users(conn))
+use _ <- result.try(
+  auth.create_user(conn, "dev@example.com", "dev")
+  |> result.map_error(fn(e) {
+    "Failed to create dev user: " <> auth_error_message(e)
+  }),
+)
+
+use _ <- result.try(clear_items(conn))
+use _ <- result.try(insert_item(conn, "Inserat 1", "Ganz tolles Inserat", "Ich", 4.9, 13.4050, 52.5200, "Berlin", "10115"))
   use _ <- result.try(insert_item(conn, "Internat", "Ganz tolles Internat", "Ich", 4.9, 11.5820, 48.1351, "München", "80331"))
   use _ <- result.try(insert_item(conn, "Inserat 2", "Papput", "Ich", 4.9, 9.9937, 53.5511, "Hamburg", "20095"))
   use _ <- result.try(insert_item(conn, "Auto", "Kann fahren", "Carl", 4.3, 6.9603, 50.9375, "Köln", "50667"))
   use _ <- result.try(insert_item(conn, "Spezi", "Bitte voll zurueck", "Timon", 5.0, 8.6821, 50.1109, "Frankfurt am Main", "60311"))
 
   Ok(Nil)
+}
+
+fn auth_error_message(e: auth.AuthError) -> String {
+  case e {
+    auth.InvalidCredentials -> "Invalid credentials"
+    auth.EmailAlreadyExists -> "Email already exists"
+    auth.SessionExpired -> "Session expired"
+    auth.DatabaseError(msg) -> msg
+  }
+}
+
+fn clear_users(conn: pog.Connection) -> Result(Nil, String) {
+  pog.query("delete from users")
+  |> pog.execute(conn)
+  |> result.map_error(fn(_) { "Failed to clear users" })
+  |> result.map(fn(_) { Nil })
 }
 
 fn clear_items(conn: pog.Connection) -> Result(Nil, String) {

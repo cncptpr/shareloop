@@ -30,18 +30,22 @@ pub fn create_session(
   arg_1: String,
   arg_2: Int,
   arg_3: Timestamp,
+  arg_4: String,
+  arg_5: Timestamp,
 ) -> Result(pog.Returned(CreateSessionRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
     decode.success(CreateSessionRow(id:))
   }
 
-  "insert into sessions (token_hash, user_id, expires_at) values ($1, $2, $3) returning id
+  "insert into sessions (token_hash, user_id, expires_at, refresh_token_hash, refresh_expires_at) values ($1, $2, $3, $4, $5) returning id
 "
   |> pog.query
   |> pog.parameter(pog.text(arg_1))
   |> pog.parameter(pog.int(arg_2))
   |> pog.parameter(pog.timestamp(arg_3))
+  |> pog.parameter(pog.text(arg_4))
+  |> pog.parameter(pog.timestamp(arg_5))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -114,6 +118,46 @@ pub fn delete_user_sessions(
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
   "delete from sessions where user_id = $1
+"
+  |> pog.query
+  |> pog.parameter(pog.int(arg_1))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// Runs the `expire_session_access` query
+/// defined in `./src/server/sql/expire_session_access.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn expire_session_access(
+  db: pog.Connection,
+  arg_1: Int,
+) -> Result(pog.Returned(Nil), pog.QueryError) {
+  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+
+  "update sessions set expires_at = now() where id = $1
+"
+  |> pog.query
+  |> pog.parameter(pog.int(arg_1))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// Runs the `expire_session_refresh` query
+/// defined in `./src/server/sql/expire_session_refresh.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn expire_session_refresh(
+  db: pog.Connection,
+  arg_1: Int,
+) -> Result(pog.Returned(Nil), pog.QueryError) {
+  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+
+  "update sessions set refresh_expires_at = now() where id = $1
 "
   |> pog.query
   |> pog.parameter(pog.int(arg_1))
@@ -260,6 +304,73 @@ order by
   |> pog.execute(db)
 }
 
+/// A row you get from running the `get_session_by_refresh_token` query
+/// defined in `./src/server/sql/get_session_by_refresh_token.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type GetSessionByRefreshTokenRow {
+  GetSessionByRefreshTokenRow(
+    id: Int,
+    token_hash: String,
+    user_id: Int,
+    expires_at: Timestamp,
+    created_at: Timestamp,
+    refresh_token_hash: String,
+    refresh_expires_at: Timestamp,
+    email: String,
+    last_online_at: Timestamp,
+  )
+}
+
+/// Runs the `get_session_by_refresh_token` query
+/// defined in `./src/server/sql/get_session_by_refresh_token.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn get_session_by_refresh_token(
+  db: pog.Connection,
+  arg_1: String,
+) -> Result(pog.Returned(GetSessionByRefreshTokenRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, decode.int)
+    use token_hash <- decode.field(1, decode.string)
+    use user_id <- decode.field(2, decode.int)
+    use expires_at <- decode.field(3, pog.timestamp_decoder())
+    use created_at <- decode.field(4, pog.timestamp_decoder())
+    use refresh_token_hash <- decode.field(5, decode.string)
+    use refresh_expires_at <- decode.field(6, pog.timestamp_decoder())
+    use email <- decode.field(7, decode.string)
+    use last_online_at <- decode.field(8, pog.timestamp_decoder())
+    decode.success(GetSessionByRefreshTokenRow(
+      id:,
+      token_hash:,
+      user_id:,
+      expires_at:,
+      created_at:,
+      refresh_token_hash:,
+      refresh_expires_at:,
+      email:,
+      last_online_at:,
+    ))
+  }
+
+  "select
+  s.id, s.token_hash, s.user_id, s.expires_at, s.created_at,
+  s.refresh_token_hash, s.refresh_expires_at,
+  u.email, u.last_online_at
+from sessions s
+join users u on s.user_id = u.id
+where s.refresh_token_hash = $1
+"
+  |> pog.query
+  |> pog.parameter(pog.text(arg_1))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
 /// A row you get from running the `get_session_by_token` query
 /// defined in `./src/server/sql/get_session_by_token.sql`.
 ///
@@ -273,6 +384,8 @@ pub type GetSessionByTokenRow {
     user_id: Int,
     expires_at: Timestamp,
     created_at: Timestamp,
+    refresh_token_hash: String,
+    refresh_expires_at: Timestamp,
     email: String,
     last_online_at: Timestamp,
   )
@@ -294,14 +407,18 @@ pub fn get_session_by_token(
     use user_id <- decode.field(2, decode.int)
     use expires_at <- decode.field(3, pog.timestamp_decoder())
     use created_at <- decode.field(4, pog.timestamp_decoder())
-    use email <- decode.field(5, decode.string)
-    use last_online_at <- decode.field(6, pog.timestamp_decoder())
+    use refresh_token_hash <- decode.field(5, decode.string)
+    use refresh_expires_at <- decode.field(6, pog.timestamp_decoder())
+    use email <- decode.field(7, decode.string)
+    use last_online_at <- decode.field(8, pog.timestamp_decoder())
     decode.success(GetSessionByTokenRow(
       id:,
       token_hash:,
       user_id:,
       expires_at:,
       created_at:,
+      refresh_token_hash:,
+      refresh_expires_at:,
       email:,
       last_online_at:,
     ))
@@ -309,6 +426,7 @@ pub fn get_session_by_token(
 
   "select
   s.id, s.token_hash, s.user_id, s.expires_at, s.created_at,
+  s.refresh_token_hash, s.refresh_expires_at,
   u.email, u.last_online_at
 from sessions s
 join users u on s.user_id = u.id
@@ -332,6 +450,7 @@ pub type GetUserByEmailRow {
     email: String,
     password_hash: String,
     last_online_at: Timestamp,
+    created_at: Timestamp,
   )
 }
 
@@ -350,15 +469,19 @@ pub fn get_user_by_email(
     use email <- decode.field(1, decode.string)
     use password_hash <- decode.field(2, decode.string)
     use last_online_at <- decode.field(3, pog.timestamp_decoder())
+    use created_at <- decode.field(4, pog.timestamp_decoder())
     decode.success(GetUserByEmailRow(
       id:,
       email:,
       password_hash:,
       last_online_at:,
+      created_at:,
     ))
   }
 
-  "select id, email, password_hash, last_online_at from users where email = $1
+  "select id, email, password_hash, last_online_at, created_at
+from users
+where email = $1
 "
   |> pog.query
   |> pog.parameter(pog.text(arg_1))
@@ -378,6 +501,7 @@ pub type GetUserByIdRow {
     email: String,
     password_hash: String,
     last_online_at: Timestamp,
+    created_at: Timestamp,
   )
 }
 
@@ -396,10 +520,19 @@ pub fn get_user_by_id(
     use email <- decode.field(1, decode.string)
     use password_hash <- decode.field(2, decode.string)
     use last_online_at <- decode.field(3, pog.timestamp_decoder())
-    decode.success(GetUserByIdRow(id:, email:, password_hash:, last_online_at:))
+    use created_at <- decode.field(4, pog.timestamp_decoder())
+    decode.success(GetUserByIdRow(
+      id:,
+      email:,
+      password_hash:,
+      last_online_at:,
+      created_at:,
+    ))
   }
 
-  "select id, email, password_hash, last_online_at from users where id = $1
+  "select id, email, password_hash, last_online_at, created_at
+from users
+where id = $1
 "
   |> pog.query
   |> pog.parameter(pog.int(arg_1))
@@ -420,6 +553,8 @@ pub type ListSessionsRow {
     user_id: Int,
     expires_at: Timestamp,
     created_at: Timestamp,
+    refresh_token_hash: String,
+    refresh_expires_at: Timestamp,
     email: String,
   )
 }
@@ -439,18 +574,23 @@ pub fn list_sessions(
     use user_id <- decode.field(2, decode.int)
     use expires_at <- decode.field(3, pog.timestamp_decoder())
     use created_at <- decode.field(4, pog.timestamp_decoder())
-    use email <- decode.field(5, decode.string)
+    use refresh_token_hash <- decode.field(5, decode.string)
+    use refresh_expires_at <- decode.field(6, pog.timestamp_decoder())
+    use email <- decode.field(7, decode.string)
     decode.success(ListSessionsRow(
       id:,
       token_hash:,
       user_id:,
       expires_at:,
       created_at:,
+      refresh_token_hash:,
+      refresh_expires_at:,
       email:,
     ))
   }
 
-  "select s.id, s.token_hash, s.user_id, s.expires_at, s.created_at, u.email
+  "select s.id, s.token_hash, s.user_id, s.expires_at, s.created_at,
+       s.refresh_token_hash, s.refresh_expires_at, u.email
 from sessions s
 join users u on s.user_id = u.id
 order by s.created_at desc
@@ -515,6 +655,36 @@ pub fn update_last_online(
 "
   |> pog.query
   |> pog.parameter(pog.int(arg_1))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// Runs the `update_session_tokens` query
+/// defined in `./src/server/sql/update_session_tokens.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn update_session_tokens(
+  db: pog.Connection,
+  arg_1: String,
+  arg_2: Timestamp,
+  arg_3: String,
+  arg_4: Timestamp,
+  arg_5: Int,
+) -> Result(pog.Returned(Nil), pog.QueryError) {
+  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+
+  "update sessions
+set token_hash = $1, expires_at = $2, refresh_token_hash = $3, refresh_expires_at = $4
+where id = $5
+"
+  |> pog.query
+  |> pog.parameter(pog.text(arg_1))
+  |> pog.parameter(pog.timestamp(arg_2))
+  |> pog.parameter(pog.text(arg_3))
+  |> pog.parameter(pog.timestamp(arg_4))
+  |> pog.parameter(pog.int(arg_5))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }

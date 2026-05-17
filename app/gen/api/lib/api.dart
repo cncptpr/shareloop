@@ -33,7 +33,11 @@ part 'api/default_api.dart';
 part 'model/distance.dart';
 part 'model/featured_item.dart';
 part 'model/lat_lng.dart';
+part 'model/login_request.dart';
+part 'model/login_result.dart';
 part 'model/person.dart';
+part 'model/refresh_request.dart';
+part 'model/user.dart';
 
 
 /// An [ApiClient] instance that uses the default values obtained from

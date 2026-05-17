@@ -8,9 +8,8 @@ import gleam/list
 import gleam/option.{None, Some}
 import gleam/result
 import mist
+import server/consts.{max_body_limit}
 import server/sql
-
-const mega_byte = 1_048_576
 
 pub fn handle(
   req: request.Request(mist.Connection),
@@ -28,7 +27,7 @@ pub fn handle(
 
 fn decode_body(req) {
   use req <- option.then(
-    mist.read_body(req, max_body_limit: mega_byte)
+    mist.read_body(req, max_body_limit:)
     |> option.from_result,
   )
 

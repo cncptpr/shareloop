@@ -4,4 +4,4 @@ select
   u.email, u.last_online_at
 from sessions s
 join users u on s.user_id = u.id
-where s.token_hash = $1
+where s.refresh_token_hash = $1

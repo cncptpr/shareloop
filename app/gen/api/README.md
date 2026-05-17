@@ -60,6 +60,10 @@ All URIs are relative to */api*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *DefaultApi* | [**getFeaturedItems**](doc//DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
+*DefaultApi* | [**login**](doc//DefaultApi.md#login) | **POST** /auth/login | Login
+*DefaultApi* | [**logout**](doc//DefaultApi.md#logout) | **POST** /auth/logout | Logout
+*DefaultApi* | [**refresh**](doc//DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
+*DefaultApi* | [**verify**](doc//DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
 
 
 ## Documentation For Models
@@ -67,12 +71,20 @@ Class | Method | HTTP request | Description
  - [Distance](doc//Distance.md)
  - [FeaturedItem](doc//FeaturedItem.md)
  - [LatLng](doc//LatLng.md)
+ - [LoginRequest](doc//LoginRequest.md)
+ - [LoginResult](doc//LoginResult.md)
  - [Person](doc//Person.md)
+ - [RefreshRequest](doc//RefreshRequest.md)
+ - [User](doc//User.md)
 
 
 ## Documentation For Authorization
 
-Endpoints do not require authorization.
+
+Authentication schemes defined for the API:
+### bearerAuth
+
+- **Type**: HTTP Bearer authentication
 
 
 ## Author

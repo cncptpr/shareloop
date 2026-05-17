@@ -44,6 +44,8 @@ fn auth_error_message(e: auth.AuthError) -> String {
     auth.InvalidCredentials -> "Invalid credentials"
     auth.EmailAlreadyExists -> "Email already exists"
     auth.SessionExpired -> "Session expired"
+    auth.TokenExpired -> "Token expired"
+    auth.RefreshTokenExpired -> "Refresh token expired"
     auth.DatabaseError(msg) -> msg
   }
 }

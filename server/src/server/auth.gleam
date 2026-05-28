@@ -1,5 +1,6 @@
 import generated/types
 import gleam/list
+import gleam/option.{type Option}
 import gleam/order
 import gleam/result
 import gleam/time/calendar
@@ -261,6 +262,17 @@ pub fn expire_access(
   Ok(Nil)
 }
 
+pub fn expire_access_for_email(
+  conn: pog.Connection,
+  email: String,
+) -> Result(Nil, AuthError) {
+  use _ <- result.try(
+    sql.expire_session_access_for_email(conn, email)
+    |> result.map_error(fn(_) { DatabaseError("Failed to expire access token") }),
+  )
+  Ok(Nil)
+}
+
 pub fn expire_refresh(
   conn: pog.Connection,
   token: String,
@@ -279,6 +291,23 @@ pub fn expire_refresh(
   )
   use _ <- result.try(
     sql.expire_session_access(conn, row.id)
+    |> result.map_error(fn(_) { DatabaseError("Failed to expire access token") }),
+  )
+  Ok(Nil)
+}
+
+pub fn expire_refresh_for_email(
+  conn: pog.Connection,
+  email: String,
+) -> Result(Nil, AuthError) {
+  use _ <- result.try(
+    sql.expire_session_refresh_for_email(conn, email)
+    |> result.map_error(fn(_) {
+      DatabaseError("Failed to expire refresh token")
+    }),
+  )
+  use _ <- result.try(
+    sql.expire_session_access_for_email(conn, email)
     |> result.map_error(fn(_) { DatabaseError("Failed to expire access token") }),
   )
   Ok(Nil)

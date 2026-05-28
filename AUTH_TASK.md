@@ -50,12 +50,9 @@ Make the APP do refresh and everything.
 ## Phase 5 - Add User to Items
 Make the "author" in the dabase an actual user.
 
-## Phase 6 - EMail
+## Phase 6 (Optional) - EMail
 Actually send out emails.
 Add a dev docker smpt server to the compose, which will be defaulted to.
 Allow for setting up smpt via env vars, to allow connecting to e.g. gmail.
 
 Emails are only for Signup / Password reset.
-
-## Phase 7 (Not for now) - 2FA
-Add EMail/TOPT/WebAuthn

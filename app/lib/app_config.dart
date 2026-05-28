@@ -11,7 +11,9 @@ class AppConfig {
     defaultValue: 'http://127.0.0.1:4000/api',
   );
 
+  static final HttpBearerAuth bearerAuth = HttpBearerAuth();
+
   static final DefaultApi apiClient = DefaultApi(
-    ApiClient(basePath: apiBaseUrl),
+    ApiClient(basePath: apiBaseUrl, authentication: bearerAuth),
   );
 }

@@ -31,6 +31,10 @@ pub fn main() {
     ["users", "login", email] -> cmd_login(conn, email)
     ["users", "validate"] -> cmd_validate(conn)
     ["users", "refresh"] -> cmd_refresh(conn)
+    ["users", "expire-access", email] ->
+      cmd_expire_access_for_email(conn, email)
+    ["users", "expire-refresh", email] ->
+      cmd_expire_refresh_for_email(conn, email)
     ["users", "expire-access"] -> cmd_expire_access(conn)
     ["users", "expire-refresh"] -> cmd_expire_refresh(conn)
     ["users", "logout"] -> cmd_logout(conn)
@@ -44,15 +48,15 @@ fn cmd_help() {
 Usage: gleam run -m server/cli <command>
 
 Commands:
-  help | -h                     Print this help
-  users create <email>          Create a new user (prompts for password)
-  users list                    List all users
+  help | -h                           Print this help
+  users create <email>                Create a new user (prompts for password)
+  users list                          List all users
   users sessions                      Show active sessions (or: users sessions)
   users login <email>                 Login as user (prompts for password) (or: users login)
   users validate                      Validate the stored access token
   users refresh                       Refresh tokens using the stored refresh token
-  users expire-access                 Force-expire the stored access token
-  users expire-refresh                Force-expire both tokens for the session
+  users expire-access [email]         Force-expire the stored access token or all tokens for email
+  users expire-refresh [email]        Force-expire both tokens for the session or all tokens for email
   users logout                        Delete the session for the stored access token",
   )
 }
@@ -233,6 +237,20 @@ fn cmd_expire_refresh(conn) {
         Ok(_) -> io.println("Refresh token expired (access also expired).")
       }
     }
+  }
+}
+
+fn cmd_expire_access_for_email(conn, email) {
+  case auth.expire_access_for_email(conn, email) {
+    Error(e) -> println_err(error_string(e))
+    Ok(_) -> io.println("Access token expired.")
+  }
+}
+
+fn cmd_expire_refresh_for_email(conn, email) {
+  case auth.expire_refresh_for_email(conn, email) {
+    Error(e) -> println_err(error_string(e))
+    Ok(_) -> io.println("Refresh token expired (access also expired).")
   }
 }
 

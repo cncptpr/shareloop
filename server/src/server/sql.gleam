@@ -145,6 +145,32 @@ pub fn expire_session_access(
   |> pog.execute(db)
 }
 
+/// Runs the `expire_session_access_for_email` query
+/// defined in `./src/server/sql/expire_session_access_for_email.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn expire_session_access_for_email(
+  db: pog.Connection,
+  arg_1: String,
+) -> Result(pog.Returned(Nil), pog.QueryError) {
+  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+
+  "update sessions
+set expires_at = now()
+where user_id = (
+    select id
+    from users
+    where email = $1
+)
+"
+  |> pog.query
+  |> pog.parameter(pog.text(arg_1))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
 /// Runs the `expire_session_refresh` query
 /// defined in `./src/server/sql/expire_session_refresh.sql`.
 ///
@@ -157,10 +183,36 @@ pub fn expire_session_refresh(
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
-  "update sessions set refresh_expires_at = now() where id = $1
+  "update sessions set refresh_expires_at = now(), expires_at = now() where id = $1
 "
   |> pog.query
   |> pog.parameter(pog.int(arg_1))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// Runs the `expire_session_refresh_for_email` query
+/// defined in `./src/server/sql/expire_session_refresh_for_email.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn expire_session_refresh_for_email(
+  db: pog.Connection,
+  arg_1: String,
+) -> Result(pog.Returned(Nil), pog.QueryError) {
+  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+
+  "update sessions
+set refresh_expires_at = now(), expires_at = now()
+where user_id = (
+    select id
+    from users
+    where email = $1
+);
+"
+  |> pog.query
+  |> pog.parameter(pog.text(arg_1))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }

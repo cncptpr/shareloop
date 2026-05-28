@@ -18,7 +18,25 @@ enum Routes {
   go(BuildContext ctx) => ctx.go(route);
 }
 
+// For navigation:
+
+// final routerKey = GlobalKey<NavigatorState>();
+// final GoRouter router = GoRouter(
+//   navigatorKey: routerKey,
+//   routes: [...],
+// );
+// // Then from anywhere (even without context):
+// routerKey.currentState?.pushReplacementNamed('home');
+
 final GoRouter router = GoRouter(
+  // redirect: (context, state) {
+  //   final loggedIn = /* check your Riverpod provider or secure storage */;
+  //   final onLogin = state.matchedLocation == '/login';
+
+  //   if (!loggedIn && !onLogin) return '/login';
+  //   if (loggedIn && onLogin) return '/';
+  //   return null;
+  // },
   routes: <RouteBase>[
     StatefulShellRoute.indexedStack(
       builder: (ctx, state, navShell) => Scaffold(

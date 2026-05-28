@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:openapi/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shareloop/state/location.dart';
 
@@ -242,13 +243,6 @@ final reverseLocationProvider =
     );
   },
 );
-
-class LatLng {
-  final double lat;
-  final double lng;
-
-  const LatLng({required this.lat, required this.lng});
-}
 
 final effectiveLatLngProvider = Provider<LatLng?>((ref) {
   final selected = ref.watch(selectedLocationProvider);

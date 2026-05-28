@@ -1,17 +1,114 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
+import 'package:shareloop/state/token_storage.dart';
 
-const secureStorage = FlutterSecureStorage();
+enum AuthStatus { initial, authenticated, unauthenticated }
 
-final userProvider = FutureProvider<User?>((ref) async {
-  return await _fetchUser();
+final authStatusNotifier = ValueNotifier(AuthStatus.initial);
+
+final authProvider = FutureProvider<User?>((ref) async {
+  ref.onDispose(() => _refreshCompleter = null);
+  final user = await _fetchUser();
+  authStatusNotifier.value =
+      user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+  return user;
 });
 
-enum UnauthorizedExeption {
+Completer<void>? _refreshCompleter;
+
+/// If an API call fails with 401, automatically refresh the token and retry.
+/// Any API call that requires Authentication should be wrapped in this.
+/// ```dart
+/// final items = await withRetryOnAuthError(
+///   () => AppConfig.apiClient.getFeaturedItems(latLng: location),
+/// );
+///
+/// ```
+Future<T> withRetryOnAuthError<T>(Future<T> Function() fn) async {
+  try {
+    return await fn();
+  } on ApiException catch (e) {
+    if (e.code != 401) rethrow;
+  }
+
+  await _doRefresh();
+  return await fn();
+}
+
+Future<void> _doRefresh() async {
+  if (_refreshCompleter != null) {
+    await _refreshCompleter!.future;
+    return;
+  }
+
+  _refreshCompleter = Completer<void>();
+  try {
+    final refreshToken = await getRefreshToken();
+    if (refreshToken == null) {
+      throw UnauthorizedException.refreshFailed;
+    }
+
+    final result = await AppConfig.apiClient.refresh(
+      RefreshRequest(refreshToken: refreshToken),
+    );
+    if (result == null) {
+      throw UnauthorizedException.refreshFailed;
+    }
+
+    await saveTokens(access: result.accessToken, refresh: result.refreshToken);
+    AppConfig.bearerAuth.accessToken = result.accessToken;
+    _refreshCompleter!.complete();
+  } catch (e) {
+    _refreshCompleter!.completeError(e);
+    _refreshCompleter = null;
+    rethrow;
+  }
+  _refreshCompleter = null;
+}
+
+Future<User?> _fetchUser() async {
+  if (!await hasTokens()) return null;
+
+  AppConfig.bearerAuth.accessToken = await getAccessToken();
+
+  try {
+    return await withRetryOnAuthError(() => AppConfig.apiClient.verify());
+  } on ApiException {
+    await deleteTokens();
+    authStatusNotifier.value = AuthStatus.unauthenticated;
+    return null;
+  }
+}
+
+Future<User> login(String email, String password) async {
+  final result = await AppConfig.apiClient.login(
+    LoginRequest(email: email, password: password),
+  );
+  if (result == null) throw UnauthorizedException.loginFailed;
+
+  await saveTokens(access: result.accessToken, refresh: result.refreshToken);
+  AppConfig.bearerAuth.accessToken = result.accessToken;
+  authStatusNotifier.value = AuthStatus.authenticated;
+
+  return result.user;
+}
+
+Future<void> logout() async {
+  try {
+    await AppConfig.apiClient.logout();
+  } on ApiException {
+    // ignore server errors — still clear local state
+  }
+  await deleteTokens();
+  AppConfig.bearerAuth.accessToken = '';
+  authStatusNotifier.value = AuthStatus.unauthenticated;
+}
+
+enum UnauthorizedException {
   missingTokens(message: "Missing Tokens."),
   verifyFailed(message: "Verify Failed."),
   refreshFailed(message: "Refresh Failed."),
@@ -19,90 +116,5 @@ enum UnauthorizedExeption {
 
   final String? message;
 
-  const UnauthorizedExeption({this.message});
-}
-
-Future<User> _fetchUser() async {
-  if (await _hasTokens()) {
-    // == Verify with tokens
-    AppConfig.bearerAuth.accessToken = await _getToken();
-    try {
-      final user = await AppConfig.apiClient.verify();
-      // user is null when response body is empty, which should never happen according to api contract
-      if (user == null) throw UnauthorizedExeption.verifyFailed;
-      return user;
-    } catch (error) {
-      print("Failed to verify: $error");
-      if (error is! ApiException) rethrow;
-    }
-
-    // == Verify failed, try refresh
-    final refreshToken = await _getRefreshToken();
-    try {
-      final refreshRespone = await AppConfig.apiClient.refresh(
-        RefreshRequest(refreshToken: refreshToken!),
-      );
-      // refreshRespone is null when response body is empty, which should never happen according to api contract
-      if (refreshRespone == null) throw UnauthorizedExeption.refreshFailed;
-      unawaited(_saveTokens(
-        access: refreshRespone.accessToken,
-        refresh: refreshRespone.refreshToken,
-      ));
-      return refreshRespone.user;
-    } catch (error) {
-      print("Failed to refresh: $error");
-      if (error is! ApiException) rethrow;
-    }
-  }
-
-  // == Refresh Failed, login again
-  final loginResult = await AppConfig.apiClient.login(LoginRequest(
-    email: "dev@example.com",
-    password: "dev",
-  ));
-
-  // loginResult is null when response body is empty, which should never happen according to api contract
-  if (loginResult == null) throw UnauthorizedExeption.loginFailed;
-  unawaited(_saveTokens(
-    access: loginResult.accessToken,
-    refresh: loginResult.refreshToken,
-  ));
-  return loginResult.user;
-}
-
-const accessTokenKey = 'access_token';
-const refreshTokenKey = 'refresh_token';
-
-Future<void> _saveTokens({
-  required String access,
-  required String refresh,
-}) async {
-  await (
-    secureStorage.write(key: accessTokenKey, value: access),
-    secureStorage.write(key: refreshTokenKey, value: refresh),
-  ).wait;
-}
-
-Future<bool> _hasTokens() async {
-  final (a, r) = await (
-    secureStorage.containsKey(key: accessTokenKey),
-    secureStorage.containsKey(key: refreshTokenKey)
-  ).wait;
-
-  return a && r;
-}
-
-Future<String?> _getToken() async {
-  return await secureStorage.read(key: accessTokenKey);
-}
-
-Future<String?> _getRefreshToken() async {
-  return await secureStorage.read(key: refreshTokenKey);
-}
-
-Future<void> _deleteTokens() async {
-  await (
-    secureStorage.delete(key: accessTokenKey),
-    secureStorage.delete(key: refreshTokenKey)
-  ).wait;
+  const UnauthorizedException({this.message});
 }

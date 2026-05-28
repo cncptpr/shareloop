@@ -7,10 +7,10 @@ import 'package:shareloop/screens/explore_screen.dart';
 
 enum Routes {
   home('/'),
-  expore('/'),
+  explore('/'),
   message('/message'),
   profile('/profile'),
-  couter('/counter');
+  counter('/counter');
 
   final String route;
   const Routes(this.route);
@@ -18,25 +18,7 @@ enum Routes {
   go(BuildContext ctx) => ctx.go(route);
 }
 
-// For navigation:
-
-// final routerKey = GlobalKey<NavigatorState>();
-// final GoRouter router = GoRouter(
-//   navigatorKey: routerKey,
-//   routes: [...],
-// );
-// // Then from anywhere (even without context):
-// routerKey.currentState?.pushReplacementNamed('home');
-
 final GoRouter router = GoRouter(
-  // redirect: (context, state) {
-  //   final loggedIn = /* check your Riverpod provider or secure storage */;
-  //   final onLogin = state.matchedLocation == '/login';
-
-  //   if (!loggedIn && !onLogin) return '/login';
-  //   if (loggedIn && onLogin) return '/';
-  //   return null;
-  // },
   routes: <RouteBase>[
     StatefulShellRoute.indexedStack(
       builder: (ctx, state, navShell) => Scaffold(
@@ -58,11 +40,11 @@ final GoRouter router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.expore.route,
+              path: Routes.explore.route,
               builder: (ctx, state) => const ExploreScreen(),
               routes: [
                 GoRoute(
-                  path: Routes.couter.route,
+                  path: Routes.counter.route,
                   builder: (ctx, state) => const Homescreen(),
                 ),
               ],

@@ -7,10 +7,10 @@ import 'package:shareloop/screens/explore_screen.dart';
 
 enum Routes {
   home('/'),
-  expore('/'),
+  explore('/'),
   message('/message'),
   profile('/profile'),
-  couter('/counter');
+  counter('/counter');
 
   final String route;
   const Routes(this.route);
@@ -40,11 +40,11 @@ final GoRouter router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.expore.route,
+              path: Routes.explore.route,
               builder: (ctx, state) => const ExploreScreen(),
               routes: [
                 GoRoute(
-                  path: Routes.couter.route,
+                  path: Routes.counter.route,
                   builder: (ctx, state) => const Homescreen(),
                 ),
               ],

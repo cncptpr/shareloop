@@ -6,6 +6,7 @@ import gleam/http/request
 import gleam/http/response
 import gleam/io
 import mist
+import server/auth/handlers
 import server/db
 import server/featured_items
 import server/migration
@@ -44,6 +45,10 @@ fn openapi_router(method, segments, req, conn) {
   case routes.match_route(method, segments) {
     routes.GetFeaturedItems -> featured_items.handle(req, conn)
     routes.NotFound -> handle404()
+    routes.Login -> handlers.login(req, conn)
+    routes.Logout -> handlers.logout(req, conn)
+    routes.Refresh -> handlers.refresh(req, conn)
+    routes.Verify -> handlers.verify(req, conn)
   }
 }
 

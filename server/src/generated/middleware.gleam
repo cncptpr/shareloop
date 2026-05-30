@@ -20,12 +20,30 @@ pub type Middleware(a, b) =
 
 /// Extracted auth information from a request.
 pub type AuthContext {
+  /// Bearer token was provided
+  BearerToken(token: String)
 
   /// No auth / public endpoint
   NoAuth
 }
 
-// No security schemes defined — no extractors generated.
+// ---------------------------------------------------------------------------
+// Auth extractors
+// ---------------------------------------------------------------------------
+
+/// Extract bearer token from Authorization header (bearerAuth).
+pub fn extract_bearer_auth_token(req: Request(a)) -> Result(String, Nil) {
+  case request.get_header(req, "authorization") {
+    Ok(value) -> {
+      case string.starts_with(value, "Bearer ") {
+        True -> Ok(string.drop_start(value, 7))
+        False -> Error(Nil)
+      }
+    }
+    Error(_) -> Error(Nil)
+  }
+}
+
 
 // ---------------------------------------------------------------------------
 // Route auth requirements
@@ -44,7 +62,26 @@ pub fn is_public_route(route: routes.Route) -> Bool {
 // Composable middleware builders
 // ---------------------------------------------------------------------------
 
-// No security schemes defined — no middleware builders generated.
+/// Create a bearer auth middleware (bearerAuth).
+/// The verify function validates the token and can return context.
+pub fn require_bearer_auth(
+  verify: fn(String) -> Result(a, String),
+  on_error: fn() -> Response(b),
+  next: fn(Request(c), a) -> Response(b),
+) -> fn(Request(c)) -> Response(b) {
+  fn(req) {
+    case extract_bearer_auth_token(req) {
+      Ok(token) -> {
+        case verify(token) {
+          Ok(context) -> next(req, context)
+          Error(_) -> on_error()
+        }
+      }
+      Error(_) -> on_error()
+    }
+  }
+}
+
 
 // ---------------------------------------------------------------------------
 // Request validation middleware

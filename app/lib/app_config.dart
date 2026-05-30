@@ -1,4 +1,5 @@
 import 'package:openapi/api.dart';
+import 'package:shareloop/state/retry_api_client.dart';
 
 class AppConfig {
   /// The Url under which the app can reach the server.
@@ -11,7 +12,9 @@ class AppConfig {
     defaultValue: 'http://127.0.0.1:4000/api',
   );
 
+  static final HttpBearerAuth bearerAuth = HttpBearerAuth();
+
   static final DefaultApi apiClient = DefaultApi(
-    ApiClient(basePath: apiBaseUrl),
+    RetryApiClient(basePath: apiBaseUrl, authentication: bearerAuth),
   );
 }

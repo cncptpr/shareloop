@@ -24,6 +24,113 @@ pub type ClientError {
   DecodeError(message: String)
 }
 
+/// Login
+pub fn login_request(config: ClientConfig, body: types.LoginRequest) -> Request(String) {
+  let path = "/auth/login"
+  request.new()
+  |> request.set_method(Post)
+  |> request.set_host(config.base_url)
+  |> request.set_path(path)
+  |> fn(req) {
+    list.fold(config.headers, req, fn(r, h) {
+      request.set_header(r, h.0, h.1)
+    })
+  }
+  |> request.set_header("content-type", "application/json")
+  |> request.set_body(json.to_string(types.encode_login_request(body)))
+}
+
+pub fn decode_login_response(resp: Response(String)) -> Result(types.LoginResult, ClientError) {
+  case resp.status {
+    status if status >= 200 && status < 300 -> {
+      case json.parse(resp.body, types.login_result_decoder()) {
+        Ok(value) -> Ok(value)
+        Error(_) -> Error(DecodeError("Failed to decode response"))
+      }
+    }
+    status -> Error(UnexpectedStatus(status: status, body: resp.body))
+  }
+}
+
+/// Logout
+pub fn logout_request(config: ClientConfig) -> Request(String) {
+  let path = "/auth/logout"
+  request.new()
+  |> request.set_method(Post)
+  |> request.set_host(config.base_url)
+  |> request.set_path(path)
+  |> fn(req) {
+    list.fold(config.headers, req, fn(r, h) {
+      request.set_header(r, h.0, h.1)
+    })
+  }
+  |> request.set_header("content-type", "application/json")
+}
+
+pub fn decode_logout_response(resp: Response(String)) -> Result(Nil, ClientError) {
+  case resp.status {
+    status if status >= 200 && status < 300 -> {
+      Ok(Nil)
+    }
+    status -> Error(UnexpectedStatus(status: status, body: resp.body))
+  }
+}
+
+/// Refresh tokens
+pub fn refresh_request(config: ClientConfig, body: types.RefreshRequest) -> Request(String) {
+  let path = "/auth/refresh"
+  request.new()
+  |> request.set_method(Post)
+  |> request.set_host(config.base_url)
+  |> request.set_path(path)
+  |> fn(req) {
+    list.fold(config.headers, req, fn(r, h) {
+      request.set_header(r, h.0, h.1)
+    })
+  }
+  |> request.set_header("content-type", "application/json")
+  |> request.set_body(json.to_string(types.encode_refresh_request(body)))
+}
+
+pub fn decode_refresh_response(resp: Response(String)) -> Result(types.LoginResult, ClientError) {
+  case resp.status {
+    status if status >= 200 && status < 300 -> {
+      case json.parse(resp.body, types.login_result_decoder()) {
+        Ok(value) -> Ok(value)
+        Error(_) -> Error(DecodeError("Failed to decode response"))
+      }
+    }
+    status -> Error(UnexpectedStatus(status: status, body: resp.body))
+  }
+}
+
+/// Verify access token
+pub fn verify_request(config: ClientConfig) -> Request(String) {
+  let path = "/auth/verify"
+  request.new()
+  |> request.set_method(Post)
+  |> request.set_host(config.base_url)
+  |> request.set_path(path)
+  |> fn(req) {
+    list.fold(config.headers, req, fn(r, h) {
+      request.set_header(r, h.0, h.1)
+    })
+  }
+  |> request.set_header("content-type", "application/json")
+}
+
+pub fn decode_verify_response(resp: Response(String)) -> Result(types.User, ClientError) {
+  case resp.status {
+    status if status >= 200 && status < 300 -> {
+      case json.parse(resp.body, types.user_decoder()) {
+        Ok(value) -> Ok(value)
+        Error(_) -> Error(DecodeError("Failed to decode response"))
+      }
+    }
+    status -> Error(UnexpectedStatus(status: status, body: resp.body))
+  }
+}
+
 /// Get featured items
 pub fn get_featured_items_request(config: ClientConfig, body: types.LatLng) -> Request(String) {
   let path = "/featured-items"

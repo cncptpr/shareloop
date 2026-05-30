@@ -29,6 +29,74 @@ paths:
                 items:
                   $ref: "#/components/schemas/FeaturedItem"
 
+  /auth/login:
+    post:
+      summary: Login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResult"
+        "401":
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      summary: Refresh tokens
+      operationId: refresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshRequest"
+      responses:
+        "200":
+          description: Tokens refreshed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResult"
+        "401":
+          description: Invalid or expired refresh token
+
+  /auth/verify:
+    post:
+      summary: Verify access token
+      operationId: verify
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Token is valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Invalid or expired token
+
+  /auth/logout:
+    post:
+      summary: Logout
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Logged out
+        "401":
+          description: Invalid token
+
 components:
   schemas:
     FeaturedItem:
@@ -77,3 +145,58 @@ components:
         lng:
           type: number
           format: double
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+
+    User:
+      type: object
+      required: [id, email, lastOnlineAt, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        lastOnlineAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    LoginResult:
+      type: object
+      required: [user, accessToken, refreshToken, accessExpiresAt, refreshExpiresAt]
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        accessExpiresAt:
+          type: string
+          format: date-time
+        refreshExpiresAt:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token

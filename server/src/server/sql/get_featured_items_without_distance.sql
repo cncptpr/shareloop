@@ -1,12 +1,11 @@
 select
-  id,
-  title,
-  description,
-  author_name,
-  score,
-  city,
-  postal_code
-from
-  items
-order by
-  score desc
+  items.id,
+  items.title,
+  items.description,
+  profiles.name as author_name,
+  items.score,
+  items.city,
+  items.postal_code
+from items, profiles
+where items.author_id = profiles.id
+order by score desc

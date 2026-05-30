@@ -188,8 +188,16 @@ class ApiClient {
           return FeaturedItem.fromJson(value);
         case 'LatLng':
           return LatLng.fromJson(value);
+        case 'LoginRequest':
+          return LoginRequest.fromJson(value);
+        case 'LoginResult':
+          return LoginResult.fromJson(value);
         case 'Person':
           return Person.fromJson(value);
+        case 'RefreshRequest':
+          return RefreshRequest.fromJson(value);
+        case 'User':
+          return User.fromJson(value);
         default:
           dynamic match;
           if (value is List && (match = _regList.firstMatch(targetType)?.group(1)) != null) {

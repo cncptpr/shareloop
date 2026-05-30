@@ -1,0 +1,15 @@
+spec: ../api/shareloop.openapi.json
+
+output:
+  gleam:
+    enabled: true
+    dir: ./src/generated
+    generated_suffix: false
+  typescript:
+    enabled: false
+  react_query:
+    enabled: false
+  swr:
+    enabled: false
+  fetch:
+    enabled: false

@@ -1,16 +1,21 @@
-# shareloop
+# Mobile App
 
-A new Flutter project.
+This is the mobile app for [shareloop](/README.md).
+
+## Requirements
+
+- a running [server](/server/README.md)
+- flutter (handled by mise)
+- java & openapi-generator-cli (only for codegen, handled by mise)
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Use `$ mise run app:dev`, `$ flutter run` from `app` (the current dir) or you IDE's features to start the mobile app.
 
-A few resources to get you started if this is your first Flutter project:
+## API
+The API connects by default to _http://127.0.0.1:4000/api_. To configure this, provide a `API_BASE_URL` define:
+`$ flutter run --dart-define=API_BASE_URL=http://production.example.com/api`
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+The API code lives in a separate package `./gen/api`, which is generated from an OpenAPI spec in `../api` with `$ mise run app:api:gen`. Code generation requires **Java** and **openapi-generator-cli** (automatically downloaded when running the task).
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Example usage of the API: `./lib/state/items.dart`

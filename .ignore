@@ -1,0 +1,9 @@
+# This is for helix (text editor), mainly
+
+app/android
+app/macos
+app/linux
+app/web
+app/ios
+app/windows
+app/lib/api

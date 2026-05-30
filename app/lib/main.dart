@@ -1,10 +1,10 @@
-
 // Copyright 2013 The Flutter Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import'package:shareloop/router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shareloop/router.dart';
 
 /// This sample app shows an app with two screens.
 ///
@@ -14,7 +14,7 @@ import'package:shareloop/router.dart';
 /// The buttons use context.go() to navigate to each destination. On mobile
 /// devices, each destination is deep-linkable and on the web, can be navigated
 /// to using the address bar.
-void main() => runApp(const MyApp());
+void main() => runApp(const ProviderScope(child: MyApp()));
 
 /// The main app.
 class MyApp extends StatelessWidget {

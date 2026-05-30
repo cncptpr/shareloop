@@ -1,0 +1,82 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Shareloop API",
+    "version": "1.0.0",
+    "description": "API for the Shareloop application"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/featured-items": {
+      "get": {
+        "summary": "Get featured items",
+        "description": "Returns a list of featured items",
+        "operationId": "getFeaturedItems",
+        "responses": {
+          "200": {
+            "description": "A list of featured items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeaturedItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FeaturedItem": {
+        "type": "object",
+        "required": ["title", "description", "author", "distance", "score"],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "author": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "distance": {
+            "$ref": "#/components/schemas/Distance"
+          },
+          "score": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "Person": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "Distance": {
+        "type": "object",
+        "required": ["km"],
+        "properties": {
+          "km": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    }
+  }
+}

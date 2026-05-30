@@ -9,6 +9,66 @@ import gleam/option.{type Option}
 import gleam/time/timestamp.{type Timestamp}
 import pog
 
+/// Runs the `create_item` query
+/// defined in `./src/server/sql/create_item.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn create_item(
+  db: pog.Connection,
+  arg_1: String,
+  arg_2: String,
+  arg_3: Int,
+  arg_4: Float,
+  arg_5: Float,
+  arg_6: Float,
+  arg_7: String,
+  arg_8: String,
+) -> Result(pog.Returned(Nil), pog.QueryError) {
+  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+
+  "INSERT INTO items (title, description, author_id, score, location, city, postal_code) VALUES ($1, $2, $3, $4, st_setsrid(st_makepoint($5, $6), 4326)::geography, $7, $8)
+"
+  |> pog.query
+  |> pog.parameter(pog.text(arg_1))
+  |> pog.parameter(pog.text(arg_2))
+  |> pog.parameter(pog.int(arg_3))
+  |> pog.parameter(pog.float(arg_4))
+  |> pog.parameter(pog.float(arg_5))
+  |> pog.parameter(pog.float(arg_6))
+  |> pog.parameter(pog.text(arg_7))
+  |> pog.parameter(pog.text(arg_8))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// Runs the `create_profile` query
+/// defined in `./src/server/sql/create_profile.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn create_profile(
+  db: pog.Connection,
+  arg_1: Int,
+  arg_2: String,
+  arg_3: String,
+  arg_4: Float,
+) -> Result(pog.Returned(Nil), pog.QueryError) {
+  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+
+  "INSERT INTO profiles (id, name, bio, rating) VALUES ($1, $2, $3, $4)
+"
+  |> pog.query
+  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.text(arg_2))
+  |> pog.parameter(pog.text(arg_3))
+  |> pog.parameter(pog.float(arg_4))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
 /// A row you get from running the `create_session` query
 /// defined in `./src/server/sql/create_session.sql`.
 ///
@@ -81,6 +141,60 @@ pub fn create_user(
   |> pog.query
   |> pog.parameter(pog.text(arg_1))
   |> pog.parameter(pog.text(arg_2))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// Runs the `delete_all_items` query
+/// defined in `./src/server/sql/delete_all_items.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn delete_all_items(
+  db: pog.Connection,
+) -> Result(pog.Returned(Nil), pog.QueryError) {
+  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+
+  "DELETE FROM items
+"
+  |> pog.query
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// Runs the `delete_all_profiles` query
+/// defined in `./src/server/sql/delete_all_profiles.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn delete_all_profiles(
+  db: pog.Connection,
+) -> Result(pog.Returned(Nil), pog.QueryError) {
+  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+
+  "DELETE FROM profiles
+"
+  |> pog.query
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// Runs the `delete_all_users` query
+/// defined in `./src/server/sql/delete_all_users.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn delete_all_users(
+  db: pog.Connection,
+) -> Result(pog.Returned(Nil), pog.QueryError) {
+  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+
+  "DELETE FROM users
+"
+  |> pog.query
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -183,7 +297,7 @@ pub fn expire_session_refresh(
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
-  "update sessions set refresh_expires_at = now(), expires_at = now() where id = $1
+  "update sessions set refresh_expires_at = now() where id = $1
 "
   |> pog.query
   |> pog.parameter(pog.int(arg_1))
@@ -204,12 +318,12 @@ pub fn expire_session_refresh_for_email(
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
   "update sessions
-set refresh_expires_at = now(), expires_at = now()
+set refresh_expires_at = now()
 where user_id = (
     select id
     from users
     where email = $1
-);
+)
 "
   |> pog.query
   |> pog.parameter(pog.text(arg_1))
@@ -269,21 +383,20 @@ pub fn get_featured_items(
   }
 
   "select
-  id,
-  title,
-  description,
-  author_name,
-  score,
-  city,
-  postal_code,
+  items.id,
+  items.title,
+  items.description,
+  profiles.name as author_name,
+  items.score,
+  items.city,
+  items.postal_code,
   coalesce(
     st_distance(location, st_setsrid(st_makepoint($2, $1), 4326)::geography) / 1000,
     0.0
   ) as distance_km
-from
-  items
-order by
-  score desc
+from items, profiles
+where items.author_id = profiles.id
+order by score desc
 "
   |> pog.query
   |> pog.parameter(pog.float(arg_1))
@@ -339,19 +452,61 @@ pub fn get_featured_items_without_distance(
   }
 
   "select
-  id,
-  title,
-  description,
-  author_name,
-  score,
-  city,
-  postal_code
-from
-  items
-order by
-  score desc
+  items.id,
+  items.title,
+  items.description,
+  profiles.name as author_name,
+  items.score,
+  items.city,
+  items.postal_code
+from items, profiles
+where items.author_id = profiles.id
+order by score desc
 "
   |> pog.query
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// A row you get from running the `get_profile` query
+/// defined in `./src/server/sql/get_profile.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type GetProfileRow {
+  GetProfileRow(
+    id: Int,
+    name: String,
+    bio: Option(String),
+    rating: Option(Float),
+  )
+}
+
+/// Runs the `get_profile` query
+/// defined in `./src/server/sql/get_profile.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn get_profile(
+  db: pog.Connection,
+  arg_1: Int,
+) -> Result(pog.Returned(GetProfileRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, decode.int)
+    use name <- decode.field(1, decode.string)
+    use bio <- decode.field(2, decode.optional(decode.string))
+    use rating <- decode.field(3, decode.optional(pog.numeric_decoder()))
+    decode.success(GetProfileRow(id:, name:, bio:, rating:))
+  }
+
+  "SELECT id, name, bio, rating
+FROM profiles
+WHERE id = $1
+"
+  |> pog.query
+  |> pog.parameter(pog.int(arg_1))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }

@@ -1,5 +1,16 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+enum UnauthorizedException {
+  missingTokens(message: "Missing Tokens."),
+  verifyFailed(message: "Verify Failed."),
+  refreshFailed(message: "Refresh Failed."),
+  loginFailed(message: "Login Failed.");
+
+  final String? message;
+
+  const UnauthorizedException({this.message});
+}
+
 const _secureStorage = FlutterSecureStorage();
 
 const accessTokenKey = 'access_token';

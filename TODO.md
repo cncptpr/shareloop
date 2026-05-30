@@ -1,14 +1,14 @@
 # TODOs for shareloop
 
-> Before mergin into master, remove all checked of TODOs
+> Before merging into master, remove all checked of TODOs!
 
 This is just a dump of things that might be good to do/fix.
 Not all of these TODOs need to be done for the finished project.
 
 ## Users & Authentification
 
-- [ ] Add Users as a concept
-- [ ] Implement Auth into the API
+- [ ] Send out emails for important stuff
+- [ ] Registration
 
 ## General
 
@@ -43,5 +43,6 @@ Not all of these TODOs need to be done for the finished project.
 - [ ] Allow for creating Items
 - [ ] Items Screen
 
-### Handeling of Location when creating an Item
+
+### Ideal Handeling of Location when creating an Item
 Don't trust the client: To avoid a mismatch the server should should look up the lat/lng from city/postal_code. This should happen async: Add the item to the db, start a task/put it into a queue to get the lat/lng, and when retrieved update db. So it's fast and resiliant against ratelimits. Maybe doing some caching might also prove valueable.

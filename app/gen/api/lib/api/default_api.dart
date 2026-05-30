@@ -21,23 +21,27 @@ class DefaultApi {
   /// Returns a list of featured items
   ///
   /// Note: This method returns the HTTP [Response].
-  Future<Response> getFeaturedItemsWithHttpInfo() async {
+  ///
+  /// Parameters:
+  ///
+  /// * [LatLng] latLng:
+  Future<Response> getFeaturedItemsWithHttpInfo({ LatLng? latLng, }) async {
     // ignore: prefer_const_declarations
     final path = r'/featured-items';
 
     // ignore: prefer_final_locals
-    Object? postBody;
+    Object? postBody = latLng;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
     final formParams = <String, String>{};
 
-    const contentTypes = <String>[];
+    const contentTypes = <String>['application/json'];
 
 
     return apiClient.invokeAPI(
       path,
-      'GET',
+      'POST',
       queryParams,
       postBody,
       headerParams,
@@ -49,8 +53,12 @@ class DefaultApi {
   /// Get featured items
   ///
   /// Returns a list of featured items
-  Future<List<FeaturedItem>?> getFeaturedItems() async {
-    final response = await getFeaturedItemsWithHttpInfo();
+  ///
+  /// Parameters:
+  ///
+  /// * [LatLng] latLng:
+  Future<List<FeaturedItem>?> getFeaturedItems({ LatLng? latLng, }) async {
+    final response = await getFeaturedItemsWithHttpInfo( latLng: latLng, );
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }

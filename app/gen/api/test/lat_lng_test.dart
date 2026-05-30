@@ -11,20 +11,22 @@
 import 'package:openapi/api.dart';
 import 'package:test/test.dart';
 
-
-/// tests for DefaultApi
+// tests for LatLng
 void main() {
-  // final instance = DefaultApi();
+  // final instance = LatLng();
 
-  group('tests for DefaultApi', () {
-    // Get featured items
-    //
-    // Returns a list of featured items
-    //
-    //Future<List<FeaturedItem>> getFeaturedItems({ double lat, double lng }) async
-    test('test getFeaturedItems', () async {
+  group('test LatLng', () {
+    // double lat
+    test('to test the property `lat`', () async {
       // TODO
     });
 
+    // double lng
+    test('to test the property `lng`', () async {
+      // TODO
+    });
+
+
   });
+
 }

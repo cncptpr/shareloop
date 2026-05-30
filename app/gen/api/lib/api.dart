@@ -32,6 +32,7 @@ part 'api/default_api.dart';
 
 part 'model/distance.dart';
 part 'model/featured_item.dart';
+part 'model/lat_lng.dart';
 part 'model/person.dart';
 
 

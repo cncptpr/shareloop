@@ -36,6 +36,16 @@ void main() {
       // TODO
     });
 
+    // String city
+    test('to test the property `city`', () async {
+      // TODO
+    });
+
+    // String postalCode
+    test('to test the property `postalCode`', () async {
+      // TODO
+    });
+
     // double score
     test('to test the property `score`', () async {
       // TODO

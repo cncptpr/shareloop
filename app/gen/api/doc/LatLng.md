@@ -1,4 +1,4 @@
-# openapi.model.FeaturedItem
+# openapi.model.LatLng
 
 ## Load the model package
 ```dart
@@ -8,13 +8,8 @@ import 'package:openapi/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**title** | **String** |  | 
-**description** | **String** |  | 
-**author** | [**Person**](Person.md) |  | 
-**distance** | [**Distance**](Distance.md) |  | [optional] 
-**city** | **String** |  | [optional] 
-**postalCode** | **String** |  | [optional] 
-**score** | **double** |  | 
+**lat** | **double** |  | 
+**lng** | **double** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

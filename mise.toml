@@ -7,7 +7,7 @@ dir = "server"
 description = "Generate Gleam types, routes, and middleware from the OpenAPI spec"
 run = "gleam run -m nori/cli -- generate"
 dir = "server"
-sources = ["../api/*.openapi.json"]
+sources = ["../api/*.openapi.yaml"]
 outputs = ["./src/generated/*.gleam"]
 
 [tasks."server:sql:gen"]
@@ -35,10 +35,10 @@ dir = "app"
 
 [tasks."app:api:gen"]
 description = "Generate the Flutter API client from the OpenAPI spec"
-run = "openapi-generator-cli generate -i ../api/shareloop.openapi.json -g dart -o ./gen/api"
+run = "openapi-generator-cli generate -i ../api/shareloop.openapi.yaml -g dart -o ./gen/api"
 dir = "app"
 tools = { java = "corretto-21", "npm:@openapitools/openapi-generator-cli" = "2.32.0" }
-sources = ["../api/*.openapi.json"]
+sources = ["../api/*.openapi.yaml"]
 outputs = ["./gen/api/**/*"]
 
 [env]

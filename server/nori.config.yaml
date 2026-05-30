@@ -1,4 +1,4 @@
-spec: ../api/shareloop.openapi.json
+spec: ../api/shareloop.openapi.yaml
 
 output:
   gleam:

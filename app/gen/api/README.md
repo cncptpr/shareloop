@@ -42,9 +42,10 @@ import 'package:openapi/api.dart';
 
 
 final api_instance = DefaultApi();
+final latLng = LatLng(); // LatLng | 
 
 try {
-    final result = api_instance.getFeaturedItems();
+    final result = api_instance.getFeaturedItems(latLng);
     print(result);
 } catch (e) {
     print('Exception when calling DefaultApi->getFeaturedItems: $e\n');
@@ -58,13 +59,14 @@ All URIs are relative to */api*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*DefaultApi* | [**getFeaturedItems**](doc//DefaultApi.md#getfeatureditems) | **GET** /featured-items | Get featured items
+*DefaultApi* | [**getFeaturedItems**](doc//DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 
 
 ## Documentation For Models
 
  - [Distance](doc//Distance.md)
  - [FeaturedItem](doc//FeaturedItem.md)
+ - [LatLng](doc//LatLng.md)
  - [Person](doc//Person.md)
 
 

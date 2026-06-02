@@ -20,6 +20,7 @@ class FeaturedItem {
     this.city,
     this.postalCode,
     required this.score,
+    this.imageUuid,
   });
 
   String title;
@@ -54,6 +55,8 @@ class FeaturedItem {
 
   double score;
 
+  String? imageUuid;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is FeaturedItem &&
     other.title == title &&
@@ -62,7 +65,8 @@ class FeaturedItem {
     other.distance == distance &&
     other.city == city &&
     other.postalCode == postalCode &&
-    other.score == score;
+    other.score == score &&
+    other.imageUuid == imageUuid;
 
   @override
   int get hashCode =>
@@ -73,10 +77,11 @@ class FeaturedItem {
     (distance == null ? 0 : distance!.hashCode) +
     (city == null ? 0 : city!.hashCode) +
     (postalCode == null ? 0 : postalCode!.hashCode) +
-    (score.hashCode);
+    (score.hashCode) +
+    (imageUuid == null ? 0 : imageUuid!.hashCode);
 
   @override
-  String toString() => 'FeaturedItem[title=$title, description=$description, author=$author, distance=$distance, city=$city, postalCode=$postalCode, score=$score]';
+  String toString() => 'FeaturedItem[title=$title, description=$description, author=$author, distance=$distance, city=$city, postalCode=$postalCode, score=$score, imageUuid=$imageUuid]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -99,6 +104,11 @@ class FeaturedItem {
       json[r'postalCode'] = null;
     }
       json[r'score'] = this.score;
+    if (this.imageUuid != null) {
+      json[r'imageUuid'] = this.imageUuid;
+    } else {
+      json[r'imageUuid'] = null;
+    }
     return json;
   }
 
@@ -132,6 +142,7 @@ class FeaturedItem {
         city: mapValueOfType<String>(json, r'city'),
         postalCode: mapValueOfType<String>(json, r'postalCode'),
         score: mapValueOfType<double>(json, r'score')!,
+        imageUuid: mapValueOfType<String>(json, r'imageUuid'),
       );
     }
     return null;

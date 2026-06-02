@@ -8,6 +8,7 @@ import gleam/dynamic/decode
 import gleam/option.{type Option}
 import gleam/time/timestamp.{type Timestamp}
 import pog
+import youid/uuid.{type Uuid}
 
 /// A row you get from running the `create_item` query
 /// defined in `./src/server/sql/create_item.sql`.
@@ -361,6 +362,7 @@ pub type GetFeaturedItemsRow {
     city: Option(String),
     postal_code: Option(String),
     distance_km: Float,
+    first_image_uuid: Option(Uuid),
   )
 }
 
@@ -384,6 +386,7 @@ pub fn get_featured_items(
     use city <- decode.field(5, decode.optional(decode.string))
     use postal_code <- decode.field(6, decode.optional(decode.string))
     use distance_km <- decode.field(7, decode.float)
+    use first_image_uuid <- decode.field(8, decode.optional(uuid_decoder()))
     decode.success(GetFeaturedItemsRow(
       id:,
       title:,
@@ -393,6 +396,7 @@ pub fn get_featured_items(
       city:,
       postal_code:,
       distance_km:,
+      first_image_uuid:,
     ))
   }
 
@@ -407,11 +411,18 @@ pub fn get_featured_items(
   coalesce(
     st_distance(location, st_setsrid(st_makepoint($2, $1), 4326)::geography) / 1000,
     0.0
-  ) as distance_km
+  ) as distance_km,
+  first_img.id as first_image_uuid
 from items, profiles
+left join lateral (
+  select id
+  from item_images
+  where item_images.item_id = items.id
+  order by sort_order, created_at
+  limit 1
+) as first_img on true
 where items.author_id = profiles.id
-order by score desc
-"
+order by score desc"
   |> pog.query
   |> pog.parameter(pog.float(arg_1))
   |> pog.parameter(pog.float(arg_2))
@@ -434,6 +445,7 @@ pub type GetFeaturedItemsWithoutDistanceRow {
     score: Float,
     city: Option(String),
     postal_code: Option(String),
+    first_image_uuid: Option(Uuid),
   )
 }
 
@@ -454,6 +466,7 @@ pub fn get_featured_items_without_distance(
     use score <- decode.field(4, decode.float)
     use city <- decode.field(5, decode.optional(decode.string))
     use postal_code <- decode.field(6, decode.optional(decode.string))
+    use first_image_uuid <- decode.field(7, decode.optional(uuid_decoder()))
     decode.success(GetFeaturedItemsWithoutDistanceRow(
       id:,
       title:,
@@ -462,6 +475,7 @@ pub fn get_featured_items_without_distance(
       score:,
       city:,
       postal_code:,
+      first_image_uuid:,
     ))
   }
 
@@ -472,12 +486,61 @@ pub fn get_featured_items_without_distance(
   profiles.name as author_name,
   items.score,
   items.city,
-  items.postal_code
+  items.postal_code,
+  first_img.id as first_image_uuid
 from items, profiles
+left join lateral (
+  select id
+  from item_images
+  where item_images.item_id = items.id
+  order by sort_order, created_at
+  limit 1
+) as first_img on true
 where items.author_id = profiles.id
-order by score desc
-"
+order by score desc"
   |> pog.query
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// A row you get from running the `get_item_image` query
+/// defined in `./src/server/sql/get_item_image.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type GetItemImageRow {
+  GetItemImageRow(
+    id: Uuid,
+    item_id: Int,
+    original_name: String,
+    mime_type: String,
+  )
+}
+
+/// Runs the `get_item_image` query
+/// defined in `./src/server/sql/get_item_image.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn get_item_image(
+  db: pog.Connection,
+  arg_1: Uuid,
+) -> Result(pog.Returned(GetItemImageRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, uuid_decoder())
+    use item_id <- decode.field(1, decode.int)
+    use original_name <- decode.field(2, decode.string)
+    use mime_type <- decode.field(3, decode.string)
+    decode.success(GetItemImageRow(id:, item_id:, original_name:, mime_type:))
+  }
+
+  "SELECT id, item_id, original_name, mime_type
+FROM item_images
+WHERE id = $1"
+  |> pog.query
+  |> pog.parameter(pog.text(uuid.to_string(arg_1)))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -761,6 +824,48 @@ where id = $1
   |> pog.execute(db)
 }
 
+/// A row you get from running the `insert_item_image` query
+/// defined in `./src/server/sql/insert_item_image.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type InsertItemImageRow {
+  InsertItemImageRow(id: Uuid)
+}
+
+/// Runs the `insert_item_image` query
+/// defined in `./src/server/sql/insert_item_image.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn insert_item_image(
+  db: pog.Connection,
+  arg_1: Uuid,
+  arg_2: Int,
+  arg_3: String,
+  arg_4: String,
+  arg_5: Int,
+) -> Result(pog.Returned(InsertItemImageRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, uuid_decoder())
+    decode.success(InsertItemImageRow(id:))
+  }
+
+  "INSERT INTO item_images (id, item_id, original_name, mime_type, sort_order)
+VALUES ($1, $2, $3, $4, $5)
+returning id"
+  |> pog.query
+  |> pog.parameter(pog.text(uuid.to_string(arg_1)))
+  |> pog.parameter(pog.int(arg_2))
+  |> pog.parameter(pog.text(arg_3))
+  |> pog.parameter(pog.text(arg_4))
+  |> pog.parameter(pog.int(arg_5))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
 /// A row you get from running the `list_sessions` query
 /// defined in `./src/server/sql/list_sessions.sql`.
 ///
@@ -908,4 +1013,16 @@ where id = $5
   |> pog.parameter(pog.int(arg_5))
   |> pog.returning(decoder)
   |> pog.execute(db)
+}
+
+// --- Encoding/decoding utils -------------------------------------------------
+
+/// A decoder to decode `Uuid`s coming from a Postgres query.
+///
+fn uuid_decoder() {
+  use bit_array <- decode.then(decode.bit_array)
+  case uuid.from_bit_array(bit_array) {
+    Ok(uuid) -> decode.success(uuid)
+    Error(_) -> decode.failure(uuid.v7(), "Uuid")
+  }
 }

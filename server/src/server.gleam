@@ -9,6 +9,7 @@ import mist
 import server/auth/handlers
 import server/db
 import server/featured_items
+import server/images
 import server/items
 import server/migration
 
@@ -46,6 +47,8 @@ fn openapi_router(method, segments, req, conn) {
   case routes.match_route(method, segments) {
     routes.GetFeaturedItems -> featured_items.handle(req, conn)
     routes.CreateItem -> items.handle(req, conn)
+    routes.UploadItemImage(item_id) -> images.upload_handle(req, conn, item_id)
+    routes.GetImage(image_id) -> images.get_handle(req, conn, image_id)
     routes.NotFound -> handle404()
     routes.Login -> handlers.login(req, conn)
     routes.Logout -> handlers.logout(req, conn)

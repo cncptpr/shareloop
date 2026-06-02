@@ -1,10 +1,11 @@
 //// Generated HTTP client from Shareloop API v1.0.0
 
-import gleam/http.{Post}
+import gleam/http.{Get, Post}
 import gleam/http/request.{type Request}
 import gleam/http/response.{type Response}
 import gleam/dynamic/decode
 import gleam/json
+import gleam/string
 import gleam/list
 import generated/types
 
@@ -159,6 +160,33 @@ pub fn decode_get_featured_items_response(resp: Response(String)) -> Result(List
   }
 }
 
+/// Get raw image data
+pub fn get_image_request(config: ClientConfig, image_id: String) -> Request(String) {
+  let path = string.replace("/images/{imageId}", "{imageId}", image_id)
+  request.new()
+  |> request.set_method(Get)
+  |> request.set_host(config.base_url)
+  |> request.set_path(path)
+  |> fn(req) {
+    list.fold(config.headers, req, fn(r, h) {
+      request.set_header(r, h.0, h.1)
+    })
+  }
+  |> request.set_header("content-type", "application/json")
+}
+
+pub fn decode_get_image_response(resp: Response(String)) -> Result(String, ClientError) {
+  case resp.status {
+    status if status >= 200 && status < 300 -> {
+      case json.parse(resp.body, decode.string) {
+        Ok(value) -> Ok(value)
+        Error(_) -> Error(DecodeError("Failed to decode response"))
+      }
+    }
+    status -> Error(UnexpectedStatus(status: status, body: resp.body))
+  }
+}
+
 /// Create a new item
 pub fn create_item_request(config: ClientConfig, body: types.CreateItemRequest) -> Request(String) {
   let path = "/items"
@@ -179,6 +207,34 @@ pub fn decode_create_item_response(resp: Response(String)) -> Result(types.Creat
   case resp.status {
     status if status >= 200 && status < 300 -> {
       case json.parse(resp.body, types.create_item_response_decoder()) {
+        Ok(value) -> Ok(value)
+        Error(_) -> Error(DecodeError("Failed to decode response"))
+      }
+    }
+    status -> Error(UnexpectedStatus(status: status, body: resp.body))
+  }
+}
+
+/// Upload an image for an item
+pub fn upload_item_image_request(config: ClientConfig, item_id: String, body: types.UploadItemImageRequest) -> Request(String) {
+  let path = string.replace("/items/{itemId}/images", "{itemId}", item_id)
+  request.new()
+  |> request.set_method(Post)
+  |> request.set_host(config.base_url)
+  |> request.set_path(path)
+  |> fn(req) {
+    list.fold(config.headers, req, fn(r, h) {
+      request.set_header(r, h.0, h.1)
+    })
+  }
+  |> request.set_header("content-type", "application/json")
+  |> request.set_body(json.to_string(types.encode_upload_item_image_request(body)))
+}
+
+pub fn decode_upload_item_image_response(resp: Response(String)) -> Result(types.UploadItemImageResponse, ClientError) {
+  case resp.status {
+    status if status >= 200 && status < 300 -> {
+      case json.parse(resp.body, types.upload_item_image_response_decoder()) {
         Ok(value) -> Ok(value)
         Error(_) -> Error(DecodeError("Failed to decode response"))
       }

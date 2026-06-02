@@ -1,4 +1,5 @@
 .gitignore
+.openapi-generator-ignore
 .travis.yml
 README.md
 analysis_options.yaml
@@ -12,6 +13,8 @@ doc/LoginRequest.md
 doc/LoginResult.md
 doc/Person.md
 doc/RefreshRequest.md
+doc/UploadItemImageRequest.md
+doc/UploadItemImageResponse.md
 doc/User.md
 git_push.sh
 lib/api.dart
@@ -33,7 +36,20 @@ lib/model/login_request.dart
 lib/model/login_result.dart
 lib/model/person.dart
 lib/model/refresh_request.dart
+lib/model/upload_item_image_request.dart
+lib/model/upload_item_image_response.dart
 lib/model/user.dart
 pubspec.yaml
 test/create_item_request_test.dart
 test/create_item_response_test.dart
+test/default_api_test.dart
+test/distance_test.dart
+test/featured_item_test.dart
+test/lat_lng_test.dart
+test/login_request_test.dart
+test/login_result_test.dart
+test/person_test.dart
+test/refresh_request_test.dart
+test/upload_item_image_request_test.dart
+test/upload_item_image_response_test.dart
+test/user_test.dart

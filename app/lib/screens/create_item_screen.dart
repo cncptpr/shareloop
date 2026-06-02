@@ -144,12 +144,36 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
       debugPrint('[createItem] API response: $result');
 
       if (result != null && mounted) {
+        final itemId = result.id;
+
+        // Upload pending images
+        final images = ref.read(createItemFormProvider).images;
+        if (images.isNotEmpty) {
+          debugPrint('[createItem] Uploading ${images.length} image(s)...');
+          try {
+            for (var i = 0; i < images.length; i++) {
+              final uuid = await uploadImage(itemId, images[i], i);
+              ref.read(createItemFormProvider.notifier).addUploadedUuid(uuid);
+              debugPrint('[createItem] Uploaded image: $uuid');
+            }
+          } catch (e) {
+            debugPrint('[createItem] Image upload failed (continuing): $e');
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Einige Bilder konnten nicht hochgeladen werden: $e')),
+              );
+            }
+          }
+        }
+
         ref.read(createItemFormProvider.notifier).reset();
         ref.invalidate(featuredItemsProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Inserat erstellt!')),
-        );
-        Navigator.pop(context);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Inserat erstellt!')),
+          );
+          Navigator.pop(context);
+        }
       } else if (result == null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Fehler: Keine Antwort vom Server.')),
@@ -294,13 +318,21 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
           if (formState.images.isNotEmpty)
             SizedBox(
               height: 120,
-              child: ListView.separated(
+              child: ReorderableListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: formState.images.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                onReorder: (oldIndex, newIndex) {
+                  ref.read(createItemFormProvider.notifier).moveImage(oldIndex, newIndex);
+                },
+                proxyDecorator: (child, index, animation) => Material(
+                  elevation: 4,
+                  borderRadius: BorderRadius.circular(8),
+                  child: child,
+                ),
                 itemBuilder: (ctx, i) {
                   final img = formState.images[i];
                   return Stack(
+                    key: ValueKey('${img.path}_$i'),
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -323,6 +355,21 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
                             ),
                             padding: const EdgeInsets.all(4),
                             child: const Icon(Icons.close, color: Colors.white, size: 16),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 4,
+                        right: 4,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          child: Text(
+                            '${i + 1}',
+                            style: const TextStyle(color: Colors.white, fontSize: 11),
                           ),
                         ),
                       ),

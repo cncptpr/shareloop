@@ -131,6 +131,59 @@ class DefaultApi {
     return null;
   }
 
+  /// Get raw image data
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] imageId (required):
+  Future<Response> getImageWithHttpInfo(String imageId,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/images/{imageId}'
+      .replaceAll('{imageId}', imageId);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Get raw image data
+  ///
+  /// Parameters:
+  ///
+  /// * [String] imageId (required):
+  Future<String?> getImage(String imageId,) async {
+    final response = await getImageWithHttpInfo(imageId,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'String',) as String;
+    
+    }
+    return null;
+  }
+
   /// Login
   ///
   /// Note: This method returns the HTTP [Response].
@@ -266,6 +319,63 @@ class DefaultApi {
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
       return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LoginResult',) as LoginResult;
+    
+    }
+    return null;
+  }
+
+  /// Upload an image for an item
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] itemId (required):
+  ///
+  /// * [UploadItemImageRequest] uploadItemImageRequest (required):
+  Future<Response> uploadItemImageWithHttpInfo(int itemId, UploadItemImageRequest uploadItemImageRequest,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/items/{itemId}/images'
+      .replaceAll('{itemId}', itemId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody = uploadItemImageRequest;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Upload an image for an item
+  ///
+  /// Parameters:
+  ///
+  /// * [int] itemId (required):
+  ///
+  /// * [UploadItemImageRequest] uploadItemImageRequest (required):
+  Future<UploadItemImageResponse?> uploadItemImage(int itemId, UploadItemImageRequest uploadItemImageRequest,) async {
+    final response = await uploadItemImageWithHttpInfo(itemId, uploadItemImageRequest,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UploadItemImageResponse',) as UploadItemImageResponse;
     
     }
     return null;

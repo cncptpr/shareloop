@@ -200,6 +200,10 @@ class ApiClient {
           return Person.fromJson(value);
         case 'RefreshRequest':
           return RefreshRequest.fromJson(value);
+        case 'UploadItemImageRequest':
+          return UploadItemImageRequest.fromJson(value);
+        case 'UploadItemImageResponse':
+          return UploadItemImageResponse.fromJson(value);
         case 'User':
           return User.fromJson(value);
         default:

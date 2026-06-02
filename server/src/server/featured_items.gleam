@@ -7,6 +7,7 @@ import gleam/json
 import gleam/list
 import gleam/option.{None, Some}
 import gleam/result
+import youid/uuid
 import mist
 import server/consts.{max_body_limit}
 import server/sql
@@ -49,6 +50,7 @@ fn get_featured_items(conn, location: types.LatLng) {
       city: row.city,
       postal_code: row.postal_code,
       score: row.score,
+      image_uuid: option.map(row.first_image_uuid, uuid.to_string),
     )
   })
 }
@@ -66,6 +68,7 @@ fn get_featured_items_without_distance(conn) {
       city: row.city,
       postal_code: row.postal_code,
       score: row.score,
+      image_uuid: option.map(row.first_image_uuid, uuid.to_string),
     )
   })
 }

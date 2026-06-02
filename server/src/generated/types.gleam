@@ -33,6 +33,7 @@ pub type FeaturedItem {
     city: Option(String),
     description: String,
     distance: Option(Distance),
+    image_uuid: Option(String),
     postal_code: Option(String),
     score: Float,
     title: String,
@@ -75,6 +76,20 @@ pub type RefreshRequest {
   )
 }
 
+pub type UploadItemImageRequest {
+  UploadItemImageRequest(
+    data: String,
+    filename: String,
+    sort_order: Int,
+  )
+}
+
+pub type UploadItemImageResponse {
+  UploadItemImageResponse(
+    uuid: String,
+  )
+}
+
 pub type User {
   User(
     created_at: String,
@@ -109,10 +124,11 @@ pub fn featured_item_decoder() -> Decoder(FeaturedItem) {
   use city <- decode.optional_field("city", None, decode.optional(decode.string))
   use description <- decode.field("description", decode.string)
   use distance <- decode.optional_field("distance", None, decode.optional(distance_decoder()))
+  use image_uuid <- decode.optional_field("imageUuid", None, decode.optional(decode.string))
   use postal_code <- decode.optional_field("postalCode", None, decode.optional(decode.string))
   use score <- decode.field("score", decode.float)
   use title <- decode.field("title", decode.string)
-  decode.success(FeaturedItem(author: author, city: city, description: description, distance: distance, postal_code: postal_code, score: score, title: title))
+  decode.success(FeaturedItem(author: author, city: city, description: description, distance: distance, image_uuid: image_uuid, postal_code: postal_code, score: score, title: title))
 }
 
 pub fn lat_lng_decoder() -> Decoder(LatLng) {
@@ -144,6 +160,18 @@ pub fn person_decoder() -> Decoder(Person) {
 pub fn refresh_request_decoder() -> Decoder(RefreshRequest) {
   use refresh_token <- decode.field("refreshToken", decode.string)
   decode.success(RefreshRequest(refresh_token: refresh_token))
+}
+
+pub fn upload_item_image_request_decoder() -> Decoder(UploadItemImageRequest) {
+  use data <- decode.field("data", decode.string)
+  use filename <- decode.field("filename", decode.string)
+  use sort_order <- decode.field("sortOrder", decode.int)
+  decode.success(UploadItemImageRequest(data: data, filename: filename, sort_order: sort_order))
+}
+
+pub fn upload_item_image_response_decoder() -> Decoder(UploadItemImageResponse) {
+  use uuid <- decode.field("uuid", decode.string)
+  decode.success(UploadItemImageResponse(uuid: uuid))
 }
 
 pub fn user_decoder() -> Decoder(User) {
@@ -189,6 +217,10 @@ pub fn encode_featured_item(value: FeaturedItem) -> Json {
       Some(v) -> encode_distance(v)
       None -> json.null()
     }),
+    #("imageUuid", case value.image_uuid {
+      Some(v) -> json.string(v)
+      None -> json.null()
+    }),
     #("postalCode", case value.postal_code {
       Some(v) -> json.string(v)
       None -> json.null()
@@ -231,6 +263,20 @@ pub fn encode_person(value: Person) -> Json {
 pub fn encode_refresh_request(value: RefreshRequest) -> Json {
   json.object([
     #("refreshToken", json.string(value.refresh_token)),
+  ])
+}
+
+pub fn encode_upload_item_image_request(value: UploadItemImageRequest) -> Json {
+  json.object([
+    #("data", json.string(value.data)),
+    #("filename", json.string(value.filename)),
+    #("sortOrder", json.int(value.sort_order)),
+  ])
+}
+
+pub fn encode_upload_item_image_response(value: UploadItemImageResponse) -> Json {
+  json.object([
+    #("uuid", json.string(value.uuid)),
   ])
 }
 

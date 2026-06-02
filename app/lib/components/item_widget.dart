@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
+import 'package:shareloop/app_config.dart';
 
 class ItemWidget extends ConsumerWidget {
   final FeaturedItem item;
@@ -16,12 +17,14 @@ class ItemWidget extends ConsumerWidget {
           Container(
             width: double.infinity,
             height: 300,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.vertical(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(15),
               ),
               image: DecorationImage(
-                image: AssetImage("assets/images/placeholder_image.jpg"),
+                image: item.imageUuid != null
+                    ? NetworkImage('${AppConfig.apiBaseUrl}/images/${item.imageUuid}')
+                    : const AssetImage("assets/images/placeholder_image.jpg"),
                 fit: BoxFit.cover,
               ),
             ),

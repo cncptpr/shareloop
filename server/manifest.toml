@@ -65,3 +65,4 @@ nori = { version = ">= 1.0.0 and < 2.0.0" }
 pog = { version = ">= 4.1.0 and < 5.0.0" }
 simplifile = { version = ">= 2.4.0 and < 3.0.0" }
 squirrel = { version = ">= 4.6.0 and < 5.0.0" }
+youid = { version = ">= 1.0.0 and < 2.0.0" }

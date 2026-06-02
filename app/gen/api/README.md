@@ -67,9 +67,11 @@ Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *DefaultApi* | [**createItem**](doc//DefaultApi.md#createitem) | **POST** /items | Create a new item
 *DefaultApi* | [**getFeaturedItems**](doc//DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
+*DefaultApi* | [**getImage**](doc//DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
 *DefaultApi* | [**login**](doc//DefaultApi.md#login) | **POST** /auth/login | Login
 *DefaultApi* | [**logout**](doc//DefaultApi.md#logout) | **POST** /auth/logout | Logout
 *DefaultApi* | [**refresh**](doc//DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
+*DefaultApi* | [**uploadItemImage**](doc//DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
 *DefaultApi* | [**verify**](doc//DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
 
 
@@ -84,6 +86,8 @@ Class | Method | HTTP request | Description
  - [LoginResult](doc//LoginResult.md)
  - [Person](doc//Person.md)
  - [RefreshRequest](doc//RefreshRequest.md)
+ - [UploadItemImageRequest](doc//UploadItemImageRequest.md)
+ - [UploadItemImageResponse](doc//UploadItemImageResponse.md)
  - [User](doc//User.md)
 
 

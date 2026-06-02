@@ -50,6 +50,51 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateItemResponse"
 
+  /items/{itemId}/images:
+    post:
+      summary: Upload an image for an item
+      operationId: uploadItemImage
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadItemImageRequest"
+      responses:
+        "201":
+          description: Image uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadItemImageResponse"
+
+  /images/{imageId}:
+    get:
+      summary: Get raw image data
+      operationId: getImage
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Raw image bytes
+          content:
+            application/json:
+              schema:
+                type: string
+
   /auth/login:
     post:
       summary: Login
@@ -140,6 +185,9 @@ components:
         score:
           type: number
           format: double
+        imageUuid:
+          type: string
+          nullable: true
 
     Person:
       type: object
@@ -241,6 +289,28 @@ components:
       properties:
         id:
           type: integer
+
+    UploadItemImageRequest:
+      type: object
+      required: [data, filename, sortOrder]
+      properties:
+        data:
+          type: string
+          description: Base64-encoded image data
+        filename:
+          type: string
+          description: Original filename for extension detection
+        sortOrder:
+          type: integer
+          description: Position of this image in the item's image list
+
+    UploadItemImageResponse:
+      type: object
+      required: [uuid]
+      properties:
+        uuid:
+          type: string
+          format: uuid
 
   securitySchemes:
     bearerAuth:

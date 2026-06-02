@@ -39,6 +39,8 @@ part 'model/login_request.dart';
 part 'model/login_result.dart';
 part 'model/person.dart';
 part 'model/refresh_request.dart';
+part 'model/upload_item_image_request.dart';
+part 'model/upload_item_image_response.dart';
 part 'model/user.dart';
 
 

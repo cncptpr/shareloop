@@ -182,6 +182,10 @@ class ApiClient {
           return valueString == 'true' || valueString == '1';
         case 'DateTime':
           return value is DateTime ? value : DateTime.tryParse(value);
+        case 'CreateItemRequest':
+          return CreateItemRequest.fromJson(value);
+        case 'CreateItemResponse':
+          return CreateItemResponse.fromJson(value);
         case 'Distance':
           return Distance.fromJson(value);
         case 'FeaturedItem':

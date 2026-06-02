@@ -4,6 +4,23 @@ import gleam/dynamic/decode.{type Decoder}
 import gleam/json.{type Json}
 import gleam/option.{type Option, None, Some}
 
+pub type CreateItemRequest {
+  CreateItemRequest(
+    city: String,
+    description: String,
+    lat: Float,
+    lng: Float,
+    postal_code: String,
+    title: String,
+  )
+}
+
+pub type CreateItemResponse {
+  CreateItemResponse(
+    id: Int,
+  )
+}
+
 pub type Distance {
   Distance(
     km: Float,
@@ -67,6 +84,21 @@ pub type User {
   )
 }
 
+pub fn create_item_request_decoder() -> Decoder(CreateItemRequest) {
+  use city <- decode.field("city", decode.string)
+  use description <- decode.field("description", decode.string)
+  use lat <- decode.field("lat", decode.float)
+  use lng <- decode.field("lng", decode.float)
+  use postal_code <- decode.field("postalCode", decode.string)
+  use title <- decode.field("title", decode.string)
+  decode.success(CreateItemRequest(city: city, description: description, lat: lat, lng: lng, postal_code: postal_code, title: title))
+}
+
+pub fn create_item_response_decoder() -> Decoder(CreateItemResponse) {
+  use id <- decode.field("id", decode.int)
+  decode.success(CreateItemResponse(id: id))
+}
+
 pub fn distance_decoder() -> Decoder(Distance) {
   use km <- decode.field("km", decode.float)
   decode.success(Distance(km: km))
@@ -120,6 +152,23 @@ pub fn user_decoder() -> Decoder(User) {
   use id <- decode.field("id", decode.int)
   use last_online_at <- decode.field("lastOnlineAt", decode.string)
   decode.success(User(created_at: created_at, email: email, id: id, last_online_at: last_online_at))
+}
+
+pub fn encode_create_item_request(value: CreateItemRequest) -> Json {
+  json.object([
+    #("city", json.string(value.city)),
+    #("description", json.string(value.description)),
+    #("lat", json.float(value.lat)),
+    #("lng", json.float(value.lng)),
+    #("postalCode", json.string(value.postal_code)),
+    #("title", json.string(value.title)),
+  ])
+}
+
+pub fn encode_create_item_response(value: CreateItemResponse) -> Json {
+  json.object([
+    #("id", json.int(value.id)),
+  ])
 }
 
 pub fn encode_distance(value: Distance) -> Json {

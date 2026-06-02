@@ -29,6 +29,27 @@ paths:
                 items:
                   $ref: "#/components/schemas/FeaturedItem"
 
+  /items:
+    post:
+      summary: Create a new item
+      description: Creates a new item listing
+      operationId: createItem
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateItemRequest"
+      responses:
+        "201":
+          description: Item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateItemResponse"
+
   /auth/login:
     post:
       summary: Login
@@ -194,6 +215,32 @@ components:
         refreshExpiresAt:
           type: string
           format: date-time
+
+    CreateItemRequest:
+      type: object
+      required: [title, description, city, postalCode, lat, lng]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+
+    CreateItemResponse:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: integer
 
   securitySchemes:
     bearerAuth:

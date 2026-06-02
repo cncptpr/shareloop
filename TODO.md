@@ -9,9 +9,11 @@ Not all of these TODOs need to be done for the finished project.
 
 - [ ] Send out emails for important stuff
 - [ ] Registration
+- [ ] Clearing of expired User Sessions
 
 ## General
 
+- [ ] Introduce Logging Framework
 - [ ] When pressing the selected button in the nav bar, return to that tabs default route.
 - [ ] Allow for 'Pulling down to reload' even if featued Items list is empty
 - [ ] Make the UI Text all German

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shareloop/components/item_widget.dart';
+import 'package:shareloop/screens/create_item_screen.dart';
 import 'package:shareloop/screens/location_picker_screen.dart';
 import 'package:shareloop/state/items.dart';
 import 'package:shareloop/state/location.dart';
@@ -55,6 +56,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             label: Text(label),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => CreateItemScreen.push(context),
+        child: const Icon(Icons.add),
       ),
       body: Column(
         children: [

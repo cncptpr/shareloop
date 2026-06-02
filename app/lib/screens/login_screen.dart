@@ -10,8 +10,8 @@ class LoginScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 
-  static void push(BuildContext ctx) {
-    Navigator.push(ctx, MaterialPageRoute(builder: (_)=>const LoginScreen()));
+  static Future<void> push(BuildContext ctx) {
+    return Navigator.push(ctx, MaterialPageRoute(builder: (_)=>const LoginScreen()));
   }
 }
 

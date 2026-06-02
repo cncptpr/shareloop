@@ -40,15 +40,21 @@ Please follow the [installation procedure](#installation--usage) and then run th
 ```dart
 import 'package:openapi/api.dart';
 
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
 
 final api_instance = DefaultApi();
-final latLng = LatLng(); // LatLng | 
+final createItemRequest = CreateItemRequest(); // CreateItemRequest | 
 
 try {
-    final result = api_instance.getFeaturedItems(latLng);
+    final result = api_instance.createItem(createItemRequest);
     print(result);
 } catch (e) {
-    print('Exception when calling DefaultApi->getFeaturedItems: $e\n');
+    print('Exception when calling DefaultApi->createItem: $e\n');
 }
 
 ```
@@ -59,6 +65,7 @@ All URIs are relative to */api*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*DefaultApi* | [**createItem**](doc//DefaultApi.md#createitem) | **POST** /items | Create a new item
 *DefaultApi* | [**getFeaturedItems**](doc//DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 *DefaultApi* | [**login**](doc//DefaultApi.md#login) | **POST** /auth/login | Login
 *DefaultApi* | [**logout**](doc//DefaultApi.md#logout) | **POST** /auth/logout | Logout
@@ -68,6 +75,8 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [CreateItemRequest](doc//CreateItemRequest.md)
+ - [CreateItemResponse](doc//CreateItemResponse.md)
  - [Distance](doc//Distance.md)
  - [FeaturedItem](doc//FeaturedItem.md)
  - [LatLng](doc//LatLng.md)

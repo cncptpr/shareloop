@@ -9,12 +9,62 @@ All URIs are relative to */api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**createItem**](DefaultApi.md#createitem) | **POST** /items | Create a new item
 [**getFeaturedItems**](DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 [**login**](DefaultApi.md#login) | **POST** /auth/login | Login
 [**logout**](DefaultApi.md#logout) | **POST** /auth/logout | Logout
 [**refresh**](DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
 [**verify**](DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
 
+
+# **createItem**
+> CreateItemResponse createItem(createItemRequest)
+
+Create a new item
+
+Creates a new item listing
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final createItemRequest = CreateItemRequest(); // CreateItemRequest | 
+
+try {
+    final result = api_instance.createItem(createItemRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->createItem: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **createItemRequest** | [**CreateItemRequest**](CreateItemRequest.md)|  | 
+
+### Return type
+
+[**CreateItemResponse**](CreateItemResponse.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **getFeaturedItems**
 > List<FeaturedItem> getFeaturedItems(latLng)

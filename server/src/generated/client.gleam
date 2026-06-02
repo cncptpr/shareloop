@@ -158,3 +158,31 @@ pub fn decode_get_featured_items_response(resp: Response(String)) -> Result(List
     status -> Error(UnexpectedStatus(status: status, body: resp.body))
   }
 }
+
+/// Create a new item
+pub fn create_item_request(config: ClientConfig, body: types.CreateItemRequest) -> Request(String) {
+  let path = "/items"
+  request.new()
+  |> request.set_method(Post)
+  |> request.set_host(config.base_url)
+  |> request.set_path(path)
+  |> fn(req) {
+    list.fold(config.headers, req, fn(r, h) {
+      request.set_header(r, h.0, h.1)
+    })
+  }
+  |> request.set_header("content-type", "application/json")
+  |> request.set_body(json.to_string(types.encode_create_item_request(body)))
+}
+
+pub fn decode_create_item_response(resp: Response(String)) -> Result(types.CreateItemResponse, ClientError) {
+  case resp.status {
+    status if status >= 200 && status < 300 -> {
+      case json.parse(resp.body, types.create_item_response_decoder()) {
+        Ok(value) -> Ok(value)
+        Error(_) -> Error(DecodeError("Failed to decode response"))
+      }
+    }
+    status -> Error(UnexpectedStatus(status: status, body: resp.body))
+  }
+}

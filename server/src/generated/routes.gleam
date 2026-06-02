@@ -1,7 +1,7 @@
 //// Generated routes from Shareloop API v1.0.0
 
 import gleam/http.{type Method, Post}
-import generated/types.{type LoginRequest, type LoginResult, type RefreshRequest, type User, type LatLng, type FeaturedItem}
+import generated/types.{type LoginRequest, type LoginResult, type RefreshRequest, type User, type LatLng, type FeaturedItem, type CreateItemRequest, type CreateItemResponse}
 
 pub type Route {
   Login
@@ -9,6 +9,7 @@ pub type Route {
   Refresh
   Verify
   GetFeaturedItems
+  CreateItem
   NotFound
 }
 
@@ -19,6 +20,7 @@ pub fn match_route(method: Method, segments: List(String)) -> Route {
     Post, ["auth", "refresh"] -> Refresh
     Post, ["auth", "verify"] -> Verify
     Post, ["featured-items"] -> GetFeaturedItems
+    Post, ["items"] -> CreateItem
     _, _ -> NotFound
   }
 }
@@ -42,3 +44,7 @@ pub type VerifyHandler =
 /// Handler type for getFeaturedItems
 pub type GetFeaturedItemsHandler =
   fn(LatLng, ) -> Result(List(FeaturedItem), String)
+
+/// Handler type for createItem
+pub type CreateItemHandler =
+  fn(CreateItemRequest, ) -> Result(CreateItemResponse, String)

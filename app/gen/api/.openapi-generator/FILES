@@ -2,6 +2,8 @@
 .travis.yml
 README.md
 analysis_options.yaml
+doc/CreateItemRequest.md
+doc/CreateItemResponse.md
 doc/DefaultApi.md
 doc/Distance.md
 doc/FeaturedItem.md
@@ -22,6 +24,8 @@ lib/auth/authentication.dart
 lib/auth/http_basic_auth.dart
 lib/auth/http_bearer_auth.dart
 lib/auth/oauth.dart
+lib/model/create_item_request.dart
+lib/model/create_item_response.dart
 lib/model/distance.dart
 lib/model/featured_item.dart
 lib/model/lat_lng.dart
@@ -31,7 +35,5 @@ lib/model/person.dart
 lib/model/refresh_request.dart
 lib/model/user.dart
 pubspec.yaml
-test/login_request_test.dart
-test/login_result_test.dart
-test/refresh_request_test.dart
-test/user_test.dart
+test/create_item_request_test.dart
+test/create_item_response_test.dart

@@ -30,6 +30,8 @@ part 'auth/http_bearer_auth.dart';
 
 part 'api/default_api.dart';
 
+part 'model/create_item_request.dart';
+part 'model/create_item_response.dart';
 part 'model/distance.dart';
 part 'model/featured_item.dart';
 part 'model/lat_lng.dart';

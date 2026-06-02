@@ -9,6 +9,16 @@ import gleam/option.{type Option}
 import gleam/time/timestamp.{type Timestamp}
 import pog
 
+/// A row you get from running the `create_item` query
+/// defined in `./src/server/sql/create_item.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type CreateItemRow {
+  CreateItemRow(id: Int)
+}
+
 /// Runs the `create_item` query
 /// defined in `./src/server/sql/create_item.sql`.
 ///
@@ -25,10 +35,14 @@ pub fn create_item(
   arg_6: Float,
   arg_7: String,
   arg_8: String,
-) -> Result(pog.Returned(Nil), pog.QueryError) {
-  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+) -> Result(pog.Returned(CreateItemRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, decode.int)
+    decode.success(CreateItemRow(id:))
+  }
 
   "INSERT INTO items (title, description, author_id, score, location, city, postal_code) VALUES ($1, $2, $3, $4, st_setsrid(st_makepoint($5, $6), 4326)::geography, $7, $8)
+returning id
 "
   |> pog.query
   |> pog.parameter(pog.text(arg_1))

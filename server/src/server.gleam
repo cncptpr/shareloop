@@ -9,6 +9,7 @@ import mist
 import server/auth/handlers
 import server/db
 import server/featured_items
+import server/items
 import server/migration
 
 pub fn main() {
@@ -44,6 +45,7 @@ fn router(req: request.Request(mist.Connection), conn) {
 fn openapi_router(method, segments, req, conn) {
   case routes.match_route(method, segments) {
     routes.GetFeaturedItems -> featured_items.handle(req, conn)
+    routes.CreateItem -> items.handle(req, conn)
     routes.NotFound -> handle404()
     routes.Login -> handlers.login(req, conn)
     routes.Logout -> handlers.logout(req, conn)

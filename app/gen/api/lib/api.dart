@@ -34,6 +34,7 @@ part 'model/create_item_request.dart';
 part 'model/create_item_response.dart';
 part 'model/distance.dart';
 part 'model/featured_item.dart';
+part 'model/item_detail.dart';
 part 'model/lat_lng.dart';
 part 'model/login_request.dart';
 part 'model/login_result.dart';

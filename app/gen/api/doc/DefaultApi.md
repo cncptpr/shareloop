@@ -12,6 +12,7 @@ Method | HTTP request | Description
 [**createItem**](DefaultApi.md#createitem) | **POST** /items | Create a new item
 [**getFeaturedItems**](DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 [**getImage**](DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
+[**getItem**](DefaultApi.md#getitem) | **GET** /items/{itemId} | Get item details
 [**login**](DefaultApi.md#login) | **POST** /auth/login | Login
 [**logout**](DefaultApi.md#logout) | **POST** /auth/logout | Logout
 [**refresh**](DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
@@ -140,6 +141,49 @@ Name | Type | Description  | Notes
 ### Return type
 
 **String**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getItem**
+> ItemDetail getItem(itemId)
+
+Get item details
+
+Returns full details for a single item
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+final itemId = 56; // int | 
+
+try {
+    final result = api_instance.getItem(itemId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getItem: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **itemId** | **int**|  | 
+
+### Return type
+
+[**ItemDetail**](ItemDetail.md)
 
 ### Authorization
 

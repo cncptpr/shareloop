@@ -50,6 +50,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateItemResponse"
 
+  /items/{itemId}:
+    get:
+      summary: Get item details
+      description: Returns full details for a single item
+      operationId: getItem
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Item details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemDetail"
+        "404":
+          description: Item not found
+
   /items/{itemId}/images:
     post:
       summary: Upload an image for an item
@@ -167,8 +188,10 @@ components:
   schemas:
     FeaturedItem:
       type: object
-      required: [title, description, author, score]
+      required: [id, title, description, author, score]
       properties:
+        id:
+          type: integer
         title:
           type: string
         description:
@@ -289,6 +312,37 @@ components:
       properties:
         id:
           type: integer
+
+    ItemDetail:
+      type: object
+      required: [id, title, description, author, score, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        author:
+          $ref: "#/components/schemas/Person"
+        score:
+          type: number
+          format: double
+        city:
+          type: string
+        postalCode:
+          type: string
+        imageUuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        category:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
 
     UploadItemImageRequest:
       type: object

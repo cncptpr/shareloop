@@ -43,6 +43,7 @@ fn get_featured_items(conn, location: types.LatLng) {
   |> result.unwrap([])
   |> list.map(fn(row) {
     types.FeaturedItem(
+      id: row.id,
       title: row.title,
       description: row.description,
       author: types.Person(name: row.author_name),
@@ -61,6 +62,7 @@ fn get_featured_items_without_distance(conn) {
   |> result.unwrap([])
   |> list.map(fn(row) {
     types.FeaturedItem(
+      id: row.id,
       title: row.title,
       description: row.description,
       author: types.Person(name: row.author_name),

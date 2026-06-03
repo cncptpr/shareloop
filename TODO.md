@@ -42,7 +42,9 @@ Not all of these TODOs need to be done for the finished project.
 
 ## Items
 
-- [ ] Allow for creating Items
+- [ ] Add all missing fields
+  - Kategorie
+  - Gebüren
 - [ ] Items Screen
 
 

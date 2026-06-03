@@ -33,7 +33,23 @@ pub type FeaturedItem {
     city: Option(String),
     description: String,
     distance: Option(Distance),
+    id: Int,
     image_uuid: Option(String),
+    postal_code: Option(String),
+    score: Float,
+    title: String,
+  )
+}
+
+pub type ItemDetail {
+  ItemDetail(
+    author: Person,
+    category: Option(String),
+    city: Option(String),
+    created_at: String,
+    description: String,
+    id: Int,
+    image_uuids: Option(List(String)),
     postal_code: Option(String),
     score: Float,
     title: String,
@@ -124,11 +140,26 @@ pub fn featured_item_decoder() -> Decoder(FeaturedItem) {
   use city <- decode.optional_field("city", None, decode.optional(decode.string))
   use description <- decode.field("description", decode.string)
   use distance <- decode.optional_field("distance", None, decode.optional(distance_decoder()))
+  use id <- decode.field("id", decode.int)
   use image_uuid <- decode.optional_field("imageUuid", None, decode.optional(decode.string))
   use postal_code <- decode.optional_field("postalCode", None, decode.optional(decode.string))
   use score <- decode.field("score", decode.float)
   use title <- decode.field("title", decode.string)
-  decode.success(FeaturedItem(author: author, city: city, description: description, distance: distance, image_uuid: image_uuid, postal_code: postal_code, score: score, title: title))
+  decode.success(FeaturedItem(author: author, city: city, description: description, distance: distance, id: id, image_uuid: image_uuid, postal_code: postal_code, score: score, title: title))
+}
+
+pub fn item_detail_decoder() -> Decoder(ItemDetail) {
+  use author <- decode.field("author", person_decoder())
+  use category <- decode.optional_field("category", None, decode.optional(decode.string))
+  use city <- decode.optional_field("city", None, decode.optional(decode.string))
+  use created_at <- decode.field("createdAt", decode.string)
+  use description <- decode.field("description", decode.string)
+  use id <- decode.field("id", decode.int)
+  use image_uuids <- decode.optional_field("imageUuids", None, decode.optional(decode.list(decode.string)))
+  use postal_code <- decode.optional_field("postalCode", None, decode.optional(decode.string))
+  use score <- decode.field("score", decode.float)
+  use title <- decode.field("title", decode.string)
+  decode.success(ItemDetail(author: author, category: category, city: city, created_at: created_at, description: description, id: id, image_uuids: image_uuids, postal_code: postal_code, score: score, title: title))
 }
 
 pub fn lat_lng_decoder() -> Decoder(LatLng) {
@@ -217,8 +248,36 @@ pub fn encode_featured_item(value: FeaturedItem) -> Json {
       Some(v) -> encode_distance(v)
       None -> json.null()
     }),
+    #("id", json.int(value.id)),
     #("imageUuid", case value.image_uuid {
       Some(v) -> json.string(v)
+      None -> json.null()
+    }),
+    #("postalCode", case value.postal_code {
+      Some(v) -> json.string(v)
+      None -> json.null()
+    }),
+    #("score", json.float(value.score)),
+    #("title", json.string(value.title)),
+  ])
+}
+
+pub fn encode_item_detail(value: ItemDetail) -> Json {
+  json.object([
+    #("author", encode_person(value.author)),
+    #("category", case value.category {
+      Some(v) -> json.string(v)
+      None -> json.null()
+    }),
+    #("city", case value.city {
+      Some(v) -> json.string(v)
+      None -> json.null()
+    }),
+    #("createdAt", json.string(value.created_at)),
+    #("description", json.string(value.description)),
+    #("id", json.int(value.id)),
+    #("imageUuids", case value.image_uuids {
+      Some(v) -> json.array(v, fn(item) { json.string(item) })
       None -> json.null()
     }),
     #("postalCode", case value.postal_code {

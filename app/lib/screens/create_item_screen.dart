@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/screens/location_picker_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
+import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/state/auth.dart' show authProvider;
 import 'package:shareloop/state/create_item.dart';
 import 'package:shareloop/state/items.dart';
@@ -169,10 +170,10 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
         ref.read(createItemFormProvider.notifier).reset();
         ref.invalidate(featuredItemsProvider);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Inserat erstellt!')),
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => ItemScreen(itemId: itemId)),
           );
-          Navigator.pop(context);
         }
       } else if (result == null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

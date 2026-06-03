@@ -68,6 +68,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**createItem**](doc//DefaultApi.md#createitem) | **POST** /items | Create a new item
 *DefaultApi* | [**getFeaturedItems**](doc//DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 *DefaultApi* | [**getImage**](doc//DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
+*DefaultApi* | [**getItem**](doc//DefaultApi.md#getitem) | **GET** /items/{itemId} | Get item details
 *DefaultApi* | [**login**](doc//DefaultApi.md#login) | **POST** /auth/login | Login
 *DefaultApi* | [**logout**](doc//DefaultApi.md#logout) | **POST** /auth/logout | Logout
 *DefaultApi* | [**refresh**](doc//DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
@@ -81,6 +82,7 @@ Class | Method | HTTP request | Description
  - [CreateItemResponse](doc//CreateItemResponse.md)
  - [Distance](doc//Distance.md)
  - [FeaturedItem](doc//FeaturedItem.md)
+ - [ItemDetail](doc//ItemDetail.md)
  - [LatLng](doc//LatLng.md)
  - [LoginRequest](doc//LoginRequest.md)
  - [LoginResult](doc//LoginResult.md)

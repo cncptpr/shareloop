@@ -215,6 +215,33 @@ pub fn decode_create_item_response(resp: Response(String)) -> Result(types.Creat
   }
 }
 
+/// Get item details
+pub fn get_item_request(config: ClientConfig, item_id: String) -> Request(String) {
+  let path = string.replace("/items/{itemId}", "{itemId}", item_id)
+  request.new()
+  |> request.set_method(Get)
+  |> request.set_host(config.base_url)
+  |> request.set_path(path)
+  |> fn(req) {
+    list.fold(config.headers, req, fn(r, h) {
+      request.set_header(r, h.0, h.1)
+    })
+  }
+  |> request.set_header("content-type", "application/json")
+}
+
+pub fn decode_get_item_response(resp: Response(String)) -> Result(types.ItemDetail, ClientError) {
+  case resp.status {
+    status if status >= 200 && status < 300 -> {
+      case json.parse(resp.body, types.item_detail_decoder()) {
+        Ok(value) -> Ok(value)
+        Error(_) -> Error(DecodeError("Failed to decode response"))
+      }
+    }
+    status -> Error(UnexpectedStatus(status: status, body: resp.body))
+  }
+}
+
 /// Upload an image for an item
 pub fn upload_item_image_request(config: ClientConfig, item_id: String, body: types.UploadItemImageRequest) -> Request(String) {
   let path = string.replace("/items/{itemId}/images", "{itemId}", item_id)

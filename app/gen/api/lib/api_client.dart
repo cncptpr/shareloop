@@ -190,6 +190,8 @@ class ApiClient {
           return Distance.fromJson(value);
         case 'FeaturedItem':
           return FeaturedItem.fromJson(value);
+        case 'ItemDetail':
+          return ItemDetail.fromJson(value);
         case 'LatLng':
           return LatLng.fromJson(value);
         case 'LoginRequest':

@@ -1,0 +1,1 @@
+select id from item_images where item_id = $1 order by sort_order, created_at

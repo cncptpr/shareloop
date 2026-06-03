@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
+import 'package:shareloop/screens/item_screen.dart';
 
 class ItemWidget extends ConsumerWidget {
   final FeaturedItem item;
@@ -10,36 +11,42 @@ class ItemWidget extends ConsumerWidget {
 
   @override
   Widget build(ctx, ref) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            height: 300,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(15),
-              ),
-              image: DecorationImage(
-                image: item.imageUuid != null
-                    ? NetworkImage('${AppConfig.apiBaseUrl}/images/${item.imageUuid}')
-                    : const AssetImage("assets/images/placeholder_image.jpg"),
-                fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        ctx,
+        MaterialPageRoute(builder: (_) => ItemScreen(itemId: item.id)),
+      ),
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              height: 300,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(15),
+                ),
+                image: DecorationImage(
+                  image: item.imageUuid != null
+                      ? NetworkImage('${AppConfig.apiBaseUrl}/images/${item.imageUuid}')
+                      : const AssetImage("assets/images/placeholder_image.jpg"),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Text(item.title, textScaler: const TextScaler.linear(2)),
-          Text(item.description),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              person(item.author),
-              score(item.score),
-              locationWidget(item.city, item.distance),
-            ],
-          )
-        ],
+            Text(item.title, textScaler: const TextScaler.linear(2)),
+            Text(item.description),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                person(item.author),
+                score(item.score),
+                locationWidget(item.city, item.distance),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

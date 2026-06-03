@@ -503,6 +503,73 @@ order by score desc"
   |> pog.execute(db)
 }
 
+/// A row you get from running the `get_item_by_id` query
+/// defined in `./src/server/sql/get_item_by_id.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type GetItemByIdRow {
+  GetItemByIdRow(
+    id: Int,
+    title: String,
+    description: String,
+    author_name: String,
+    score: Float,
+    city: Option(String),
+    postal_code: Option(String),
+    created_at: String,
+  )
+}
+
+/// Runs the `get_item_by_id` query
+/// defined in `./src/server/sql/get_item_by_id.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn get_item_by_id(
+  db: pog.Connection,
+  arg_1: Int,
+) -> Result(pog.Returned(GetItemByIdRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, decode.int)
+    use title <- decode.field(1, decode.string)
+    use description <- decode.field(2, decode.string)
+    use author_name <- decode.field(3, decode.string)
+    use score <- decode.field(4, decode.float)
+    use city <- decode.field(5, decode.optional(decode.string))
+    use postal_code <- decode.field(6, decode.optional(decode.string))
+    use created_at <- decode.field(7, decode.string)
+    decode.success(GetItemByIdRow(
+      id:,
+      title:,
+      description:,
+      author_name:,
+      score:,
+      city:,
+      postal_code:,
+      created_at:,
+    ))
+  }
+
+  "select
+  items.id,
+  items.title,
+  items.description,
+  profiles.name as author_name,
+  items.score,
+  items.city,
+  items.postal_code,
+  items.created_at::text as created_at
+from items, profiles
+where items.id = $1 and items.author_id = profiles.id"
+  |> pog.query
+  |> pog.parameter(pog.int(arg_1))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
 /// A row you get from running the `get_item_image` query
 /// defined in `./src/server/sql/get_item_image.sql`.
 ///
@@ -541,6 +608,38 @@ FROM item_images
 WHERE id = $1"
   |> pog.query
   |> pog.parameter(pog.text(uuid.to_string(arg_1)))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// A row you get from running the `get_item_images_for_item` query
+/// defined in `./src/server/sql/get_item_images_for_item.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type GetItemImagesForItemRow {
+  GetItemImagesForItemRow(id: Uuid)
+}
+
+/// Runs the `get_item_images_for_item` query
+/// defined in `./src/server/sql/get_item_images_for_item.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn get_item_images_for_item(
+  db: pog.Connection,
+  arg_1: Int,
+) -> Result(pog.Returned(GetItemImagesForItemRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, uuid_decoder())
+    decode.success(GetItemImagesForItemRow(id:))
+  }
+
+  "select id from item_images where item_id = $1 order by sort_order, created_at"
+  |> pog.query
+  |> pog.parameter(pog.int(arg_1))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }

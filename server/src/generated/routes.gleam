@@ -1,7 +1,7 @@
 //// Generated routes from Shareloop API v1.0.0
 
 import gleam/http.{type Method, Get, Post}
-import generated/types.{type LoginRequest, type LoginResult, type RefreshRequest, type User, type LatLng, type FeaturedItem, type CreateItemRequest, type CreateItemResponse, type UploadItemImageRequest, type UploadItemImageResponse}
+import generated/types.{type LoginRequest, type LoginResult, type RefreshRequest, type User, type LatLng, type FeaturedItem, type CreateItemRequest, type CreateItemResponse, type ItemDetail, type UploadItemImageRequest, type UploadItemImageResponse}
 
 pub type Route {
   Login
@@ -11,6 +11,7 @@ pub type Route {
   GetFeaturedItems
   GetImage(image_id: String)
   CreateItem
+  GetItem(item_id: String)
   UploadItemImage(item_id: String)
   NotFound
 }
@@ -24,6 +25,7 @@ pub fn match_route(method: Method, segments: List(String)) -> Route {
     Post, ["featured-items"] -> GetFeaturedItems
     Get, ["images", image_id] -> GetImage(image_id: image_id)
     Post, ["items"] -> CreateItem
+    Get, ["items", item_id] -> GetItem(item_id: item_id)
     Post, ["items", item_id, "images"] -> UploadItemImage(item_id: item_id)
     _, _ -> NotFound
   }
@@ -56,6 +58,10 @@ pub type GetImageHandler =
 /// Handler type for createItem
 pub type CreateItemHandler =
   fn(CreateItemRequest, ) -> Result(CreateItemResponse, String)
+
+/// Handler type for getItem
+pub type GetItemHandler =
+  fn(String, ) -> Result(ItemDetail, String)
 
 /// Handler type for uploadItemImage
 pub type UploadItemImageHandler =

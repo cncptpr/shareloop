@@ -19,8 +19,11 @@ class CreateItemScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<CreateItemScreen> createState() => _CreateItemScreenState();
 
-  static Future<void> push(BuildContext ctx) {
-    return Navigator.push(ctx, MaterialPageRoute(builder: (_) => const CreateItemScreen()));
+  static Future<void> push(BuildContext ctx) async {
+    await Navigator.push(
+      ctx,
+      MaterialPageRoute(builder: (_) => const CreateItemScreen()),
+    );
   }
 }
 
@@ -30,6 +33,7 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
   final _descriptionController = TextEditingController();
   String? _category;
   bool _loading = false;
+  bool _redirectedToLoginScreen = false;
 
   @override
   void initState() {
@@ -119,7 +123,9 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
 
         final state = ref.read(itemFormProvider);
         if (state.images.whereType<LocalItemImage>().isNotEmpty) {
-          debugPrint('[createItem] Uploading ${state.images.whereType<LocalItemImage>().length} image(s)...');
+          debugPrint(
+            '[createItem] Uploading ${state.images.whereType<LocalItemImage>().length} image(s)...',
+          );
           try {
             for (var i = 0; i < state.images.length; i++) {
               final img = state.images[i];
@@ -132,7 +138,11 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
             debugPrint('[createItem] Image upload failed (continuing): $e');
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Einige Bilder konnten nicht hochgeladen werden: $e')),
+                SnackBar(
+                  content: Text(
+                    'Einige Bilder konnten nicht hochgeladen werden: $e',
+                  ),
+                ),
               );
             }
           }
@@ -152,10 +162,16 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
         );
       }
     } on ApiException catch (e) {
-      debugPrint('[createItem] ApiException: code=${e.code}, message=${e.message}');
+      debugPrint(
+        '[createItem] ApiException: code=${e.code}, message=${e.message}',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Fehler ${e.code}: ${e.message ?? 'Unbekannter Fehler'}')),
+          SnackBar(
+            content: Text(
+              'Fehler ${e.code}: ${e.message ?? 'Unbekannter Fehler'}',
+            ),
+          ),
         );
       }
     } catch (e) {
@@ -182,11 +198,17 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
         skipLoadingOnReload: true,
         data: (user) {
           if (user == null) {
+            if (!_redirectedToLoginScreen) {
+              _redirectedToLoginScreen = true;
+              LoginScreen.queuePush(context);
+            }
             return Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Du musst angemeldet sein, um ein Inserat zu erstellen.'),
+                  const Text(
+                    'Du musst angemeldet sein, um ein Inserat zu erstellen.',
+                  ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () async {
@@ -214,12 +236,15 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
               MaterialPageRoute(builder: (_) => const LocationPickerScreen()),
             ),
             images: formState.images,
-            onReorderImages: (oldIndex, newIndex) =>
-                ref.read(itemFormProvider.notifier).moveImage(oldIndex, newIndex),
-            onRemoveImage: (i) =>
-                ref.read(itemFormProvider.notifier).removeImage(i),
-            onAddImage: (file) =>
-                ref.read(itemFormProvider.notifier).addImage(file),
+            onReorderImages: (oldIndex, newIndex) {
+              ref.read(itemFormProvider.notifier).moveImage(oldIndex, newIndex);
+            },
+            onRemoveImage: (i) {
+              ref.read(itemFormProvider.notifier).removeImage(i);
+            },
+            onAddImage: (file) {
+              ref.read(itemFormProvider.notifier).addImage(file);
+            },
             onSubmit: _submit,
             isLoading: _loading,
             isEdit: false,

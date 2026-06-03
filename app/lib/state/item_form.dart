@@ -66,8 +66,13 @@ class ItemFormNotifier extends Notifier<ItemFormState> {
   void setTitle(String v) => state = state.copyWith(title: v);
   void setDescription(String v) => state = state.copyWith(description: v);
   void setCategory(String? v) => state = state.copyWith(category: v);
-  void addImage(XFile img) =>
-      state = state.copyWith(images: [...state.images, LocalItemImage(file: img)]);
+  void addImage(XFile img) {
+    state = state.copyWith(images: [
+      ...state.images,
+      LocalItemImage(file: img),
+    ]);
+  }
+
   void removeImage(int index) {
     final img = state.images[index];
     if (img is ServerItemImage) {
@@ -91,8 +96,9 @@ class ItemFormNotifier extends Notifier<ItemFormState> {
   void reset() => state = const ItemFormState();
 }
 
-final itemFormProvider =
-    NotifierProvider<ItemFormNotifier, ItemFormState>(ItemFormNotifier.new);
+final itemFormProvider = NotifierProvider<ItemFormNotifier, ItemFormState>(
+  ItemFormNotifier.new,
+);
 
 class EditItemFormNotifier extends ItemFormNotifier {
   final ItemDetail _item;
@@ -131,13 +137,18 @@ Future<String> uploadImage(int itemId, XFile file, int sortOrder) async {
     filename: file.name,
     sortOrder: sortOrder,
   );
-  debugPrint('[uploadImage] Uploading ${file.name} for item $itemId (order: $sortOrder)');
+  debugPrint(
+    '[uploadImage] Uploading ${file.name} for item $itemId (order: $sortOrder)',
+  );
   final result = await AppConfig.apiClient.uploadItemImage(itemId, request);
   debugPrint('[uploadImage] Response: $result');
   return result!.uuid;
 }
 
-Future<CreateItemResponse?> updateItem(int itemId, UpdateItemRequest request) async {
+Future<CreateItemResponse?> updateItem(
+  int itemId,
+  UpdateItemRequest request,
+) async {
   debugPrint('[updateItem] Sending request: ${request.toJson()}');
   final result = await AppConfig.apiClient.updateItem(itemId, request);
   debugPrint('[updateItem] Response: $result');

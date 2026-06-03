@@ -20,19 +20,22 @@ class ItemWidget extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              height: 300,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(15),
-                ),
-                image: DecorationImage(
-                  image: item.imageUuid != null
-                      ? NetworkImage('${AppConfig.apiBaseUrl}/images/${item.imageUuid}')
-                      : const AssetImage("assets/images/placeholder_image.jpg"),
-                  fit: BoxFit.cover,
-                ),
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(15),
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                height: 300,
+                child: item.imageUuid != null
+                    ? Image.network(
+                        '${AppConfig.apiBaseUrl}/images/${item.imageUuid}',
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        "assets/images/placeholder_image.jpg",
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
             Text(item.title, textScaler: const TextScaler.linear(2)),

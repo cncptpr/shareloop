@@ -76,44 +76,49 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 ref.invalidate(featuredItemsProvider);
                 await ref.read(featuredItemsProvider.future);
               },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: LayoutBuilder(
-                  builder: (ctx, constraints) => Center(
-                    child: ConstrainedBox(
-                      constraints:
-                          BoxConstraints(maxWidth: constraints.maxWidth),
-                      child: Consumer(builder: (ctx, ref, _) {
-                        final itemsAsync = ref.watch(featuredItemsProvider);
-                        return itemsAsync.when(
-                          skipLoadingOnReload: true,
-                          data: (items) => Column(children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  "Featured Items",
-                                  textScaler: TextScaler.linear(2),
-                                ),
-                                TextButton(
-                                  child: const Row(
-                                    children: [
-                                      Text("View all"),
-                                      Icon(Icons.arrow_right_alt),
-                                    ],
+              child: LayoutBuilder(
+                builder: (ctx, constraints) => Center(
+                  child: ConstrainedBox(
+                    constraints:
+                        BoxConstraints(maxWidth: constraints.maxWidth),
+                    child: Consumer(builder: (ctx, ref, _) {
+                      final itemsAsync = ref.watch(featuredItemsProvider);
+                      return itemsAsync.when(
+                        skipLoadingOnReload: true,
+                        data: (items) => ListView.builder(
+                          cacheExtent: 500,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: items.length + 1,
+                          itemBuilder: (ctx, i) {
+                            if (i == 0) {
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "Featured Items",
+                                    textScaler: TextScaler.linear(2),
                                   ),
-                                  onPressed: () {},
-                                ),
-                              ],
-                            ),
-                            ...items.map((item) => ItemWidget(item)),
-                          ]),
-                          loading: () =>
-                              const Center(child: CircularProgressIndicator()),
-                          error: (e, _) => Center(child: Text('Error: $e')),
-                        );
-                      }),
-                    ),
+                                  TextButton(
+                                    child: const Row(
+                                      children: [
+                                        Text("View all"),
+                                        Icon(Icons.arrow_right_alt),
+                                      ],
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                ],
+                              );
+                            }
+                            return ItemWidget(items[i - 1]);
+                          },
+                        ),
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
+                        error: (e, _) => Center(child: Text('Error: $e')),
+                      );
+                    }),
                   ),
                 ),
               ),

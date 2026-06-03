@@ -72,6 +72,55 @@ class DefaultApi {
     return null;
   }
 
+  /// Edit item images (reorder / delete)
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] itemId (required):
+  ///
+  /// * [EditItemImagesRequest] editItemImagesRequest (required):
+  Future<Response> editItemImagesWithHttpInfo(int itemId, EditItemImagesRequest editItemImagesRequest,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/items/{itemId}/images'
+      .replaceAll('{itemId}', itemId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody = editItemImagesRequest;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'PUT',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Edit item images (reorder / delete)
+  ///
+  /// Parameters:
+  ///
+  /// * [int] itemId (required):
+  ///
+  /// * [EditItemImagesRequest] editItemImagesRequest (required):
+  Future<void> editItemImages(int itemId, EditItemImagesRequest editItemImagesRequest,) async {
+    final response = await editItemImagesWithHttpInfo(itemId, editItemImagesRequest,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
   /// Get featured items
   ///
   /// Returns a list of featured items
@@ -376,6 +425,63 @@ class DefaultApi {
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
       return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LoginResult',) as LoginResult;
+    
+    }
+    return null;
+  }
+
+  /// Update an item
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] itemId (required):
+  ///
+  /// * [UpdateItemRequest] updateItemRequest (required):
+  Future<Response> updateItemWithHttpInfo(int itemId, UpdateItemRequest updateItemRequest,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/items/{itemId}'
+      .replaceAll('{itemId}', itemId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody = updateItemRequest;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'PUT',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Update an item
+  ///
+  /// Parameters:
+  ///
+  /// * [int] itemId (required):
+  ///
+  /// * [UpdateItemRequest] updateItemRequest (required):
+  Future<CreateItemResponse?> updateItem(int itemId, UpdateItemRequest updateItemRequest,) async {
+    final response = await updateItemWithHttpInfo(itemId, updateItemRequest,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'CreateItemResponse',) as CreateItemResponse;
     
     }
     return null;

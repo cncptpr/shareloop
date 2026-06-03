@@ -27,6 +27,13 @@ pub type Distance {
   )
 }
 
+pub type EditItemImagesRequest {
+  EditItemImagesRequest(
+    delete: List(String),
+    reorder: List(ReorderEntry),
+  )
+}
+
 pub type FeaturedItem {
   FeaturedItem(
     author: Person,
@@ -44,6 +51,7 @@ pub type FeaturedItem {
 pub type ItemDetail {
   ItemDetail(
     author: Person,
+    author_id: Int,
     category: Option(String),
     city: Option(String),
     created_at: String,
@@ -92,6 +100,24 @@ pub type RefreshRequest {
   )
 }
 
+pub type ReorderEntry {
+  ReorderEntry(
+    sort_order: Int,
+    uuid: String,
+  )
+}
+
+pub type UpdateItemRequest {
+  UpdateItemRequest(
+    city: String,
+    description: String,
+    lat: Float,
+    lng: Float,
+    postal_code: String,
+    title: String,
+  )
+}
+
 pub type UploadItemImageRequest {
   UploadItemImageRequest(
     data: String,
@@ -135,6 +161,12 @@ pub fn distance_decoder() -> Decoder(Distance) {
   decode.success(Distance(km: km))
 }
 
+pub fn edit_item_images_request_decoder() -> Decoder(EditItemImagesRequest) {
+  use delete <- decode.field("delete", decode.list(decode.string))
+  use reorder <- decode.field("reorder", decode.list(reorder_entry_decoder()))
+  decode.success(EditItemImagesRequest(delete: delete, reorder: reorder))
+}
+
 pub fn featured_item_decoder() -> Decoder(FeaturedItem) {
   use author <- decode.field("author", person_decoder())
   use city <- decode.optional_field("city", None, decode.optional(decode.string))
@@ -150,6 +182,7 @@ pub fn featured_item_decoder() -> Decoder(FeaturedItem) {
 
 pub fn item_detail_decoder() -> Decoder(ItemDetail) {
   use author <- decode.field("author", person_decoder())
+  use author_id <- decode.field("authorId", decode.int)
   use category <- decode.optional_field("category", None, decode.optional(decode.string))
   use city <- decode.optional_field("city", None, decode.optional(decode.string))
   use created_at <- decode.field("createdAt", decode.string)
@@ -159,7 +192,7 @@ pub fn item_detail_decoder() -> Decoder(ItemDetail) {
   use postal_code <- decode.optional_field("postalCode", None, decode.optional(decode.string))
   use score <- decode.field("score", decode.float)
   use title <- decode.field("title", decode.string)
-  decode.success(ItemDetail(author: author, category: category, city: city, created_at: created_at, description: description, id: id, image_uuids: image_uuids, postal_code: postal_code, score: score, title: title))
+  decode.success(ItemDetail(author: author, author_id: author_id, category: category, city: city, created_at: created_at, description: description, id: id, image_uuids: image_uuids, postal_code: postal_code, score: score, title: title))
 }
 
 pub fn lat_lng_decoder() -> Decoder(LatLng) {
@@ -191,6 +224,22 @@ pub fn person_decoder() -> Decoder(Person) {
 pub fn refresh_request_decoder() -> Decoder(RefreshRequest) {
   use refresh_token <- decode.field("refreshToken", decode.string)
   decode.success(RefreshRequest(refresh_token: refresh_token))
+}
+
+pub fn reorder_entry_decoder() -> Decoder(ReorderEntry) {
+  use sort_order <- decode.field("sortOrder", decode.int)
+  use uuid <- decode.field("uuid", decode.string)
+  decode.success(ReorderEntry(sort_order: sort_order, uuid: uuid))
+}
+
+pub fn update_item_request_decoder() -> Decoder(UpdateItemRequest) {
+  use city <- decode.field("city", decode.string)
+  use description <- decode.field("description", decode.string)
+  use lat <- decode.field("lat", decode.float)
+  use lng <- decode.field("lng", decode.float)
+  use postal_code <- decode.field("postalCode", decode.string)
+  use title <- decode.field("title", decode.string)
+  decode.success(UpdateItemRequest(city: city, description: description, lat: lat, lng: lng, postal_code: postal_code, title: title))
 }
 
 pub fn upload_item_image_request_decoder() -> Decoder(UploadItemImageRequest) {
@@ -236,6 +285,13 @@ pub fn encode_distance(value: Distance) -> Json {
   ])
 }
 
+pub fn encode_edit_item_images_request(value: EditItemImagesRequest) -> Json {
+  json.object([
+    #("delete", json.array(value.delete, fn(item) { json.string(item) })),
+    #("reorder", json.array(value.reorder, fn(item) { encode_reorder_entry(item) })),
+  ])
+}
+
 pub fn encode_featured_item(value: FeaturedItem) -> Json {
   json.object([
     #("author", encode_person(value.author)),
@@ -265,6 +321,7 @@ pub fn encode_featured_item(value: FeaturedItem) -> Json {
 pub fn encode_item_detail(value: ItemDetail) -> Json {
   json.object([
     #("author", encode_person(value.author)),
+    #("authorId", json.int(value.author_id)),
     #("category", case value.category {
       Some(v) -> json.string(v)
       None -> json.null()
@@ -322,6 +379,24 @@ pub fn encode_person(value: Person) -> Json {
 pub fn encode_refresh_request(value: RefreshRequest) -> Json {
   json.object([
     #("refreshToken", json.string(value.refresh_token)),
+  ])
+}
+
+pub fn encode_reorder_entry(value: ReorderEntry) -> Json {
+  json.object([
+    #("sortOrder", json.int(value.sort_order)),
+    #("uuid", json.string(value.uuid)),
+  ])
+}
+
+pub fn encode_update_item_request(value: UpdateItemRequest) -> Json {
+  json.object([
+    #("city", json.string(value.city)),
+    #("description", json.string(value.description)),
+    #("lat", json.float(value.lat)),
+    #("lng", json.float(value.lng)),
+    #("postalCode", json.string(value.postal_code)),
+    #("title", json.string(value.title)),
   ])
 }
 

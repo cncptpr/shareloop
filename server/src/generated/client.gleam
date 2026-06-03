@@ -1,6 +1,6 @@
 //// Generated HTTP client from Shareloop API v1.0.0
 
-import gleam/http.{Get, Post}
+import gleam/http.{Get, Post, Put}
 import gleam/http/request.{type Request}
 import gleam/http/response.{type Response}
 import gleam/dynamic/decode
@@ -215,6 +215,34 @@ pub fn decode_create_item_response(resp: Response(String)) -> Result(types.Creat
   }
 }
 
+/// Update an item
+pub fn update_item_request(config: ClientConfig, item_id: String, body: types.UpdateItemRequest) -> Request(String) {
+  let path = string.replace("/items/{itemId}", "{itemId}", item_id)
+  request.new()
+  |> request.set_method(Put)
+  |> request.set_host(config.base_url)
+  |> request.set_path(path)
+  |> fn(req) {
+    list.fold(config.headers, req, fn(r, h) {
+      request.set_header(r, h.0, h.1)
+    })
+  }
+  |> request.set_header("content-type", "application/json")
+  |> request.set_body(json.to_string(types.encode_update_item_request(body)))
+}
+
+pub fn decode_update_item_response(resp: Response(String)) -> Result(types.CreateItemResponse, ClientError) {
+  case resp.status {
+    status if status >= 200 && status < 300 -> {
+      case json.parse(resp.body, types.create_item_response_decoder()) {
+        Ok(value) -> Ok(value)
+        Error(_) -> Error(DecodeError("Failed to decode response"))
+      }
+    }
+    status -> Error(UnexpectedStatus(status: status, body: resp.body))
+  }
+}
+
 /// Get item details
 pub fn get_item_request(config: ClientConfig, item_id: String) -> Request(String) {
   let path = string.replace("/items/{itemId}", "{itemId}", item_id)
@@ -265,6 +293,31 @@ pub fn decode_upload_item_image_response(resp: Response(String)) -> Result(types
         Ok(value) -> Ok(value)
         Error(_) -> Error(DecodeError("Failed to decode response"))
       }
+    }
+    status -> Error(UnexpectedStatus(status: status, body: resp.body))
+  }
+}
+
+/// Edit item images (reorder / delete)
+pub fn edit_item_images_request(config: ClientConfig, item_id: String, body: types.EditItemImagesRequest) -> Request(String) {
+  let path = string.replace("/items/{itemId}/images", "{itemId}", item_id)
+  request.new()
+  |> request.set_method(Put)
+  |> request.set_host(config.base_url)
+  |> request.set_path(path)
+  |> fn(req) {
+    list.fold(config.headers, req, fn(r, h) {
+      request.set_header(r, h.0, h.1)
+    })
+  }
+  |> request.set_header("content-type", "application/json")
+  |> request.set_body(json.to_string(types.encode_edit_item_images_request(body)))
+}
+
+pub fn decode_edit_item_images_response(resp: Response(String)) -> Result(Nil, ClientError) {
+  case resp.status {
+    status if status >= 200 && status < 300 -> {
+      Ok(Nil)
     }
     status -> Error(UnexpectedStatus(status: status, body: resp.body))
   }

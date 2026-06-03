@@ -188,6 +188,8 @@ class ApiClient {
           return CreateItemResponse.fromJson(value);
         case 'Distance':
           return Distance.fromJson(value);
+        case 'EditItemImagesRequest':
+          return EditItemImagesRequest.fromJson(value);
         case 'FeaturedItem':
           return FeaturedItem.fromJson(value);
         case 'ItemDetail':
@@ -202,6 +204,10 @@ class ApiClient {
           return Person.fromJson(value);
         case 'RefreshRequest':
           return RefreshRequest.fromJson(value);
+        case 'ReorderEntry':
+          return ReorderEntry.fromJson(value);
+        case 'UpdateItemRequest':
+          return UpdateItemRequest.fromJson(value);
         case 'UploadItemImageRequest':
           return UploadItemImageRequest.fromJson(value);
         case 'UploadItemImageResponse':

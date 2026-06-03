@@ -23,6 +23,7 @@ class ItemDetail {
     this.imageUuids = const [],
     this.category,
     required this.createdAt,
+    required this.authorId,
   });
 
   int id;
@@ -57,6 +58,8 @@ class ItemDetail {
 
   DateTime createdAt;
 
+  int authorId;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is ItemDetail &&
     other.id == id &&
@@ -68,7 +71,8 @@ class ItemDetail {
     other.postalCode == postalCode &&
     _deepEquality.equals(other.imageUuids, imageUuids) &&
     other.category == category &&
-    other.createdAt == createdAt;
+    other.createdAt == createdAt &&
+    other.authorId == authorId;
 
   @override
   int get hashCode =>
@@ -82,10 +86,11 @@ class ItemDetail {
     (postalCode == null ? 0 : postalCode!.hashCode) +
     (imageUuids.hashCode) +
     (category == null ? 0 : category!.hashCode) +
-    (createdAt.hashCode);
+    (createdAt.hashCode) +
+    (authorId.hashCode);
 
   @override
-  String toString() => 'ItemDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, createdAt=$createdAt]';
+  String toString() => 'ItemDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, createdAt=$createdAt, authorId=$authorId]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -111,6 +116,7 @@ class ItemDetail {
       json[r'category'] = null;
     }
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
+      json[r'authorId'] = this.authorId;
     return json;
   }
 
@@ -137,6 +143,8 @@ class ItemDetail {
         assert(json[r'score'] != null, 'Required key "ItemDetail[score]" has a null value in JSON.');
         assert(json.containsKey(r'createdAt'), 'Required key "ItemDetail[createdAt]" is missing from JSON.');
         assert(json[r'createdAt'] != null, 'Required key "ItemDetail[createdAt]" has a null value in JSON.');
+        assert(json.containsKey(r'authorId'), 'Required key "ItemDetail[authorId]" is missing from JSON.');
+        assert(json[r'authorId'] != null, 'Required key "ItemDetail[authorId]" has a null value in JSON.');
         return true;
       }());
 
@@ -153,6 +161,7 @@ class ItemDetail {
             : const [],
         category: mapValueOfType<String>(json, r'category'),
         createdAt: mapDateTime(json, r'createdAt', r'')!,
+        authorId: mapValueOfType<int>(json, r'authorId')!,
       );
     }
     return null;
@@ -206,6 +215,7 @@ class ItemDetail {
     'author',
     'score',
     'createdAt',
+    'authorId',
   };
 }
 

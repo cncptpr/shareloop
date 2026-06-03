@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
+import 'package:shareloop/screens/edit_item_screen.dart';
+import 'package:shareloop/state/auth.dart' show authProvider;
 import 'package:shareloop/state/item_detail.dart';
 
 class ItemScreen extends ConsumerWidget {
@@ -11,11 +13,26 @@ class ItemScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(itemDetailProvider(itemId));
+    final asyncItem = ref.watch(itemDetailProvider(itemId));
+    final asyncUser = ref.watch(authProvider);
 
     return Scaffold(
-      appBar: AppBar(),
-      body: async.when(
+      appBar: AppBar(
+        actions: [
+          if (asyncItem.hasValue && asyncUser.hasValue && asyncUser.value != null &&
+              asyncItem.value!.authorId == asyncUser.value!.id)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () async {
+                final result = await EditItemScreen.push(context, asyncItem.value!);
+                if (result == true) {
+                  ref.invalidate(itemDetailProvider(itemId));
+                }
+              },
+            ),
+        ],
+      ),
+      body: asyncItem.when(
         data: (item) => _Content(item: item),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('$e')),

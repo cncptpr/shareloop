@@ -6,6 +6,7 @@ doc/CreateItemRequest.md
 doc/CreateItemResponse.md
 doc/DefaultApi.md
 doc/Distance.md
+doc/EditItemImagesRequest.md
 doc/FeaturedItem.md
 doc/ItemDetail.md
 doc/LatLng.md
@@ -13,6 +14,8 @@ doc/LoginRequest.md
 doc/LoginResult.md
 doc/Person.md
 doc/RefreshRequest.md
+doc/ReorderEntry.md
+doc/UpdateItemRequest.md
 doc/UploadItemImageRequest.md
 doc/UploadItemImageResponse.md
 doc/User.md
@@ -30,6 +33,7 @@ lib/auth/oauth.dart
 lib/model/create_item_request.dart
 lib/model/create_item_response.dart
 lib/model/distance.dart
+lib/model/edit_item_images_request.dart
 lib/model/featured_item.dart
 lib/model/item_detail.dart
 lib/model/lat_lng.dart
@@ -37,8 +41,12 @@ lib/model/login_request.dart
 lib/model/login_result.dart
 lib/model/person.dart
 lib/model/refresh_request.dart
+lib/model/reorder_entry.dart
+lib/model/update_item_request.dart
 lib/model/upload_item_image_request.dart
 lib/model/upload_item_image_response.dart
 lib/model/user.dart
 pubspec.yaml
-test/item_detail_test.dart
+test/edit_item_images_request_test.dart
+test/reorder_entry_test.dart
+test/update_item_request_test.dart

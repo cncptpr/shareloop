@@ -214,6 +214,42 @@ pub fn delete_all_users(
   |> pog.execute(db)
 }
 
+/// A row you get from running the `delete_item_image` query
+/// defined in `./src/server/sql/delete_item_image.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type DeleteItemImageRow {
+  DeleteItemImageRow(original_name: String)
+}
+
+/// Runs the `delete_item_image` query
+/// defined in `./src/server/sql/delete_item_image.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn delete_item_image(
+  db: pog.Connection,
+  arg_1: Uuid,
+  arg_2: Int,
+) -> Result(pog.Returned(DeleteItemImageRow), pog.QueryError) {
+  let decoder = {
+    use original_name <- decode.field(0, decode.string)
+    decode.success(DeleteItemImageRow(original_name:))
+  }
+
+  "DELETE FROM item_images WHERE id=$1 AND item_id=$2
+returning original_name
+"
+  |> pog.query
+  |> pog.parameter(pog.text(uuid.to_string(arg_1)))
+  |> pog.parameter(pog.int(arg_2))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
 /// Runs the `delete_session` query
 /// defined in `./src/server/sql/delete_session.sql`.
 ///
@@ -519,6 +555,7 @@ pub type GetItemByIdRow {
     city: Option(String),
     postal_code: Option(String),
     created_at: String,
+    author_id: Int,
   )
 }
 
@@ -541,6 +578,7 @@ pub fn get_item_by_id(
     use city <- decode.field(5, decode.optional(decode.string))
     use postal_code <- decode.field(6, decode.optional(decode.string))
     use created_at <- decode.field(7, decode.string)
+    use author_id <- decode.field(8, decode.int)
     decode.success(GetItemByIdRow(
       id:,
       title:,
@@ -550,6 +588,7 @@ pub fn get_item_by_id(
       city:,
       postal_code:,
       created_at:,
+      author_id:,
     ))
   }
 
@@ -561,7 +600,8 @@ pub fn get_item_by_id(
   items.score,
   items.city,
   items.postal_code,
-  items.created_at::text as created_at
+  items.created_at::text as created_at,
+  items.author_id
 from items, profiles
 where items.id = $1 and items.author_id = profiles.id"
   |> pog.query
@@ -1060,6 +1100,92 @@ pub fn list_users(
   "select id, email, last_online_at, created_at from users order by id
 "
   |> pog.query
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// A row you get from running the `update_item` query
+/// defined in `./src/server/sql/update_item.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type UpdateItemRow {
+  UpdateItemRow(id: Int)
+}
+
+/// Runs the `update_item` query
+/// defined in `./src/server/sql/update_item.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn update_item(
+  db: pog.Connection,
+  arg_1: String,
+  arg_2: String,
+  arg_3: String,
+  arg_4: String,
+  arg_5: Float,
+  arg_6: Float,
+  arg_7: Int,
+  arg_8: Int,
+) -> Result(pog.Returned(UpdateItemRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, decode.int)
+    decode.success(UpdateItemRow(id:))
+  }
+
+  "UPDATE items SET title=$1, description=$2, city=$3, postal_code=$4, location=st_setsrid(st_makepoint($5, $6), 4326)::geography WHERE id=$7 AND author_id=$8
+returning id
+"
+  |> pog.query
+  |> pog.parameter(pog.text(arg_1))
+  |> pog.parameter(pog.text(arg_2))
+  |> pog.parameter(pog.text(arg_3))
+  |> pog.parameter(pog.text(arg_4))
+  |> pog.parameter(pog.float(arg_5))
+  |> pog.parameter(pog.float(arg_6))
+  |> pog.parameter(pog.int(arg_7))
+  |> pog.parameter(pog.int(arg_8))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// A row you get from running the `update_item_image_sort_order` query
+/// defined in `./src/server/sql/update_item_image_sort_order.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type UpdateItemImageSortOrderRow {
+  UpdateItemImageSortOrderRow(id: Uuid)
+}
+
+/// Runs the `update_item_image_sort_order` query
+/// defined in `./src/server/sql/update_item_image_sort_order.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn update_item_image_sort_order(
+  db: pog.Connection,
+  arg_1: Uuid,
+  arg_2: Int,
+  arg_3: Int,
+) -> Result(pog.Returned(UpdateItemImageSortOrderRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, uuid_decoder())
+    decode.success(UpdateItemImageSortOrderRow(id:))
+  }
+
+  "UPDATE item_images SET sort_order=$3 WHERE id=$1 AND item_id=$2
+returning id
+"
+  |> pog.query
+  |> pog.parameter(pog.text(uuid.to_string(arg_1)))
+  |> pog.parameter(pog.int(arg_2))
+  |> pog.parameter(pog.int(arg_3))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }

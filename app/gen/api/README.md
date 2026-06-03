@@ -66,12 +66,14 @@ All URIs are relative to */api*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *DefaultApi* | [**createItem**](doc//DefaultApi.md#createitem) | **POST** /items | Create a new item
+*DefaultApi* | [**editItemImages**](doc//DefaultApi.md#edititemimages) | **PUT** /items/{itemId}/images | Edit item images (reorder / delete)
 *DefaultApi* | [**getFeaturedItems**](doc//DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 *DefaultApi* | [**getImage**](doc//DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
 *DefaultApi* | [**getItem**](doc//DefaultApi.md#getitem) | **GET** /items/{itemId} | Get item details
 *DefaultApi* | [**login**](doc//DefaultApi.md#login) | **POST** /auth/login | Login
 *DefaultApi* | [**logout**](doc//DefaultApi.md#logout) | **POST** /auth/logout | Logout
 *DefaultApi* | [**refresh**](doc//DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
+*DefaultApi* | [**updateItem**](doc//DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 *DefaultApi* | [**uploadItemImage**](doc//DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
 *DefaultApi* | [**verify**](doc//DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
 
@@ -81,6 +83,7 @@ Class | Method | HTTP request | Description
  - [CreateItemRequest](doc//CreateItemRequest.md)
  - [CreateItemResponse](doc//CreateItemResponse.md)
  - [Distance](doc//Distance.md)
+ - [EditItemImagesRequest](doc//EditItemImagesRequest.md)
  - [FeaturedItem](doc//FeaturedItem.md)
  - [ItemDetail](doc//ItemDetail.md)
  - [LatLng](doc//LatLng.md)
@@ -88,6 +91,8 @@ Class | Method | HTTP request | Description
  - [LoginResult](doc//LoginResult.md)
  - [Person](doc//Person.md)
  - [RefreshRequest](doc//RefreshRequest.md)
+ - [ReorderEntry](doc//ReorderEntry.md)
+ - [UpdateItemRequest](doc//UpdateItemRequest.md)
  - [UploadItemImageRequest](doc//UploadItemImageRequest.md)
  - [UploadItemImageResponse](doc//UploadItemImageResponse.md)
  - [User](doc//User.md)

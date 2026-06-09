@@ -17,6 +17,7 @@ class LoginScreen extends ConsumerStatefulWidget {
     );
   }
 
+  /// For pushing during e.g. a build phase.
   static Future<void> queuePush(BuildContext ctx) async {
     WidgetsBinding.instance.addPostFrameCallback((_) => push(ctx));
   }

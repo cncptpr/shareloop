@@ -5,12 +5,11 @@ import 'package:shareloop/components/item_form_body.dart';
 import 'package:shareloop/screens/location_picker_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/screens/item_screen.dart';
-import 'package:shareloop/state/auth.dart' show authProvider;
+import 'package:shareloop/state/auth.dart';
 import 'package:shareloop/state/item_form.dart';
 import 'package:shareloop/state/items.dart';
-import 'package:shareloop/state/location.dart' show currentPositionProvider;
+import 'package:shareloop/state/location.dart';
 import 'package:shareloop/state/location_search.dart';
-import 'package:shareloop/state/token_storage.dart' show getAccessToken;
 import 'package:shareloop/app_config.dart';
 
 class CreateItemScreen extends ConsumerStatefulWidget {
@@ -94,13 +93,6 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
         );
       }
       return;
-    }
-
-    final token = await getAccessToken();
-    if (token != null) {
-      AppConfig.bearerAuth.accessToken = token;
-    } else {
-      debugPrint('[createItem] No token available');
     }
 
     setState(() => _loading = true);

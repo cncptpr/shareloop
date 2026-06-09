@@ -5,9 +5,8 @@ import 'package:shareloop/components/item_form_body.dart';
 import 'package:shareloop/screens/location_picker_screen.dart';
 import 'package:shareloop/state/item_form.dart';
 import 'package:shareloop/state/items.dart';
-import 'package:shareloop/state/location.dart' show currentPositionProvider;
+import 'package:shareloop/state/location.dart';
 import 'package:shareloop/state/location_search.dart';
-import 'package:shareloop/state/token_storage.dart' show getAccessToken;
 import 'package:shareloop/app_config.dart';
 
 class EditItemScreen extends ConsumerStatefulWidget {
@@ -93,21 +92,20 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen> {
       return;
     }
 
-    final token = await getAccessToken();
-    if (token != null) {
-      AppConfig.bearerAuth.accessToken = token;
-    } else {
-      debugPrint('[editItem] No token available');
-    }
-
     setState(() => _loading = true);
     try {
       await _submitEdit(city!, postalCode ?? '', lat, lng);
     } on ApiException catch (e) {
-      debugPrint('[editItem] ApiException: code=${e.code}, message=${e.message}');
+      debugPrint(
+        '[editItem] ApiException: code=${e.code}, message=${e.message}',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Fehler ${e.code}: ${e.message ?? 'Unbekannter Fehler'}')),
+          SnackBar(
+            content: Text(
+              'Fehler ${e.code}: ${e.message ?? 'Unbekannter Fehler'}',
+            ),
+          ),
         );
       }
     } catch (e) {
@@ -122,7 +120,12 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen> {
     }
   }
 
-  Future<void> _submitEdit(String city, String postalCode, double lat, double lng) async {
+  Future<void> _submitEdit(
+    String city,
+    String postalCode,
+    double lat,
+    double lng,
+  ) async {
     final itemId = widget.existingItem.id;
     final state = ref.read(editItemFormProvider(widget.existingItem));
 
@@ -157,7 +160,9 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen> {
         } else {
           final idx = finalUuids.indexOf(img.uuid.toString());
           if (idx >= 0) {
-            reorder.add(ReorderEntry(uuid: img.uuid.toString(), sortOrder: idx));
+            reorder.add(
+              ReorderEntry(uuid: img.uuid.toString(), sortOrder: idx),
+            );
           }
         }
       }
@@ -179,7 +184,10 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen> {
 
     debugPrint('[editItem] Updating item $itemId...');
     final textFuture = AppConfig.apiClient.updateItem(itemId, textRequest);
-    final imagesFuture = AppConfig.apiClient.editItemImages(itemId, imagesRequest);
+    final imagesFuture = AppConfig.apiClient.editItemImages(
+      itemId,
+      imagesRequest,
+    );
 
     await Future.wait([textFuture, imagesFuture]);
     debugPrint('[editItem] Update done');
@@ -211,12 +219,11 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen> {
           MaterialPageRoute(builder: (_) => const LocationPickerScreen()),
         ),
         images: formState.images,
-        onReorderImages: (oldIndex, newIndex) =>
-            ref.read(provider.notifier).moveImage(oldIndex, newIndex),
-        onRemoveImage: (i) =>
-            ref.read(provider.notifier).removeImage(i),
-        onAddImage: (file) =>
-            ref.read(provider.notifier).addImage(file),
+        onReorderImages: (oldIndex, newIndex) {
+          ref.read(provider.notifier).moveImage(oldIndex, newIndex);
+        },
+        onRemoveImage: (i) => ref.read(provider.notifier).removeImage(i),
+        onAddImage: (file) => ref.read(provider.notifier).addImage(file),
         onSubmit: _submit,
         isLoading: _loading,
         isEdit: true,

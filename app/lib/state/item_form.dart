@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
+import 'package:shareloop/state/location_search.dart';
 import 'package:uuid/uuid.dart';
 
 const dummyCategories = [
@@ -24,11 +25,10 @@ class LocalItemImage implements ItemImage {
 
 class ServerItemImage implements ItemImage {
   final UuidValue uuid;
-  final bool deleted;
 
-  ServerItemImage({required this.uuid, this.deleted = false});
+  ServerItemImage({required this.uuid});
 
-  ServerItemImage markDeleted() => ServerItemImage(uuid: uuid, deleted: true);
+  ServerItemImage markDeleted() => ServerItemImage(uuid: uuid);
 }
 
 class ItemFormState {
@@ -36,12 +36,16 @@ class ItemFormState {
   final String description;
   final String? category;
   final List<ItemImage> images;
+  final List<UuidValue> deletedServerImages;
+  final SelectedLocation? selectedLocation;
 
   const ItemFormState({
     this.title = '',
     this.description = '',
     this.category,
     this.images = const [],
+    this.deletedServerImages = const [],
+    this.selectedLocation,
   });
 
   ItemFormState copyWith({
@@ -49,12 +53,16 @@ class ItemFormState {
     String? description,
     String? category,
     List<ItemImage>? images,
+    List<UuidValue>? deletedServerImages,
+    SelectedLocation? selectedLocation,
   }) {
     return ItemFormState(
       title: title ?? this.title,
       description: description ?? this.description,
       category: category ?? this.category,
       images: images ?? this.images,
+      deletedServerImages: deletedServerImages ?? this.deletedServerImages,
+      selectedLocation: selectedLocation ?? this.selectedLocation,
     );
   }
 }
@@ -66,6 +74,8 @@ class ItemFormNotifier extends Notifier<ItemFormState> {
   void setTitle(String v) => state = state.copyWith(title: v);
   void setDescription(String v) => state = state.copyWith(description: v);
   void setCategory(String? v) => state = state.copyWith(category: v);
+  void setSelectedLocation(SelectedLocation? v) =>
+      state = state.copyWith(selectedLocation: v);
   void addImage(XFile img) {
     state = state.copyWith(images: [
       ...state.images,
@@ -75,12 +85,13 @@ class ItemFormNotifier extends Notifier<ItemFormState> {
 
   void removeImage(int index) {
     final img = state.images[index];
+    final updated = [...state.images]..removeAt(index);
     if (img is ServerItemImage) {
-      final updated = [...state.images];
-      updated[index] = img.markDeleted();
-      state = state.copyWith(images: updated);
+      state = state.copyWith(
+        images: updated,
+        deletedServerImages: [...state.deletedServerImages, img.uuid],
+      );
     } else {
-      final updated = [...state.images]..removeAt(index);
       state = state.copyWith(images: updated);
     }
   }
@@ -107,18 +118,34 @@ class EditItemFormNotifier extends ItemFormNotifier {
 
   @override
   ItemFormState build() {
+    SearchedLocation? location;
+    if (_item.lat != null && _item.lng != null) {
+      final city = _item.city ?? '';
+      final postalCode = _item.postalCode ?? '';
+      final parts = [postalCode, city]..removeWhere((s) => s.isEmpty);
+      final name = parts.isEmpty ? '${_item.lat}, ${_item.lng}' : parts.join(' ');
+      location = SearchedLocation(
+        name: name,
+        displayName: name,
+        lat: _item.lat!,
+        lng: _item.lng!,
+        city: city,
+        postalCode: postalCode,
+      );
+    }
     return ItemFormState(
       title: _item.title,
       description: _item.description,
       images: _item.imageUuids
           .map((uuid) => ServerItemImage(uuid: UuidValue.fromString(uuid)))
           .toList(),
+      selectedLocation: location,
     );
   }
 }
 
-final editItemFormProvider = NotifierProvider.autoDispose
-    .family<EditItemFormNotifier, ItemFormState, ItemDetail>(
+final editItemFormProvider =
+    NotifierProvider.family<EditItemFormNotifier, ItemFormState, ItemDetail>(
   (arg) => EditItemFormNotifier(item: arg),
 );
 

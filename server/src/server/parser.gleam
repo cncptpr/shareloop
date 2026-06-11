@@ -2,12 +2,12 @@ import gleam/bit_array
 import gleam/json
 import gleam/result
 import mist
-import server/consts.{max_body_limit}
+import server/consts
 import server/error
 
 pub fn parse_json_body(req, decoder) {
   use req <- error.try(
-    mist.read_body(req, max_body_limit:),
+    mist.read_body(req, consts.max_body_limit()),
     error.MistReadError,
   )
 

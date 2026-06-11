@@ -23,6 +23,25 @@ Future<User?> _fetchUser() async {
   try {
     return await AppConfig.apiClient.verify();
   } on ApiException {
+    // Try refreshing tokens before giving up
+    final refreshToken = await getRefreshToken();
+    if (refreshToken != null) {
+      try {
+        final result = await AppConfig.apiClient.refresh(
+          RefreshRequest(refreshToken: refreshToken),
+        );
+        if (result != null) {
+          await saveTokens(
+            access: result.accessToken,
+            refresh: result.refreshToken,
+          );
+          AppConfig.bearerAuth.accessToken = result.accessToken;
+          return await AppConfig.apiClient.verify();
+        }
+      } on ApiException {
+        // Refresh also failed — proceed to logout
+      }
+    }
     await deleteTokens();
     authStatusNotifier.value = AuthStatus.unauthenticated;
     return null;

@@ -19,9 +19,13 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
   String _locationLabel(WidgetRef ref) {
     final selected = ref.watch(selectedLocationProvider);
+    String formatLabel(SearchedLocation l) {
+      final parts = [l.postalCode, l.city]..removeWhere((s) => s.isEmpty);
+      return parts.isEmpty ? l.name : parts.join(' ');
+    }
     switch (selected) {
       case SearchedLocation manual:
-        return manual.name;
+        return formatLabel(manual);
       case GPSLocation _:
         final gps = ref.watch(currentPositionProvider).asData?.value;
         if (gps == null) return 'Position wählen';
@@ -29,12 +33,27 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           reverseLocationProvider((gps.latitude, gps.longitude)),
         );
         return reverse.when(
-          data: (loc) => loc?.name ?? 'Aktuelle Position',
+          data: (loc) => loc != null ? formatLabel(loc) : 'Aktuelle Position',
           loading: () => 'Aktuelle Position',
           error: (_, __) => 'Aktuelle Position',
         );
       default:
         return 'Position wählen';
+    }
+  }
+
+  Future<void> _openLocationPicker() async {
+    final current = ref.read(selectedLocationProvider);
+    final result = await Navigator.push<SelectedLocation>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickerScreen(initialLocation: current),
+      ),
+    );
+    if (result != null && mounted) {
+      ref.read(selectedLocationProvider.notifier).select(result);
+    } else if (mounted) {
+      ref.read(selectedLocationProvider.notifier).clear();
     }
   }
 
@@ -47,11 +66,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         title: const Text('Explore Screen'),
         actions: [
           TextButton.icon(
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const LocationPickerScreen(),
-                )),
+            onPressed: _openLocationPicker,
             icon: const Icon(Icons.location_on),
             label: Text(label),
           ),

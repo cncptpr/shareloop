@@ -22,6 +22,8 @@ class ItemDetail {
     this.postalCode,
     this.imageUuids = const [],
     this.category,
+    this.lat,
+    this.lng,
     required this.createdAt,
     required this.authorId,
   });
@@ -36,25 +38,17 @@ class ItemDetail {
 
   double score;
 
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
   String? city;
 
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
   String? postalCode;
 
   List<String> imageUuids;
 
   String? category;
+
+  double? lat;
+
+  double? lng;
 
   DateTime createdAt;
 
@@ -71,6 +65,8 @@ class ItemDetail {
     other.postalCode == postalCode &&
     _deepEquality.equals(other.imageUuids, imageUuids) &&
     other.category == category &&
+    other.lat == lat &&
+    other.lng == lng &&
     other.createdAt == createdAt &&
     other.authorId == authorId;
 
@@ -86,11 +82,13 @@ class ItemDetail {
     (postalCode == null ? 0 : postalCode!.hashCode) +
     (imageUuids.hashCode) +
     (category == null ? 0 : category!.hashCode) +
+    (lat == null ? 0 : lat!.hashCode) +
+    (lng == null ? 0 : lng!.hashCode) +
     (createdAt.hashCode) +
     (authorId.hashCode);
 
   @override
-  String toString() => 'ItemDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, createdAt=$createdAt, authorId=$authorId]';
+  String toString() => 'ItemDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, lat=$lat, lng=$lng, createdAt=$createdAt, authorId=$authorId]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -114,6 +112,16 @@ class ItemDetail {
       json[r'category'] = this.category;
     } else {
       json[r'category'] = null;
+    }
+    if (this.lat != null) {
+      json[r'lat'] = this.lat;
+    } else {
+      json[r'lat'] = null;
+    }
+    if (this.lng != null) {
+      json[r'lng'] = this.lng;
+    } else {
+      json[r'lng'] = null;
     }
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
       json[r'authorId'] = this.authorId;
@@ -160,6 +168,8 @@ class ItemDetail {
             ? (json[r'imageUuids'] as Iterable).cast<String>().toList(growable: false)
             : const [],
         category: mapValueOfType<String>(json, r'category'),
+        lat: mapValueOfType<double>(json, r'lat'),
+        lng: mapValueOfType<double>(json, r'lng'),
         createdAt: mapDateTime(json, r'createdAt', r'')!,
         authorId: mapValueOfType<int>(json, r'authorId')!,
       );

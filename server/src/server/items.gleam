@@ -85,25 +85,43 @@ fn try_create(req, conn) -> Result(types.CreateItemResponse, Int) {
     }),
   )
 
-  io.println("[items] Creating: " <> title)
+  case city == "" || postal_code == "" {
+    True -> {
+      io.println("[items] city and postal_code must not be empty")
+      Error(400)
+    }
+    False -> {
+      io.println("[items] Creating: " <> title)
 
-  use result <- result.try(
-    sql.create_item(conn, title, description, user.id, 0.0, lng, lat, city, postal_code)
-    |> result.map_error(fn(e) {
-      io.println("[items] DB error: " <> string.inspect(e))
-      500
-    }),
-  )
+      use result <- result.try(
+        sql.create_item(
+          conn,
+          title,
+          description,
+          user.id,
+          0.0,
+          lng,
+          lat,
+          city,
+          postal_code,
+        )
+        |> result.map_error(fn(e) {
+          io.println("[items] DB error: " <> string.inspect(e))
+          500
+        }),
+      )
 
-  use row <- result.try(
-    result.rows |> list.first |> result.map_error(fn(_) {
-      io.println("[items] No row returned")
-      500
-    }),
-  )
+      use row <- result.try(
+        result.rows |> list.first |> result.map_error(fn(_) {
+          io.println("[items] No row returned")
+          500
+        }),
+      )
 
-  io.println("[items] Created item id=" <> int.to_string(row.id))
-  Ok(types.CreateItemResponse(id: row.id))
+      io.println("[items] Created item id=" <> int.to_string(row.id))
+      Ok(types.CreateItemResponse(id: row.id))
+    }
+  }
 }
 
 fn try_get(_req, conn, raw_item_id: String) -> Result(types.ItemDetail, Int) {
@@ -154,6 +172,8 @@ fn try_get(_req, conn, raw_item_id: String) -> Result(types.ItemDetail, Int) {
     postal_code: row.postal_code,
     image_uuids: Some(image_uuids),
     category: None,
+    lat: row.lat,
+    lng: row.lng,
     created_at: row.created_at,
     author_id: row.author_id,
   ))
@@ -182,6 +202,17 @@ fn try_update(req, conn, raw_item_id: String) -> Result(types.CreateItemResponse
       io.println("[items] Invalid body")
       400
     }),
+  )
+
+  use _ <- result.try(
+    case city == "" || postal_code == "" {
+      True -> {
+        io.println("[items] city and postal_code must not be empty")
+        Error(Nil)
+      }
+      False -> Ok(Nil)
+    }
+    |> result.map_error(fn(_) { 400 }),
   )
 
   use item_result <- result.try(

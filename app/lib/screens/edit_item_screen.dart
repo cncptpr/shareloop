@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/components/item_form_body.dart';
-import 'package:shareloop/screens/location_picker_screen.dart';
+import 'package:shareloop/components/location_form_mixin.dart';
 import 'package:shareloop/state/item_form.dart';
 import 'package:shareloop/state/items.dart';
-import 'package:shareloop/state/location.dart';
 import 'package:shareloop/state/location_search.dart';
 import 'package:shareloop/app_config.dart';
 
@@ -25,65 +24,71 @@ class EditItemScreen extends ConsumerStatefulWidget {
   }
 }
 
-class _EditItemScreenState extends ConsumerState<EditItemScreen> {
+class _EditItemScreenState extends ConsumerState<EditItemScreen>
+    with LocationFormMixin<EditItemScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   String? _category;
   bool _loading = false;
+  SearchedLocation? _selectedLocation;
+
+  @override
+  SearchedLocation? get selectedLocation => _selectedLocation;
+
+  @override
+  set selectedLocation(SearchedLocation? value) =>
+      setState(() => _selectedLocation = value);
+
+  @override
+  void setProviderLocation(SelectedLocation? loc) {
+    ref.read(editItemFormProvider(widget.existingItem).notifier)
+        .setSelectedLocation(loc);
+  }
 
   @override
   void initState() {
     super.initState();
-    final item = widget.existingItem;
-    _titleController.text = item.title;
-    _descriptionController.text = item.description;
+    final formState = ref.read(editItemFormProvider(widget.existingItem));
+    _titleController.text = formState.title.isNotEmpty
+        ? formState.title
+        : widget.existingItem.title;
+    _descriptionController.text = formState.description.isNotEmpty
+        ? formState.description
+        : widget.existingItem.description;
+    _titleController.addListener(_onTitleChanged);
+    _descriptionController.addListener(_onDescriptionChanged);
+    _selectedLocation = formState.selectedLocation is SearchedLocation
+        ? formState.selectedLocation as SearchedLocation
+        : null;
+  }
+
+  void _onTitleChanged() {
+    ref
+        .read(editItemFormProvider(widget.existingItem).notifier)
+        .setTitle(_titleController.text);
+  }
+
+  void _onDescriptionChanged() {
+    ref
+        .read(editItemFormProvider(widget.existingItem).notifier)
+        .setDescription(_descriptionController.text);
   }
 
   @override
   void dispose() {
+    _titleController.removeListener(_onTitleChanged);
+    _descriptionController.removeListener(_onDescriptionChanged);
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
 
-  String? _locationLabel() {
-    final selected = ref.read(selectedLocationProvider);
-    switch (selected) {
-      case SearchedLocation l:
-        return l.name;
-      case GPSLocation _:
-        return 'Aktuelle Position';
-      default:
-        return null;
-    }
-  }
-
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final selected = ref.read(selectedLocationProvider);
-    double? lat;
-    double? lng;
-    String? city;
-    String? postalCode;
-
-    switch (selected) {
-      case SearchedLocation l:
-        lat = l.lat;
-        lng = l.lng;
-        city = l.name;
-        postalCode = l.displayName.split(',').first.trim();
-      case GPSLocation _:
-        final gps = ref.read(currentPositionProvider).asData?.value;
-        if (gps != null) {
-          lat = gps.latitude;
-          lng = gps.longitude;
-        }
-      default:
-    }
-
-    if (lat == null || lng == null) {
+    var selected = _selectedLocation;
+    if (selected == null || selected.city.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Bitte wähle einen Standort.')),
@@ -91,10 +96,22 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen> {
       }
       return;
     }
+    if (selected.postalCode.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Der gewählte Standort hat keine Postleitzahl. Bitte wähle einen anderen Standort.',
+            ),
+          ),
+        );
+      }
+      return;
+    }
 
     setState(() => _loading = true);
     try {
-      await _submitEdit(city!, postalCode ?? '', lat, lng);
+      await _submitEdit(selected);
     } on ApiException catch (e) {
       debugPrint(
         '[editItem] ApiException: code=${e.code}, message=${e.message}',
@@ -120,66 +137,35 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen> {
     }
   }
 
-  Future<void> _submitEdit(
-    String city,
-    String postalCode,
-    double lat,
-    double lng,
-  ) async {
+  Future<void> _submitEdit(SearchedLocation location) async {
     final itemId = widget.existingItem.id;
     final state = ref.read(editItemFormProvider(widget.existingItem));
 
-    // Step 1: Upload all LocalItemImages sequentially
-    final localUploads = <int, String>{};
-    for (var i = 0; i < state.images.length; i++) {
-      final img = state.images[i];
-      if (img is LocalItemImage) {
-        final uuid = await uploadImage(itemId, img.file, i);
-        localUploads[i] = uuid;
-      }
-    }
+    List<Future> futures = [];
 
-    // Step 2: Build final ordered UUID list
-    final finalUuids = <String>[];
-    for (var i = 0; i < state.images.length; i++) {
-      final img = state.images[i];
-      if (img is ServerItemImage && !img.deleted) {
-        finalUuids.add(img.uuid.toString());
-      } else if (localUploads.containsKey(i)) {
-        finalUuids.add(localUploads[i]!);
-      }
-    }
+    final delete = state.deletedServerImages.map((e) => e.toString()).toList();
 
-    // Step 3 & 4: Build reorder entries and delete array
     final reorder = <ReorderEntry>[];
-    final deleteUuids = <String>[];
-    for (final img in state.images) {
-      if (img is ServerItemImage) {
-        if (img.deleted) {
-          deleteUuids.add(img.uuid.toString());
-        } else {
-          final idx = finalUuids.indexOf(img.uuid.toString());
-          if (idx >= 0) {
-            reorder.add(
-              ReorderEntry(uuid: img.uuid.toString(), sortOrder: idx),
-            );
-          }
-        }
+    for (final (i, img) in state.images.indexed) {
+      if (img is LocalItemImage) {
+        futures.add(uploadImage(itemId, img.file, i));
+      } else if (img is ServerItemImage) {
+        reorder.add(ReorderEntry(uuid: img.uuid.toString(), sortOrder: i));
       }
     }
 
-    // Step 5: Run text update + image edit in parallel
     final textRequest = UpdateItemRequest(
       title: _titleController.text.trim(),
       description: _descriptionController.text.trim(),
-      city: city,
-      postalCode: postalCode,
-      lat: lat,
-      lng: lng,
+      city: location.city,
+      postalCode: location.postalCode,
+      lat: location.lat,
+      lng: location.lng,
     );
+
     final imagesRequest = EditItemImagesRequest(
       reorder: reorder,
-      delete: deleteUuids,
+      delete: delete,
     );
 
     debugPrint('[editItem] Updating item $itemId...');
@@ -189,7 +175,7 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen> {
       imagesRequest,
     );
 
-    await Future.wait([textFuture, imagesFuture]);
+    await Future.wait([...futures, textFuture, imagesFuture]);
     debugPrint('[editItem] Update done');
 
     ref.read(editItemFormProvider(widget.existingItem).notifier).reset();
@@ -203,7 +189,7 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen> {
   Widget build(BuildContext context) {
     final provider = editItemFormProvider(widget.existingItem);
     final formState = ref.watch(provider);
-    final locationLabel = _locationLabel();
+    final label = locationLabel();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Inserat bearbeiten')),
@@ -213,11 +199,8 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen> {
         descriptionController: _descriptionController,
         category: _category,
         onCategoryChanged: (v) => setState(() => _category = v),
-        locationLabel: locationLabel,
-        onLocationTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const LocationPickerScreen()),
-        ),
+        locationLabel: label,
+        onLocationTap: openLocationPicker,
         images: formState.images,
         onReorderImages: (oldIndex, newIndex) {
           ref.read(provider.notifier).moveImage(oldIndex, newIndex);

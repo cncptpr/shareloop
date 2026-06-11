@@ -1,5 +1,6 @@
 import 'package:openapi/api.dart';
 import 'package:shareloop/state/retry_api_client.dart';
+import 'package:uuid/uuid.dart';
 
 class AppConfig {
   /// The Url under which the app can reach the server.
@@ -17,4 +18,6 @@ class AppConfig {
   static final DefaultApi apiClient = DefaultApi(
     RetryApiClient(basePath: apiBaseUrl, authentication: bearerAuth),
   );
+
+  static String imageUrl(UuidValue uuid) => '$apiBaseUrl/images/$uuid';
 }

@@ -68,7 +68,7 @@ class _Content extends StatelessWidget {
                   Row(children: [
                     const Icon(Icons.location_on, size: 16),
                     const SizedBox(width: 4),
-                    Text([item.city, item.postalCode].nonNulls.join(', ')),
+                    Text([item.postalCode, item.city].nonNulls.join(' ')),
                   ]),
                 const SizedBox(height: 8),
                 Row(children: [

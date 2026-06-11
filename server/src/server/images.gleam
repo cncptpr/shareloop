@@ -8,9 +8,9 @@ import gleam/int
 import gleam/io
 import gleam/json
 import gleam/list
+import gleam/option.{None}
 import gleam/result
 import gleam/string
-import gleam/option.{None}
 import mist
 import pog
 import server/auth/helpers
@@ -43,23 +43,31 @@ pub fn get_handle(
 
 fn try_upload(req, conn, raw_item_id) -> Result(String, Int) {
   use user <- result.try(
-    helpers.verify_request(req, conn) |> result.map_error(fn(_) {
+    helpers.verify_request(req, conn)
+    |> result.map_error(fn(_) {
       io.println("[images] Auth failed")
       401
     }),
   )
 
-  let item_id = int.parse(raw_item_id) |> result.map_error(fn(_) {
-    io.println("[images] Invalid item_id: " <> raw_item_id)
-    400
-  })
+  let item_id =
+    int.parse(raw_item_id)
+    |> result.map_error(fn(_) {
+      io.println("[images] Invalid item_id: " <> raw_item_id)
+      400
+    })
 
   use item_id <- result.try(item_id)
 
-  io.println("[images] Authed as: " <> user.email <> " for item " <> int.to_string(item_id))
+  io.println(
+    "[images] Authed as: "
+    <> user.email
+    <> " for item "
+    <> int.to_string(item_id),
+  )
 
   use req <- result.try(
-    mist.read_body(req, max_body_limit: max_upload_limit)
+    mist.read_body(req, consts.max_upload_limit())
     |> result.map_error(fn(_) {
       io.println("[images] Body too large")
       413
@@ -67,7 +75,8 @@ fn try_upload(req, conn, raw_item_id) -> Result(String, Int) {
   )
 
   use str <- result.try(
-    bit_array.to_string(req.body) |> result.map_error(fn(_) {
+    bit_array.to_string(req.body)
+    |> result.map_error(fn(_) {
       io.println("[images] Body not valid UTF-8")
       400
     }),
@@ -128,7 +137,9 @@ fn try_upload(req, conn, raw_item_id) -> Result(String, Int) {
   )
 
   use row <- result.try(
-    result.rows |> list.first |> result.map_error(fn(_) {
+    result.rows
+    |> list.first
+    |> result.map_error(fn(_) {
       io.println("[images] No row returned")
       500
     }),
@@ -138,10 +149,11 @@ fn try_upload(req, conn, raw_item_id) -> Result(String, Int) {
   Ok(uuid_string)
 }
 
-fn try_get(_req, conn, raw_image_id: String) -> Result(
-  response.Response(mist.ResponseData),
-  Int,
-) {
+fn try_get(
+  _req,
+  conn,
+  raw_image_id: String,
+) -> Result(response.Response(mist.ResponseData), Int) {
   use image_uuid <- result.try(
     uuid.from_string(raw_image_id)
     |> result.map_error(fn(_) {
@@ -159,7 +171,9 @@ fn try_get(_req, conn, raw_image_id: String) -> Result(
   )
 
   use row <- result.try(
-    result.rows |> list.first |> result.map_error(fn(_) {
+    result.rows
+    |> list.first
+    |> result.map_error(fn(_) {
       io.println("[images] Image not found: " <> raw_image_id)
       404
     }),

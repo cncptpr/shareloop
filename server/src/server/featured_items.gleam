@@ -7,10 +7,10 @@ import gleam/json
 import gleam/list
 import gleam/option.{None, Some}
 import gleam/result
-import youid/uuid
 import mist
-import server/consts.{max_body_limit}
+import server/consts
 import server/sql
+import youid/uuid
 
 pub fn handle(
   req: request.Request(mist.Connection),
@@ -28,7 +28,7 @@ pub fn handle(
 
 fn decode_body(req) {
   use req <- option.then(
-    mist.read_body(req, max_body_limit:)
+    mist.read_body(req, consts.max_body_limit())
     |> option.from_result,
   )
 

@@ -11,7 +11,7 @@ sealed class SelectedLocation {
   Map<String, dynamic> selectedToJson();
   factory SelectedLocation.selectedFromJson(Map<String, dynamic> json) {
     if (json['type'] == 'GPSLocation') {
-      return GPSLocation();
+      return const GPSLocation();
     } else if (json['type'] == 'SearchedLocation') {
       return SearchedLocation.fromJson(json['loc'] as Map<String, dynamic>);
     }
@@ -22,6 +22,8 @@ sealed class SelectedLocation {
 }
 
 class GPSLocation implements SelectedLocation {
+  const GPSLocation();
+
   @override
   Map<String, dynamic> selectedToJson() => {
         'type': 'GPSLocation',
@@ -33,12 +35,16 @@ class SearchedLocation implements SelectedLocation {
   final double lng;
   final String displayName;
   final String name;
+  final String city;
+  final String postalCode;
 
   const SearchedLocation({
     required this.lat,
     required this.lng,
     required this.displayName,
     required this.name,
+    required this.city,
+    required this.postalCode,
   });
 
   Map<String, dynamic> toJson() => {
@@ -46,6 +52,8 @@ class SearchedLocation implements SelectedLocation {
         'lng': lng,
         'displayName': displayName,
         'name': name,
+        'city': city,
+        'postalCode': postalCode,
       };
 
   factory SearchedLocation.fromJson(Map<String, dynamic> json) =>
@@ -54,6 +62,8 @@ class SearchedLocation implements SelectedLocation {
         lng: (json['lng'] as num).toDouble(),
         displayName: json['displayName'] as String,
         name: json['name'] as String,
+        city: json['city'] as String,
+        postalCode: json['postalCode'] as String,
       );
 
   @override
@@ -139,8 +149,6 @@ class SelectedLocationNotifier extends Notifier<SelectedLocation?> {
     await _saveStoredLocations(stored);
   }
 
-  Future<void> selectGPS() async => select(GPSLocation());
-
   Future<void> clear() async {
     state = null;
     await _saveSelectedLocation(null);
@@ -155,6 +163,16 @@ final selectedLocationProvider =
 final storedLocationsProvider = FutureProvider<List<SearchedLocation>>(
   (ref) => _loadStoredLocations(),
 );
+
+Future<void> addStoredLocation(SearchedLocation location) async {
+  final stored = await _loadStoredLocations();
+  stored.removeWhere((l) => l.lat == location.lat && l.lng == location.lng);
+  stored.insert(0, location);
+  if (stored.length > _maxStoredLocations) {
+    stored.removeLast();
+  }
+  await _saveStoredLocations(stored);
+}
 
 Future<void> removeStoredLocation(SearchedLocation location) async {
   final stored = await _loadStoredLocations();
@@ -195,6 +213,7 @@ final locationSearchProvider =
         'format': 'json',
         'limit': '5',
         'countrycodes': 'de',
+        'addressdetails': '1',
       },
     );
     final res = await _fetchWithRetry(
@@ -202,11 +221,21 @@ final locationSearchProvider =
     );
     final List<dynamic> data = jsonDecode(res.body);
     return data.map((j) {
+      final addr = j['address'] as Map<String, dynamic>?;
+      final city = (addr?['city'] ??
+              addr?['town'] ??
+              addr?['village'] ??
+              addr?['municipality'] ??
+              '')
+          as String;
+      final postalCode = (addr?['postcode'] ?? '') as String;
       return SearchedLocation(
         lat: double.parse(j['lat'] as String),
         lng: double.parse(j['lon'] as String),
         displayName: j['display_name'] as String,
         name: j['name'] as String,
+        city: city,
+        postalCode: postalCode,
       );
     }).toList();
   },
@@ -240,6 +269,8 @@ final reverseLocationProvider =
       lng: lng,
       displayName: data['display_name'] as String,
       name: name,
+      city: city,
+      postalCode: postcode,
     );
   },
 );

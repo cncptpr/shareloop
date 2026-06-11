@@ -77,7 +77,9 @@ class _ItemFormBodyState extends State<ItemFormBody> {
               labelText: 'Titel',
               border: OutlineInputBorder(),
             ),
-            validator: (v) => (v == null || v.trim().isEmpty) ? 'Erforderlich' : null,
+            validator: (v) {
+              return (v == null || v.trim().isEmpty) ? 'Erforderlich' : null;
+            },
           ),
           const SizedBox(height: 16),
           TextFormField(
@@ -88,7 +90,9 @@ class _ItemFormBodyState extends State<ItemFormBody> {
               alignLabelWithHint: true,
             ),
             maxLines: 5,
-            validator: (v) => (v == null || v.trim().isEmpty) ? 'Erforderlich' : null,
+            validator: (v) {
+              return (v == null || v.trim().isEmpty) ? 'Erforderlich' : null;
+            },
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
@@ -114,112 +118,17 @@ class _ItemFormBodyState extends State<ItemFormBody> {
               child: Text(
                 widget.locationLabel ?? 'Tippen zum Wählen',
                 style: TextStyle(
-                  color: widget.locationLabel != null ? null : Theme.of(context).hintColor,
+                  color: widget.locationLabel != null
+                      ? null
+                      : Theme.of(context).hintColor,
                 ),
               ),
             ),
           ),
           const SizedBox(height: 16),
-          if (widget.images.any((img) => img is! ServerItemImage || !img.deleted))
-            SizedBox(
-              height: 120,
-              child: ReorderableListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: widget.images.length,
-                onReorder: widget.onReorderImages,
-                proxyDecorator: (child, index, animation) => Material(
-                  elevation: 4,
-                  borderRadius: BorderRadius.circular(8),
-                  child: child,
-                ),
-                itemBuilder: (ctx, i) {
-                  final img = widget.images[i];
-                  if (img is ServerItemImage && img.deleted) {
-                    return const SizedBox(key: ValueKey('deleted'));
-                  }
-
-                  return Stack(
-                    key: ValueKey(_imageKey(img)),
-                    children: [
-                      _ItemFormImageTile(image: img),
-                      Positioned(
-                        top: 4,
-                        right: 4,
-                        child: GestureDetector(
-                          onTap: () => widget.onRemoveImage(i),
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.black54,
-                              shape: BoxShape.circle,
-                            ),
-                            padding: const EdgeInsets.all(4),
-                            child: const Icon(Icons.close, color: Colors.white, size: 16),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 4,
-                        right: 4,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black54,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          child: Text(
-                            '${i + 1}',
-                            style: const TextStyle(color: Colors.white, fontSize: 11),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
+          if (widget.images.isNotEmpty) _imageRondell(),
           const SizedBox(height: 8),
-          DropTarget(
-            onDragEntered: (_) => setState(() => _dropHovering = true),
-            onDragExited: (_) => setState(() => _dropHovering = false),
-            onDragDone: _onDrop,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: _dropHovering ? Theme.of(context).colorScheme.primary : Colors.grey,
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(8),
-                color: _dropHovering ? Theme.of(context).colorScheme.primaryContainer : null,
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.camera_alt),
-                        tooltip: 'Kamera',
-                        onPressed: () => _pickImage(ImageSource.camera),
-                      ),
-                      const SizedBox(width: 16),
-                      IconButton(
-                        icon: const Icon(Icons.photo_library),
-                        tooltip: 'Galerie',
-                        onPressed: () => _pickImage(ImageSource.gallery),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _dropHovering ? 'Loslassen zum Hinzufügen' : 'Bilder wählen oder hierher ziehen',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _dropTarget(),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: widget.isLoading ? null : widget.onSubmit,
@@ -239,8 +148,121 @@ class _ItemFormBodyState extends State<ItemFormBody> {
     );
   }
 
+  Widget _imageRondell() {
+    return SizedBox(
+      height: 120,
+      child: ReorderableListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: widget.images.length,
+        onReorder: widget.onReorderImages,
+        proxyDecorator: (child, index, animation) => Material(
+          elevation: 4,
+          borderRadius: BorderRadius.circular(8),
+          child: child,
+        ),
+        itemBuilder: (ctx, i) {
+          final img = widget.images[i];
+          return Stack(
+            key: ValueKey(_imageKey(img)),
+            children: [
+              _ItemFormImageTile(image: img),
+              Positioned(
+                top: 4,
+                right: 4,
+                child: GestureDetector(
+                  onTap: () => widget.onRemoveImage(i),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.black54,
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(4),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 4,
+                right: 4,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  child: Text(
+                    '${i + 1}',
+                    style: const TextStyle(color: Colors.white, fontSize: 11),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _dropTarget() {
+    return DropTarget(
+      onDragEntered: (_) => setState(() => _dropHovering = true),
+      onDragExited: (_) => setState(() => _dropHovering = false),
+      onDragDone: _onDrop,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: _dropHovering
+                ? Theme.of(context).colorScheme.primary
+                : Colors.grey,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(8),
+          color: _dropHovering
+              ? Theme.of(context).colorScheme.primaryContainer
+              : null,
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.camera_alt),
+                  tooltip: 'Kamera',
+                  onPressed: () => _pickImage(ImageSource.camera),
+                ),
+                const SizedBox(width: 16),
+                IconButton(
+                  icon: const Icon(Icons.photo_library),
+                  tooltip: 'Galerie',
+                  onPressed: () => _pickImage(ImageSource.gallery),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _dropHovering
+                  ? 'Loslassen zum Hinzufügen'
+                  : 'Bilder wählen oder hierher ziehen',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   String _imageKey(ItemImage img) {
-    if (img is ServerItemImage) return 'srv:${img.uuid}';
+    if (img is ServerItemImage) return 'server:${img.uuid}';
     return 'local:${(img as LocalItemImage).file.path}';
   }
 }
@@ -252,17 +274,13 @@ class _ItemFormImageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (image is ServerItemImage && (image as ServerItemImage).deleted) {
-      return const SizedBox.shrink();
-    }
-
     Widget imageWidget;
     Widget? overlay;
 
     if (image is ServerItemImage) {
       final srv = image as ServerItemImage;
       imageWidget = Image.network(
-        '${AppConfig.apiBaseUrl}/images/${srv.uuid}',
+        AppConfig.imageUrl(srv.uuid),
         height: 120,
         width: 120,
         fit: BoxFit.cover,
@@ -271,7 +289,10 @@ class _ItemFormImageTile extends StatelessWidget {
         top: 4,
         left: 4,
         child: Container(
-          decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+          decoration: const BoxDecoration(
+            color: Colors.black54,
+            shape: BoxShape.circle,
+          ),
           padding: const EdgeInsets.all(4),
           child: const Icon(Icons.cloud, color: Colors.white, size: 14),
         ),

@@ -58,6 +58,8 @@ pub type ItemDetail {
     description: String,
     id: Int,
     image_uuids: Option(List(String)),
+    lat: Option(Float),
+    lng: Option(Float),
     postal_code: Option(String),
     score: Float,
     title: String,
@@ -189,10 +191,12 @@ pub fn item_detail_decoder() -> Decoder(ItemDetail) {
   use description <- decode.field("description", decode.string)
   use id <- decode.field("id", decode.int)
   use image_uuids <- decode.optional_field("imageUuids", None, decode.optional(decode.list(decode.string)))
+  use lat <- decode.optional_field("lat", None, decode.optional(decode.float))
+  use lng <- decode.optional_field("lng", None, decode.optional(decode.float))
   use postal_code <- decode.optional_field("postalCode", None, decode.optional(decode.string))
   use score <- decode.field("score", decode.float)
   use title <- decode.field("title", decode.string)
-  decode.success(ItemDetail(author: author, author_id: author_id, category: category, city: city, created_at: created_at, description: description, id: id, image_uuids: image_uuids, postal_code: postal_code, score: score, title: title))
+  decode.success(ItemDetail(author: author, author_id: author_id, category: category, city: city, created_at: created_at, description: description, id: id, image_uuids: image_uuids, lat: lat, lng: lng, postal_code: postal_code, score: score, title: title))
 }
 
 pub fn lat_lng_decoder() -> Decoder(LatLng) {
@@ -335,6 +339,14 @@ pub fn encode_item_detail(value: ItemDetail) -> Json {
     #("id", json.int(value.id)),
     #("imageUuids", case value.image_uuids {
       Some(v) -> json.array(v, fn(item) { json.string(item) })
+      None -> json.null()
+    }),
+    #("lat", case value.lat {
+      Some(v) -> json.float(v)
+      None -> json.null()
+    }),
+    #("lng", case value.lng {
+      Some(v) -> json.float(v)
       None -> json.null()
     }),
     #("postalCode", case value.postal_code {

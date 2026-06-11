@@ -556,6 +556,8 @@ pub type GetItemByIdRow {
     postal_code: Option(String),
     created_at: String,
     author_id: Int,
+    lng: Option(Float),
+    lat: Option(Float),
   )
 }
 
@@ -579,6 +581,8 @@ pub fn get_item_by_id(
     use postal_code <- decode.field(6, decode.optional(decode.string))
     use created_at <- decode.field(7, decode.string)
     use author_id <- decode.field(8, decode.int)
+    use lng <- decode.field(9, decode.optional(decode.float))
+    use lat <- decode.field(10, decode.optional(decode.float))
     decode.success(GetItemByIdRow(
       id:,
       title:,
@@ -589,6 +593,8 @@ pub fn get_item_by_id(
       postal_code:,
       created_at:,
       author_id:,
+      lng:,
+      lat:,
     ))
   }
 
@@ -601,7 +607,9 @@ pub fn get_item_by_id(
   items.city,
   items.postal_code,
   items.created_at::text as created_at,
-  items.author_id
+  items.author_id,
+  st_x(items.location::geometry) as lng,
+  st_y(items.location::geometry) as lat
 from items, profiles
 where items.id = $1 and items.author_id = profiles.id"
   |> pog.query

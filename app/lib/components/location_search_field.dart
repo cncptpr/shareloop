@@ -5,9 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shareloop/state/location_search.dart';
 
 class LocationSearchField extends ConsumerStatefulWidget {
-  final VoidCallback? onSelected;
+  final SelectedLocation? selectedLocation;
+  final ValueChanged<SearchedLocation> onLocationSelected;
+  final VoidCallback? onGpsSelected;
 
-  const LocationSearchField({super.key, this.onSelected});
+  const LocationSearchField({
+    super.key,
+    this.selectedLocation,
+    required this.onLocationSelected,
+    this.onGpsSelected,
+  });
 
   @override
   ConsumerState<LocationSearchField> createState() =>
@@ -35,27 +42,13 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
   }
 
   Future<void> _selectLocation(SearchedLocation location) async {
-    await ref.read(selectedLocationProvider.notifier).select(location);
-    ref.invalidate(storedLocationsProvider);
     _cachedResults = null;
     _activeQuery = '';
     _controller.clear();
     _focusNode.unfocus();
-    widget.onSelected?.call();
-  }
-
-  Future<void> _clearLocation() async {
-    await ref.read(selectedLocationProvider.notifier).clear();
-    _cachedResults = null;
-    _activeQuery = '';
-    _controller.clear();
-    _focusNode.unfocus();
-    widget.onSelected?.call();
-  }
-
-  Future<void> _deleteStored(SearchedLocation location) async {
-    await removeStoredLocation(location);
+    await addStoredLocation(location);
     ref.invalidate(storedLocationsProvider);
+    widget.onLocationSelected(location);
   }
 
   void _reset() {
@@ -186,7 +179,7 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
 
   Widget _buildDefaultView() {
     final storedAsync = ref.watch(storedLocationsProvider);
-    final selected = ref.watch(selectedLocationProvider);
+    final selected = widget.selectedLocation;
     final recentTitle = Padding(
       padding: const EdgeInsets.only(left: 12, top: 8),
       child: Text(
@@ -220,7 +213,9 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
                 onTap: () => _selectLocation(loc),
                 trailing: IconButton(
                   icon: const Icon(Icons.close, size: 16),
-                  onPressed: () => _deleteStored(loc),
+                  onPressed: () => removeStoredLocation(loc).then((_) {
+                    ref.invalidate(storedLocationsProvider);
+                  }),
                 ),
               ),
             ),
@@ -234,23 +229,21 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
 
   Widget _gpsTile() {
     final canUseGps = !Platform.isLinux && !Platform.isWindows;
-    final tile = _SuggestionTile(
-      leading: const Icon(Icons.my_location),
-      title: 'Aktuellen Standort verwenden',
-      subtitle: canUseGps ? null : 'GPS auf diesem Gerät nicht verfügbar',
-      onTap: null,
-      enabled: false,
-    );
-    if (!canUseGps) return tile;
-
-    final selected = ref.watch(selectedLocationProvider);
-    if (selected == null) return tile;
+    if (!canUseGps) {
+      return _SuggestionTile(
+        leading: const Icon(Icons.my_location),
+        title: 'Aktuellen Standort verwenden',
+        subtitle: 'GPS auf diesem Gerät nicht verfügbar',
+        onTap: null,
+        enabled: false,
+      );
+    }
 
     return _SuggestionTile(
       leading: const Icon(Icons.my_location),
       title: 'Aktuellen Standort verwenden',
       subtitle: null,
-      onTap: _clearLocation,
+      onTap: () => widget.onGpsSelected?.call(),
     );
   }
 }

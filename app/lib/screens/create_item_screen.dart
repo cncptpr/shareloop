@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/components/item_form_body.dart';
-import 'package:shareloop/screens/location_picker_screen.dart';
+import 'package:shareloop/components/location_form_mixin.dart';
 import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/state/auth.dart';
@@ -26,13 +26,27 @@ class CreateItemScreen extends ConsumerStatefulWidget {
   }
 }
 
-class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
+class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
+    with LocationFormMixin<CreateItemScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   String? _category;
   bool _loading = false;
   bool _redirectedToLoginScreen = false;
+  SearchedLocation? _selectedLocation;
+
+  @override
+  SearchedLocation? get selectedLocation => _selectedLocation;
+
+  @override
+  set selectedLocation(SearchedLocation? value) =>
+      setState(() => _selectedLocation = value);
+
+  @override
+  void setProviderLocation(SelectedLocation? loc) {
+    ref.read(itemFormProvider.notifier).setSelectedLocation(loc);
+  }
 
   @override
   void initState() {
@@ -41,55 +55,79 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
     _titleController.text = saved.title;
     _descriptionController.text = saved.description;
     _category = saved.category;
+    _selectedLocation = saved.selectedLocation is SearchedLocation
+        ? saved.selectedLocation as SearchedLocation
+        : null;
+    _titleController.addListener(_onTitleChanged);
+    _descriptionController.addListener(_onDescriptionChanged);
+    if (_selectedLocation == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _initLocation());
+    }
+  }
+
+  Future<void> _initLocation() async {
+    // Try app-wide selected location first
+    final global = ref.read(selectedLocationProvider);
+    if (global is SearchedLocation) {
+      applyLocation(global);
+      return;
+    }
+    // Fall back to GPS reverse-geocode
+    try {
+      final gps = await ref.read(currentPositionProvider.future);
+      if (gps == null || !mounted) return;
+      final loc = await ref.read(
+        reverseLocationProvider((gps.latitude, gps.longitude)).future,
+      );
+      if (loc == null ||
+          loc.city.isEmpty ||
+          loc.postalCode.isEmpty ||
+          !mounted) {
+        return;
+      }
+      applyLocation(loc);
+    } catch (_) {}
+  }
+
+  void _onTitleChanged() {
+    ref.read(itemFormProvider.notifier).setTitle(_titleController.text);
+  }
+
+  void _onDescriptionChanged() {
+    ref
+        .read(itemFormProvider.notifier)
+        .setDescription(_descriptionController.text);
   }
 
   @override
   void dispose() {
+    _titleController.removeListener(_onTitleChanged);
+    _descriptionController.removeListener(_onDescriptionChanged);
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
 
-  String? _locationLabel() {
-    final selected = ref.read(selectedLocationProvider);
-    switch (selected) {
-      case SearchedLocation l:
-        return l.name;
-      case GPSLocation _:
-        return 'Aktuelle Position';
-      default:
-        return null;
-    }
-  }
-
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final selected = ref.read(selectedLocationProvider);
-    double? lat;
-    double? lng;
-    String? city;
-    String? postalCode;
-
-    switch (selected) {
-      case SearchedLocation l:
-        lat = l.lat;
-        lng = l.lng;
-        city = l.name;
-        postalCode = l.displayName.split(',').first.trim();
-      case GPSLocation _:
-        final gps = ref.read(currentPositionProvider).asData?.value;
-        if (gps != null) {
-          lat = gps.latitude;
-          lng = gps.longitude;
-        }
-      default:
-    }
-
-    if (lat == null || lng == null) {
+    final selected = _selectedLocation;
+    if (selected == null || selected.city.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Bitte wähle einen Standort.')),
+        );
+      }
+      return;
+    }
+    if (selected.postalCode.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Der gewählte Standort hat keine Postleitzahl. Bitte wähle einen anderen Standort.',
+            ),
+          ),
         );
       }
       return;
@@ -100,10 +138,10 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
       final request = CreateItemRequest(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
-        city: city ?? '',
-        postalCode: postalCode ?? '',
-        lat: lat,
-        lng: lng,
+        city: selected.city,
+        postalCode: selected.postalCode,
+        lat: selected.lat,
+        lng: selected.lng,
       );
 
       debugPrint('[createItem] Creating item...');
@@ -182,7 +220,7 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
   Widget build(BuildContext context) {
     final authAsync = ref.watch(authProvider);
     final formState = ref.watch(itemFormProvider);
-    final locationLabel = _locationLabel();
+    final label = locationLabel();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Inserat erstellen')),
@@ -222,11 +260,8 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen> {
               setState(() => _category = v);
               ref.read(itemFormProvider.notifier).setCategory(v);
             },
-            locationLabel: locationLabel,
-            onLocationTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const LocationPickerScreen()),
-            ),
+            locationLabel: label,
+            onLocationTap: openLocationPicker,
             images: formState.images,
             onReorderImages: (oldIndex, newIndex) {
               ref.read(itemFormProvider.notifier).moveImage(oldIndex, newIndex);

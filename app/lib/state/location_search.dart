@@ -108,7 +108,14 @@ Future<List<SearchedLocation>> _loadStoredLocations() async {
   if (raw == null) return [];
   final list = jsonDecode(raw) as List;
   return list
-      .map((e) => SearchedLocation.fromJson(e as Map<String, dynamic>))
+      .map((e) {
+        try {
+          return SearchedLocation.fromJson(e as Map<String, dynamic>);
+        } catch (_) {
+          return null;
+        }
+      })
+      .whereType<SearchedLocation>()
       .toList();
 }
 
@@ -223,11 +230,10 @@ final locationSearchProvider =
     return data.map((j) {
       final addr = j['address'] as Map<String, dynamic>?;
       final city = (addr?['city'] ??
-              addr?['town'] ??
-              addr?['village'] ??
-              addr?['municipality'] ??
-              '')
-          as String;
+          addr?['town'] ??
+          addr?['village'] ??
+          addr?['municipality'] ??
+          '') as String;
       final postalCode = (addr?['postcode'] ?? '') as String;
       return SearchedLocation(
         lat: double.parse(j['lat'] as String),

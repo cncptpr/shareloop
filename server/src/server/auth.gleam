@@ -1,6 +1,5 @@
 import generated/types
 import gleam/list
-import gleam/option.{type Option}
 import gleam/order
 import gleam/result
 import gleam/time/calendar

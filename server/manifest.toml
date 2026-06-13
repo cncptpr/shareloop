@@ -32,7 +32,6 @@ packages = [
   { name = "mist", version = "6.0.3", build_tools = ["gleam"], requirements = ["exception", "gleam_erlang", "gleam_http", "gleam_otp", "gleam_stdlib", "glisten", "gramps", "hpack_erl", "logging"], otp_app = "mist", source = "hex", outer_checksum = "1B07F321D5FA0CB162D81496F2DE96AEB6EF8980F4F38230A4CC3F849497E020" },
   { name = "mug", version = "3.1.0", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_stdlib"], otp_app = "mug", source = "hex", outer_checksum = "C01279D98E40371DA23461774B63F0E3581B8F1396049D881B0C7EB32799D93F" },
   { name = "non_empty_list", version = "2.3.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "non_empty_list", source = "hex", outer_checksum = "06F9D3AC751CF7853AD5D24B8139CEB30E42D8799DE8D49F966A6197DF0B01CC" },
-  { name = "nori", version = "1.0.0", build_tools = ["gleam"], requirements = ["argv", "gleam_json", "gleam_stdlib", "glint", "handles", "simplifile", "taffy"], otp_app = "nori", source = "hex", outer_checksum = "CC51947791139B14FFA3A016EC82ECCD669B82EC71EB27E5DD7B9E37916462CE" },
   { name = "opentelemetry_api", version = "1.5.0", build_tools = ["rebar3", "mix"], requirements = [], otp_app = "opentelemetry_api", source = "hex", outer_checksum = "F53EC8A1337AE4A487D43AC89DA4BD3A3C99DDF576655D071DEED8B56A2D5DDA" },
   { name = "pg_types", version = "0.6.0", build_tools = ["rebar3"], requirements = [], otp_app = "pg_types", source = "hex", outer_checksum = "9949A4849DD13408FA249AB7B745E0D2DFDB9532AEE2B9722326E33CD082A778" },
   { name = "pgo", version = "0.20.0", build_tools = ["rebar3"], requirements = ["backoff", "opentelemetry_api", "pg_types"], otp_app = "pgo", source = "hex", outer_checksum = "2F11E6649CEB38E569EF56B16BE1D04874AE5B11A02867080A2817CE423C683B" },
@@ -61,7 +60,6 @@ gleam_stdlib = { version = ">= 1.0.0 and < 2.0.0" }
 gleam_time = { version = ">= 1.8.0 and < 2.0.0" }
 gleeunit = { version = ">= 1.0.0 and < 2.0.0" }
 mist = { version = ">= 6.0.3 and < 7.0.0" }
-nori = { version = ">= 1.0.0 and < 2.0.0" }
 pog = { version = ">= 4.1.0 and < 5.0.0" }
 simplifile = { version = ">= 2.4.0 and < 3.0.0" }
 squirrel = { version = ">= 4.6.0 and < 5.0.0" }

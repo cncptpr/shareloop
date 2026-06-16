@@ -169,7 +169,6 @@ pub fn decode_featured_item_list(
 
 pub fn item_detail_decoder() -> decode.Decoder(types.ItemDetail) {
   use author <- decode.field("author", person_decoder())
-  use author_id <- decode.field("authorId", decode.int)
   use category <- decode.optional_field(
     "category",
     option.None,
@@ -183,11 +182,7 @@ pub fn item_detail_decoder() -> decode.Decoder(types.ItemDetail) {
   use created_at <- decode.field("createdAt", decode.string)
   use description <- decode.field("description", decode.string)
   use id <- decode.field("id", decode.int)
-  use image_uuids <- decode.optional_field(
-    "imageUuids",
-    option.None,
-    decode.optional(decode.list(decode.string)),
-  )
+  use image_uuids <- decode.field("imageUuids", decode.list(decode.string))
   use postal_code <- decode.optional_field(
     "postalCode",
     option.None,
@@ -197,7 +192,6 @@ pub fn item_detail_decoder() -> decode.Decoder(types.ItemDetail) {
   use title <- decode.field("title", decode.string)
   decode.success(types.ItemDetail(
     author: author,
-    author_id: author_id,
     category: category,
     city: city,
     created_at: created_at,
@@ -224,6 +218,73 @@ pub fn decode_item_detail_list(
   json_string: String,
 ) -> Result(List(types.ItemDetail), json.DecodeError) {
   json.parse(json_string, item_detail_decoder_list())
+}
+
+pub fn item_edit_detail_decoder() -> decode.Decoder(types.ItemEditDetail) {
+  use author <- decode.field("author", person_decoder())
+  use category <- decode.optional_field(
+    "category",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use city <- decode.optional_field(
+    "city",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use created_at <- decode.field("createdAt", decode.string)
+  use description <- decode.field("description", decode.string)
+  use id <- decode.field("id", decode.int)
+  use image_uuids <- decode.field("imageUuids", decode.list(decode.string))
+  use lat <- decode.optional_field(
+    "lat",
+    option.None,
+    decode.optional(decode.float),
+  )
+  use lng <- decode.optional_field(
+    "lng",
+    option.None,
+    decode.optional(decode.float),
+  )
+  use postal_code <- decode.optional_field(
+    "postalCode",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use score <- decode.field("score", decode.float)
+  use title <- decode.field("title", decode.string)
+  decode.success(types.ItemEditDetail(
+    author: author,
+    category: category,
+    city: city,
+    created_at: created_at,
+    description: description,
+    id: id,
+    image_uuids: image_uuids,
+    lat: lat,
+    lng: lng,
+    postal_code: postal_code,
+    score: score,
+    title: title,
+  ))
+}
+
+pub fn decode_item_edit_detail(
+  json_string: String,
+) -> Result(types.ItemEditDetail, json.DecodeError) {
+  json.parse(json_string, item_edit_detail_decoder())
+}
+
+pub fn item_edit_detail_decoder_list() -> decode.Decoder(
+  List(types.ItemEditDetail),
+) {
+  decode.list(item_edit_detail_decoder())
+}
+
+pub fn decode_item_edit_detail_list(
+  json_string: String,
+) -> Result(List(types.ItemEditDetail), json.DecodeError) {
+  json.parse(json_string, item_edit_detail_decoder_list())
 }
 
 pub fn lat_lng_decoder() -> decode.Decoder(types.LatLng) {
@@ -302,8 +363,9 @@ pub fn decode_login_result_list(
 }
 
 pub fn person_decoder() -> decode.Decoder(types.Person) {
+  use id <- decode.field("id", decode.int)
   use name <- decode.field("name", decode.string)
-  decode.success(types.Person(name: name))
+  decode.success(types.Person(id: id, name: name))
 }
 
 pub fn decode_person(

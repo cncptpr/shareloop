@@ -194,6 +194,8 @@ class ApiClient {
           return FeaturedItem.fromJson(value);
         case 'ItemDetail':
           return ItemDetail.fromJson(value);
+        case 'ItemEditDetail':
+          return ItemEditDetail.fromJson(value);
         case 'LatLng':
           return LatLng.fromJson(value);
         case 'LoginRequest':

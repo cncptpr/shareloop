@@ -45,6 +45,12 @@ pub type UpdateItemResponse {
   UpdateItemResponseNotFound
 }
 
+pub type GetItemEditResponse {
+  GetItemEditResponseOk(types.ItemEditDetail)
+  GetItemEditResponseForbidden
+  GetItemEditResponseNotFound
+}
+
 pub type UploadItemImageResponse {
   UploadItemImageResponseCreated(types.UploadItemImageResponse)
 }

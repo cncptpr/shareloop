@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class ItemDetail {
-  /// Returns a new [ItemDetail] instance.
-  ItemDetail({
+class ItemEditDetail {
+  /// Returns a new [ItemEditDetail] instance.
+  ItemEditDetail({
     required this.id,
     required this.title,
     required this.description,
@@ -22,6 +22,8 @@ class ItemDetail {
     this.postalCode,
     this.imageUuids = const [],
     this.category,
+    this.lat,
+    this.lng,
     required this.createdAt,
   });
 
@@ -55,10 +57,14 @@ class ItemDetail {
 
   String? category;
 
+  double? lat;
+
+  double? lng;
+
   DateTime createdAt;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is ItemDetail &&
+  bool operator ==(Object other) => identical(this, other) || other is ItemEditDetail &&
     other.id == id &&
     other.title == title &&
     other.description == description &&
@@ -68,6 +74,8 @@ class ItemDetail {
     other.postalCode == postalCode &&
     _deepEquality.equals(other.imageUuids, imageUuids) &&
     other.category == category &&
+    other.lat == lat &&
+    other.lng == lng &&
     other.createdAt == createdAt;
 
   @override
@@ -82,10 +90,12 @@ class ItemDetail {
     (postalCode == null ? 0 : postalCode!.hashCode) +
     (imageUuids.hashCode) +
     (category == null ? 0 : category!.hashCode) +
+    (lat == null ? 0 : lat!.hashCode) +
+    (lng == null ? 0 : lng!.hashCode) +
     (createdAt.hashCode);
 
   @override
-  String toString() => 'ItemDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, createdAt=$createdAt]';
+  String toString() => 'ItemEditDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, lat=$lat, lng=$lng, createdAt=$createdAt]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -110,14 +120,24 @@ class ItemDetail {
     } else {
       json[r'category'] = null;
     }
+    if (this.lat != null) {
+      json[r'lat'] = this.lat;
+    } else {
+      json[r'lat'] = null;
+    }
+    if (this.lng != null) {
+      json[r'lng'] = this.lng;
+    } else {
+      json[r'lng'] = null;
+    }
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
     return json;
   }
 
-  /// Returns a new [ItemDetail] instance and imports its values from
+  /// Returns a new [ItemEditDetail] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static ItemDetail? fromJson(dynamic value) {
+  static ItemEditDetail? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
@@ -125,24 +145,24 @@ class ItemDetail {
       // Note 1: the values aren't checked for validity beyond being non-null.
       // Note 2: this code is stripped in release mode!
       assert(() {
-        assert(json.containsKey(r'id'), 'Required key "ItemDetail[id]" is missing from JSON.');
-        assert(json[r'id'] != null, 'Required key "ItemDetail[id]" has a null value in JSON.');
-        assert(json.containsKey(r'title'), 'Required key "ItemDetail[title]" is missing from JSON.');
-        assert(json[r'title'] != null, 'Required key "ItemDetail[title]" has a null value in JSON.');
-        assert(json.containsKey(r'description'), 'Required key "ItemDetail[description]" is missing from JSON.');
-        assert(json[r'description'] != null, 'Required key "ItemDetail[description]" has a null value in JSON.');
-        assert(json.containsKey(r'author'), 'Required key "ItemDetail[author]" is missing from JSON.');
-        assert(json[r'author'] != null, 'Required key "ItemDetail[author]" has a null value in JSON.');
-        assert(json.containsKey(r'score'), 'Required key "ItemDetail[score]" is missing from JSON.');
-        assert(json[r'score'] != null, 'Required key "ItemDetail[score]" has a null value in JSON.');
-        assert(json.containsKey(r'imageUuids'), 'Required key "ItemDetail[imageUuids]" is missing from JSON.');
-        assert(json[r'imageUuids'] != null, 'Required key "ItemDetail[imageUuids]" has a null value in JSON.');
-        assert(json.containsKey(r'createdAt'), 'Required key "ItemDetail[createdAt]" is missing from JSON.');
-        assert(json[r'createdAt'] != null, 'Required key "ItemDetail[createdAt]" has a null value in JSON.');
+        assert(json.containsKey(r'id'), 'Required key "ItemEditDetail[id]" is missing from JSON.');
+        assert(json[r'id'] != null, 'Required key "ItemEditDetail[id]" has a null value in JSON.');
+        assert(json.containsKey(r'title'), 'Required key "ItemEditDetail[title]" is missing from JSON.');
+        assert(json[r'title'] != null, 'Required key "ItemEditDetail[title]" has a null value in JSON.');
+        assert(json.containsKey(r'description'), 'Required key "ItemEditDetail[description]" is missing from JSON.');
+        assert(json[r'description'] != null, 'Required key "ItemEditDetail[description]" has a null value in JSON.');
+        assert(json.containsKey(r'author'), 'Required key "ItemEditDetail[author]" is missing from JSON.');
+        assert(json[r'author'] != null, 'Required key "ItemEditDetail[author]" has a null value in JSON.');
+        assert(json.containsKey(r'score'), 'Required key "ItemEditDetail[score]" is missing from JSON.');
+        assert(json[r'score'] != null, 'Required key "ItemEditDetail[score]" has a null value in JSON.');
+        assert(json.containsKey(r'imageUuids'), 'Required key "ItemEditDetail[imageUuids]" is missing from JSON.');
+        assert(json[r'imageUuids'] != null, 'Required key "ItemEditDetail[imageUuids]" has a null value in JSON.');
+        assert(json.containsKey(r'createdAt'), 'Required key "ItemEditDetail[createdAt]" is missing from JSON.');
+        assert(json[r'createdAt'] != null, 'Required key "ItemEditDetail[createdAt]" has a null value in JSON.');
         return true;
       }());
 
-      return ItemDetail(
+      return ItemEditDetail(
         id: mapValueOfType<int>(json, r'id')!,
         title: mapValueOfType<String>(json, r'title')!,
         description: mapValueOfType<String>(json, r'description')!,
@@ -154,17 +174,19 @@ class ItemDetail {
             ? (json[r'imageUuids'] as Iterable).cast<String>().toList(growable: false)
             : const [],
         category: mapValueOfType<String>(json, r'category'),
+        lat: mapValueOfType<double>(json, r'lat'),
+        lng: mapValueOfType<double>(json, r'lng'),
         createdAt: mapDateTime(json, r'createdAt', r'')!,
       );
     }
     return null;
   }
 
-  static List<ItemDetail> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <ItemDetail>[];
+  static List<ItemEditDetail> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <ItemEditDetail>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = ItemDetail.fromJson(row);
+        final value = ItemEditDetail.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -173,12 +195,12 @@ class ItemDetail {
     return result.toList(growable: growable);
   }
 
-  static Map<String, ItemDetail> mapFromJson(dynamic json) {
-    final map = <String, ItemDetail>{};
+  static Map<String, ItemEditDetail> mapFromJson(dynamic json) {
+    final map = <String, ItemEditDetail>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = ItemDetail.fromJson(entry.value);
+        final value = ItemEditDetail.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -187,14 +209,14 @@ class ItemDetail {
     return map;
   }
 
-  // maps a json object with a list of ItemDetail-objects as value to a dart map
-  static Map<String, List<ItemDetail>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<ItemDetail>>{};
+  // maps a json object with a list of ItemEditDetail-objects as value to a dart map
+  static Map<String, List<ItemEditDetail>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<ItemEditDetail>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = ItemDetail.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = ItemEditDetail.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;

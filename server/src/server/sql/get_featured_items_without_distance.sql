@@ -3,6 +3,7 @@ select
   items.title,
   items.description,
   profiles.name as author_name,
+  items.author_id,
   items.score,
   items.city,
   items.postal_code,

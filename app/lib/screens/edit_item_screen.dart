@@ -9,17 +9,20 @@ import 'package:shareloop/state/location_search.dart';
 import 'package:shareloop/app_config.dart';
 
 class EditItemScreen extends ConsumerStatefulWidget {
-  final ItemDetail existingItem;
+  final ItemEditDetail existingItem;
 
   const EditItemScreen({super.key, required this.existingItem});
 
   @override
   ConsumerState<EditItemScreen> createState() => _EditItemScreenState();
 
-  static Future<bool?> push(BuildContext ctx, ItemDetail item) {
+  static Future<bool?> push(BuildContext ctx, int itemId) async {
+    final editDetail = await AppConfig.apiClient.getItemEdit(itemId);
+    if (editDetail == null) throw Exception('Item not found or access denied');
+    if (!ctx.mounted) return null;
     return Navigator.push<bool>(
       ctx,
-      MaterialPageRoute(builder: (_) => EditItemScreen(existingItem: item)),
+      MaterialPageRoute(builder: (_) => EditItemScreen(existingItem: editDetail)),
     );
   }
 }

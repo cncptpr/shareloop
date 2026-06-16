@@ -14,6 +14,7 @@ Method | HTTP request | Description
 [**getFeaturedItems**](DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 [**getImage**](DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
 [**getItem**](DefaultApi.md#getitem) | **GET** /items/{itemId} | Get item details
+[**getItemEdit**](DefaultApi.md#getitemedit) | **GET** /items/{itemId}/edit | Get item edit details (owner only)
 [**login**](DefaultApi.md#login) | **POST** /auth/login | Login
 [**logout**](DefaultApi.md#logout) | **POST** /auth/logout | Logout
 [**refresh**](DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
@@ -238,6 +239,55 @@ Name | Type | Description  | Notes
 ### Authorization
 
 No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getItemEdit**
+> ItemEditDetail getItemEdit(itemId)
+
+Get item edit details (owner only)
+
+Returns full item details including location for the item owner
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final itemId = 56; // int | 
+
+try {
+    final result = api_instance.getItemEdit(itemId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getItemEdit: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **itemId** | **int**|  | 
+
+### Return type
+
+[**ItemEditDetail**](ItemEditDetail.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
 
 ### HTTP request headers
 

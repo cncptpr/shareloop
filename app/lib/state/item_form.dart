@@ -112,9 +112,9 @@ final itemFormProvider = NotifierProvider<ItemFormNotifier, ItemFormState>(
 );
 
 class EditItemFormNotifier extends ItemFormNotifier {
-  final ItemDetail _item;
+  final ItemEditDetail _item;
 
-  EditItemFormNotifier({required ItemDetail item}) : _item = item;
+  EditItemFormNotifier({required ItemEditDetail item}) : _item = item;
 
   @override
   ItemFormState build() {
@@ -145,7 +145,7 @@ class EditItemFormNotifier extends ItemFormNotifier {
 }
 
 final editItemFormProvider =
-    NotifierProvider.family<EditItemFormNotifier, ItemFormState, ItemDetail>(
+    NotifierProvider.family<EditItemFormNotifier, ItemFormState, ItemEditDetail>(
   (arg) => EditItemFormNotifier(item: arg),
 );
 

@@ -42,13 +42,29 @@ pub type FeaturedItem {
 pub type ItemDetail {
   ItemDetail(
     author: Person,
-    author_id: Int,
     category: Option(String),
     city: Option(String),
     created_at: String,
     description: String,
     id: Int,
-    image_uuids: Option(List(String)),
+    image_uuids: List(String),
+    postal_code: Option(String),
+    score: Float,
+    title: String,
+  )
+}
+
+pub type ItemEditDetail {
+  ItemEditDetail(
+    author: Person,
+    category: Option(String),
+    city: Option(String),
+    created_at: String,
+    description: String,
+    id: Int,
+    image_uuids: List(String),
+    lat: Option(Float),
+    lng: Option(Float),
     postal_code: Option(String),
     score: Float,
     title: String,
@@ -74,7 +90,7 @@ pub type LoginResult {
 }
 
 pub type Person {
-  Person(name: String)
+  Person(id: Int, name: String)
 }
 
 pub type RefreshRequest {

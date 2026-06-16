@@ -394,6 +394,7 @@ pub type GetFeaturedItemsRow {
     title: String,
     description: String,
     author_name: String,
+    author_id: Int,
     score: Float,
     city: Option(String),
     postal_code: Option(String),
@@ -418,16 +419,18 @@ pub fn get_featured_items(
     use title <- decode.field(1, decode.string)
     use description <- decode.field(2, decode.string)
     use author_name <- decode.field(3, decode.string)
-    use score <- decode.field(4, decode.float)
-    use city <- decode.field(5, decode.optional(decode.string))
-    use postal_code <- decode.field(6, decode.optional(decode.string))
-    use distance_km <- decode.field(7, decode.float)
-    use first_image_uuid <- decode.field(8, decode.optional(uuid_decoder()))
+    use author_id <- decode.field(4, decode.int)
+    use score <- decode.field(5, decode.float)
+    use city <- decode.field(6, decode.optional(decode.string))
+    use postal_code <- decode.field(7, decode.optional(decode.string))
+    use distance_km <- decode.field(8, decode.float)
+    use first_image_uuid <- decode.field(9, decode.optional(uuid_decoder()))
     decode.success(GetFeaturedItemsRow(
       id:,
       title:,
       description:,
       author_name:,
+      author_id:,
       score:,
       city:,
       postal_code:,
@@ -441,6 +444,7 @@ pub fn get_featured_items(
   items.title,
   items.description,
   profiles.name as author_name,
+  items.author_id,
   items.score,
   items.city,
   items.postal_code,
@@ -478,6 +482,7 @@ pub type GetFeaturedItemsWithoutDistanceRow {
     title: String,
     description: String,
     author_name: String,
+    author_id: Int,
     score: Float,
     city: Option(String),
     postal_code: Option(String),
@@ -499,15 +504,17 @@ pub fn get_featured_items_without_distance(
     use title <- decode.field(1, decode.string)
     use description <- decode.field(2, decode.string)
     use author_name <- decode.field(3, decode.string)
-    use score <- decode.field(4, decode.float)
-    use city <- decode.field(5, decode.optional(decode.string))
-    use postal_code <- decode.field(6, decode.optional(decode.string))
-    use first_image_uuid <- decode.field(7, decode.optional(uuid_decoder()))
+    use author_id <- decode.field(4, decode.int)
+    use score <- decode.field(5, decode.float)
+    use city <- decode.field(6, decode.optional(decode.string))
+    use postal_code <- decode.field(7, decode.optional(decode.string))
+    use first_image_uuid <- decode.field(8, decode.optional(uuid_decoder()))
     decode.success(GetFeaturedItemsWithoutDistanceRow(
       id:,
       title:,
       description:,
       author_name:,
+      author_id:,
       score:,
       city:,
       postal_code:,
@@ -520,6 +527,7 @@ pub fn get_featured_items_without_distance(
   items.title,
   items.description,
   profiles.name as author_name,
+  items.author_id,
   items.score,
   items.city,
   items.postal_code,

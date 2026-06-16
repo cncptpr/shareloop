@@ -61,6 +61,13 @@ pub fn update_item(
   handlers.update_item(state, req)
 }
 
+pub fn get_item_edit(
+  state: handlers.State,
+  req: request_types.GetItemEditRequest,
+) -> response_types.GetItemEditResponse {
+  handlers.get_item_edit(state, req)
+}
+
 pub fn upload_item_image(
   state: handlers.State,
   req: request_types.UploadItemImageRequest,

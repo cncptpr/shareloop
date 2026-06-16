@@ -34,6 +34,11 @@ pub type UpdateItemRequest {
   UpdateItemRequest(item_id: Int, body: types.UpdateItemRequest)
 }
 
+/// Returns full item details including location for the item owner
+pub type GetItemEditRequest {
+  GetItemEditRequest(item_id: Int)
+}
+
 pub type UploadItemImageRequest {
   UploadItemImageRequest(item_id: Int, body: types.UploadItemImageRequest)
 }

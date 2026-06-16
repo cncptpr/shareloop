@@ -290,6 +290,63 @@ class DefaultApi {
     return null;
   }
 
+  /// Get item edit details (owner only)
+  ///
+  /// Returns full item details including location for the item owner
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] itemId (required):
+  Future<Response> getItemEditWithHttpInfo(int itemId,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/items/{itemId}/edit'
+      .replaceAll('{itemId}', itemId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Get item edit details (owner only)
+  ///
+  /// Returns full item details including location for the item owner
+  ///
+  /// Parameters:
+  ///
+  /// * [int] itemId (required):
+  Future<ItemEditDetail?> getItemEdit(int itemId,) async {
+    final response = await getItemEditWithHttpInfo(itemId,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'ItemEditDetail',) as ItemEditDetail;
+    
+    }
+    return null;
+  }
+
   /// Login
   ///
   /// Note: This method returns the HTTP [Response].

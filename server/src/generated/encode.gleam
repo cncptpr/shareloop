@@ -88,7 +88,6 @@ pub fn encode_item_detail_json(value: types.ItemDetail) -> json.Json {
   json.object(
     list.flatten([
       [#("author", encode_person_json(value.author))],
-      [#("authorId", json.int(value.author_id))],
       [#("category", json.nullable(value.category, json.string))],
       case value.city {
         option.None -> []
@@ -97,10 +96,7 @@ pub fn encode_item_detail_json(value: types.ItemDetail) -> json.Json {
       [#("createdAt", json.string(value.created_at))],
       [#("description", json.string(value.description))],
       [#("id", json.int(value.id))],
-      case value.image_uuids {
-        option.None -> []
-        option.Some(x) -> [#("imageUuids", json.array(x, json.string))]
-      },
+      [#("imageUuids", json.array(value.image_uuids, json.string))],
       case value.postal_code {
         option.None -> []
         option.Some(x) -> [#("postalCode", json.string(x))]
@@ -113,6 +109,35 @@ pub fn encode_item_detail_json(value: types.ItemDetail) -> json.Json {
 
 pub fn encode_item_detail(value: types.ItemDetail) -> String {
   encode_item_detail_json(value) |> json.to_string()
+}
+
+pub fn encode_item_edit_detail_json(value: types.ItemEditDetail) -> json.Json {
+  json.object(
+    list.flatten([
+      [#("author", encode_person_json(value.author))],
+      [#("category", json.nullable(value.category, json.string))],
+      case value.city {
+        option.None -> []
+        option.Some(x) -> [#("city", json.string(x))]
+      },
+      [#("createdAt", json.string(value.created_at))],
+      [#("description", json.string(value.description))],
+      [#("id", json.int(value.id))],
+      [#("imageUuids", json.array(value.image_uuids, json.string))],
+      [#("lat", json.nullable(value.lat, json.float))],
+      [#("lng", json.nullable(value.lng, json.float))],
+      case value.postal_code {
+        option.None -> []
+        option.Some(x) -> [#("postalCode", json.string(x))]
+      },
+      [#("score", json.float(value.score))],
+      [#("title", json.string(value.title))],
+    ]),
+  )
+}
+
+pub fn encode_item_edit_detail(value: types.ItemEditDetail) -> String {
+  encode_item_edit_detail_json(value) |> json.to_string()
 }
 
 pub fn encode_lat_lng_json(value: types.LatLng) -> json.Json {
@@ -149,7 +174,7 @@ pub fn encode_login_result(value: types.LoginResult) -> String {
 }
 
 pub fn encode_person_json(value: types.Person) -> json.Json {
-  json.object([#("name", json.string(value.name))])
+  json.object([#("id", json.int(value.id)), #("name", json.string(value.name))])
 }
 
 pub fn encode_person(value: types.Person) -> String {

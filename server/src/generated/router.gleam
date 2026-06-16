@@ -257,6 +257,37 @@ pub fn route(
           )
       }
     }
+    "GET", ["items", item_id, "edit"] -> {
+      case int.parse(item_id) {
+        Ok(item_id_parsed) -> {
+          let request =
+            request_types.GetItemEditRequest(item_id: item_id_parsed)
+          let response = handlers_generated.get_item_edit(app_state, request)
+          case response {
+            response_types.GetItemEditResponseOk(data) ->
+              ServerResponse(
+                status: 200,
+                body: TextBody(
+                  json.to_string(encode.encode_item_edit_detail_json(data)),
+                ),
+                headers: [#("content-type", "application/json")],
+              )
+            response_types.GetItemEditResponseForbidden ->
+              ServerResponse(status: 403, body: EmptyBody, headers: [])
+            response_types.GetItemEditResponseNotFound ->
+              ServerResponse(status: 404, body: EmptyBody, headers: [])
+          }
+        }
+        Error(_) ->
+          ServerResponse(
+            status: 400,
+            body: TextBody(
+              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
+            ),
+            headers: [#("content-type", "application/problem+json")],
+          )
+      }
+    }
     "POST", ["items", item_id, "images"] -> {
       case int.parse(item_id) {
         Ok(item_id_parsed) -> {

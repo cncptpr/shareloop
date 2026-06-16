@@ -20,11 +20,11 @@ class ItemScreen extends ConsumerWidget {
       appBar: AppBar(
         actions: [
           if (asyncItem.hasValue && asyncUser.hasValue && asyncUser.value != null &&
-              asyncItem.value!.authorId == asyncUser.value!.id)
+              asyncItem.value!.author.id == asyncUser.value!.id)
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () async {
-                final result = await EditItemScreen.push(context, asyncItem.value!);
+                final result = await EditItemScreen.push(context, asyncItem.value!.id);
                 if (result == true) {
                   ref.invalidate(itemDetailProvider(itemId));
                 }

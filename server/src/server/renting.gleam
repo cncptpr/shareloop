@@ -1,6 +1,6 @@
 import generated/types
 import gleam/list
-import gleam/option.{type Option}
+import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/time/calendar
 import gleam/time/timestamp.{type Timestamp}
@@ -50,21 +50,21 @@ fn offer_from_row(
   id: Int,
   rent_request_id: Int,
   sender_id: Int,
-  start_date: String,
-  end_date: String,
+  start_date: Timestamp,
+  end_date: Timestamp,
   accepted_at: Option(Timestamp),
-  created_at: String,
-  updated_at: String,
+  created_at: Timestamp,
+  updated_at: Timestamp,
 ) -> types.RentOffer {
   types.RentOffer(
     id:,
     rent_request_id:,
     sender_id:,
-    start_date:,
-    end_date:,
+    start_date: timestamp_to_string(start_date),
+    end_date: timestamp_to_string(end_date),
     accepted_at: option.map(accepted_at, timestamp_to_string),
-    created_at:,
-    updated_at:,
+    created_at: timestamp_to_string(created_at),
+    updated_at: timestamp_to_string(updated_at),
   )
 }
 
@@ -230,7 +230,7 @@ pub fn send_message(
     rent_request_id: msg.rent_request_id,
     author_id: msg.author_id,
     content: msg.content,
-    created_at: msg.created_at,
+    created_at: timestamp_to_string(msg.created_at),
   ))
 }
 
@@ -252,7 +252,7 @@ pub fn get_messages(
       rent_request_id: row.rent_request_id,
       author_id: row.author_id,
       content: row.content,
-      created_at: row.created_at,
+      created_at: timestamp_to_string(row.created_at),
     )
   }))
 }
@@ -335,40 +335,45 @@ pub fn accept_offer(
   )
   use offer <- result.try(single_row(returned.rows))
 
-  use _request <- result.try(
+  use request <- result.try(
     get_request_for_participant(conn, offer.rent_request_id, user_id),
   )
 
   case offer.sender_id == user_id {
     True -> Error(Nil)
     False -> {
-      use accepted <- result.try(
-        sql.accept_offer(conn, offer_id)
-        |> result.map_error(fn(_) { Nil }),
-      )
-      use _ <- result.try(single_row(accepted.rows) |> result.map(fn(_) { Nil }))
+      case request.latest_open_offer_id {
+        Some(id) if id == offer.id -> {
+          use accepted <- result.try(
+            sql.accept_offer(conn, offer_id)
+            |> result.map_error(fn(_) { Nil }),
+          )
+          use _ <- result.try(single_row(accepted.rows) |> result.map(fn(_) { Nil }))
 
-      use _ <- result.try(
-        sql.update_rent_request_latest_accepted(conn, offer_id, offer.rent_request_id)
-        |> result.map_error(fn(_) { Nil }),
-      )
+          use _ <- result.try(
+            sql.update_rent_request_latest_accepted(conn, offer_id, offer.rent_request_id)
+            |> result.map_error(fn(_) { Nil }),
+          )
 
-      use returned <- result.try(
-        sql.get_latest_accepted_offer(conn, offer.rent_request_id)
-        |> result.map_error(fn(_) { Nil }),
-      )
-      use row <- result.try(single_row(returned.rows))
+          use returned <- result.try(
+            sql.get_latest_accepted_offer(conn, offer.rent_request_id)
+            |> result.map_error(fn(_) { Nil }),
+          )
+          use row <- result.try(single_row(returned.rows))
 
-      Ok(offer_from_row(
-        row.id,
-        row.rent_request_id,
-        row.sender_id,
-        row.start_date,
-        row.end_date,
-        row.accepted_at,
-        row.created_at,
-        row.updated_at,
-      ))
+          Ok(offer_from_row(
+            row.id,
+            row.rent_request_id,
+            row.sender_id,
+            row.start_date,
+            row.end_date,
+            row.accepted_at,
+            row.created_at,
+            row.updated_at,
+          ))
+        }
+        _ -> Error(Nil)
+      }
     }
   }
 }
@@ -382,6 +387,24 @@ pub fn confirm_borrow(
 
   case request.owner_id == user_id {
     True -> {
+      use _ <- result.try(
+        case request.latest_accepted_offer_id {
+          None -> Error(Nil)
+          Some(_) -> Ok(Nil)
+        }
+      )
+      use _ <- result.try(
+        case request.borrow_confirmed_at {
+          None -> Ok(Nil)
+          Some(_) -> Error(Nil)
+        }
+      )
+      use _ <- result.try(
+        case request.returned_at {
+          None -> Ok(Nil)
+          Some(_) -> Error(Nil)
+        }
+      )
       use _ <- result.try(
         sql.update_rent_request_borrow(conn, request_id)
         |> result.map_error(fn(_) { Nil }),
@@ -422,6 +445,18 @@ pub fn confirm_return(
 
   case request.owner_id == user_id {
     True -> {
+      use _ <- result.try(
+        case request.borrow_confirmed_at {
+          None -> Error(Nil)
+          Some(_) -> Ok(Nil)
+        }
+      )
+      use _ <- result.try(
+        case request.returned_at {
+          None -> Ok(Nil)
+          Some(_) -> Error(Nil)
+        }
+      )
       use _ <- result.try(
         sql.update_rent_request_returned(conn, request_id)
         |> result.map_error(fn(_) { Nil }),

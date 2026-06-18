@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/edit_item_screen.dart';
+import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/screens/rent_request_chat_screen.dart';
 import 'package:shareloop/state/auth.dart' show authProvider;
 import 'package:shareloop/state/item_detail.dart';
-import 'package:shareloop/state/renting.dart';
 
 class ItemScreen extends ConsumerWidget {
   final int itemId;
@@ -90,14 +90,16 @@ class _Content extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () async {
-                        final request = await createRentRequest(item.id);
-                        if (request != null && context.mounted) {
+                        if (userId == null) {
+                          LoginScreen.push(context);
+                          return;
+                        }
+                        if (context.mounted) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => RentRequestChatScreen(
-                                requestId: request.id,
-                                rentRequest: request,
+                              builder: (_) => RentRequestChatScreen.newRequest(
+                                itemId: item.id,
                               ),
                             ),
                           );

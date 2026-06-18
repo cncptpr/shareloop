@@ -1,6 +1,6 @@
 //// This module contains the code to run the sql queries defined in
 //// `./src/server/sql`.
-//// > 🐿️ This module was generated automatically using v4.6.0 of
+//// > 🐿️ This module was generated automatically using v4.7.0 of
 //// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ////
 
@@ -13,7 +13,7 @@ import youid/uuid.{type Uuid}
 /// A row you get from running the `accept_offer` query
 /// defined in `./src/server/sql/accept_offer.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type AcceptOfferRow {
@@ -23,12 +23,12 @@ pub type AcceptOfferRow {
 /// Runs the `accept_offer` query
 /// defined in `./src/server/sql/accept_offer.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn accept_offer(
   db: pog.Connection,
-  arg_1: Int,
+  id: Int,
 ) -> Result(pog.Returned(AcceptOfferRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -39,7 +39,7 @@ pub fn accept_offer(
 returning id
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -47,7 +47,7 @@ returning id
 /// A row you get from running the `create_item` query
 /// defined in `./src/server/sql/create_item.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type CreateItemRow {
@@ -57,7 +57,7 @@ pub type CreateItemRow {
 /// Runs the `create_item` query
 /// defined in `./src/server/sql/create_item.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn create_item(
@@ -95,7 +95,7 @@ returning id
 /// A row you get from running the `create_message` query
 /// defined in `./src/server/sql/create_message.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type CreateMessageRow {
@@ -105,7 +105,7 @@ pub type CreateMessageRow {
 /// Runs the `create_message` query
 /// defined in `./src/server/sql/create_message.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn create_message(
@@ -133,7 +133,7 @@ returning id
 /// A row you get from running the `create_offer` query
 /// defined in `./src/server/sql/create_offer.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type CreateOfferRow {
@@ -143,7 +143,7 @@ pub type CreateOfferRow {
 /// Runs the `create_offer` query
 /// defined in `./src/server/sql/create_offer.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn create_offer(
@@ -173,7 +173,7 @@ returning id
 /// Runs the `create_profile` query
 /// defined in `./src/server/sql/create_profile.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn create_profile(
@@ -199,7 +199,7 @@ pub fn create_profile(
 /// A row you get from running the `create_rent_request` query
 /// defined in `./src/server/sql/create_rent_request.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type CreateRentRequestRow {
@@ -209,7 +209,7 @@ pub type CreateRentRequestRow {
 /// Runs the `create_rent_request` query
 /// defined in `./src/server/sql/create_rent_request.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn create_rent_request(
@@ -235,7 +235,7 @@ returning id
 /// A row you get from running the `create_session` query
 /// defined in `./src/server/sql/create_session.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type CreateSessionRow {
@@ -245,7 +245,7 @@ pub type CreateSessionRow {
 /// Runs the `create_session` query
 /// defined in `./src/server/sql/create_session.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn create_session(
@@ -276,7 +276,7 @@ pub fn create_session(
 /// A row you get from running the `create_user` query
 /// defined in `./src/server/sql/create_user.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type CreateUserRow {
@@ -286,7 +286,7 @@ pub type CreateUserRow {
 /// Runs the `create_user` query
 /// defined in `./src/server/sql/create_user.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn create_user(
@@ -311,7 +311,7 @@ pub fn create_user(
 /// Runs the `delete_all_items` query
 /// defined in `./src/server/sql/delete_all_items.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn delete_all_items(
@@ -329,7 +329,7 @@ pub fn delete_all_items(
 /// Runs the `delete_all_profiles` query
 /// defined in `./src/server/sql/delete_all_profiles.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn delete_all_profiles(
@@ -347,7 +347,7 @@ pub fn delete_all_profiles(
 /// Runs the `delete_all_users` query
 /// defined in `./src/server/sql/delete_all_users.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn delete_all_users(
@@ -365,7 +365,7 @@ pub fn delete_all_users(
 /// A row you get from running the `delete_item_image` query
 /// defined in `./src/server/sql/delete_item_image.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type DeleteItemImageRow {
@@ -375,13 +375,13 @@ pub type DeleteItemImageRow {
 /// Runs the `delete_item_image` query
 /// defined in `./src/server/sql/delete_item_image.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn delete_item_image(
   db: pog.Connection,
-  arg_1: Uuid,
-  arg_2: Int,
+  id: Uuid,
+  item_id: Int,
 ) -> Result(pog.Returned(DeleteItemImageRow), pog.QueryError) {
   let decoder = {
     use original_name <- decode.field(0, decode.string)
@@ -392,8 +392,8 @@ pub fn delete_item_image(
 returning original_name
 "
   |> pog.query
-  |> pog.parameter(pog.text(uuid.to_string(arg_1)))
-  |> pog.parameter(pog.int(arg_2))
+  |> pog.parameter(pog.text(uuid.to_string(id)))
+  |> pog.parameter(pog.int(item_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -401,19 +401,19 @@ returning original_name
 /// Runs the `delete_session` query
 /// defined in `./src/server/sql/delete_session.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn delete_session(
   db: pog.Connection,
-  arg_1: Int,
+  id: Int,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
   "delete from sessions where id = $1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -421,19 +421,19 @@ pub fn delete_session(
 /// Runs the `delete_user_sessions` query
 /// defined in `./src/server/sql/delete_user_sessions.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn delete_user_sessions(
   db: pog.Connection,
-  arg_1: Int,
+  user_id: Int,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
   "delete from sessions where user_id = $1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(user_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -441,19 +441,19 @@ pub fn delete_user_sessions(
 /// Runs the `expire_session_access` query
 /// defined in `./src/server/sql/expire_session_access.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn expire_session_access(
   db: pog.Connection,
-  arg_1: Int,
+  id: Int,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
   "update sessions set expires_at = now() where id = $1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -461,12 +461,12 @@ pub fn expire_session_access(
 /// Runs the `expire_session_access_for_email` query
 /// defined in `./src/server/sql/expire_session_access_for_email.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn expire_session_access_for_email(
   db: pog.Connection,
-  arg_1: String,
+  email: String,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
@@ -479,7 +479,7 @@ where user_id = (
 )
 "
   |> pog.query
-  |> pog.parameter(pog.text(arg_1))
+  |> pog.parameter(pog.text(email))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -487,19 +487,19 @@ where user_id = (
 /// Runs the `expire_session_refresh` query
 /// defined in `./src/server/sql/expire_session_refresh.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn expire_session_refresh(
   db: pog.Connection,
-  arg_1: Int,
+  id: Int,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
   "update sessions set refresh_expires_at = now() where id = $1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -507,12 +507,12 @@ pub fn expire_session_refresh(
 /// Runs the `expire_session_refresh_for_email` query
 /// defined in `./src/server/sql/expire_session_refresh_for_email.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn expire_session_refresh_for_email(
   db: pog.Connection,
-  arg_1: String,
+  email: String,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
@@ -525,7 +525,7 @@ where user_id = (
 )
 "
   |> pog.query
-  |> pog.parameter(pog.text(arg_1))
+  |> pog.parameter(pog.text(email))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -533,7 +533,7 @@ where user_id = (
 /// A row you get from running the `get_featured_items` query
 /// defined in `./src/server/sql/get_featured_items.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetFeaturedItemsRow {
@@ -554,7 +554,7 @@ pub type GetFeaturedItemsRow {
 /// Runs the `get_featured_items` query
 /// defined in `./src/server/sql/get_featured_items.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_featured_items(
@@ -621,7 +621,7 @@ order by score desc"
 /// A row you get from running the `get_featured_items_without_distance` query
 /// defined in `./src/server/sql/get_featured_items_without_distance.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetFeaturedItemsWithoutDistanceRow {
@@ -641,7 +641,7 @@ pub type GetFeaturedItemsWithoutDistanceRow {
 /// Runs the `get_featured_items_without_distance` query
 /// defined in `./src/server/sql/get_featured_items_without_distance.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_featured_items_without_distance(
@@ -698,7 +698,7 @@ order by score desc"
 /// A row you get from running the `get_item_by_id` query
 /// defined in `./src/server/sql/get_item_by_id.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetItemByIdRow {
@@ -720,12 +720,12 @@ pub type GetItemByIdRow {
 /// Runs the `get_item_by_id` query
 /// defined in `./src/server/sql/get_item_by_id.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_item_by_id(
   db: pog.Connection,
-  arg_1: Int,
+  items_id: Int,
 ) -> Result(pog.Returned(GetItemByIdRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -769,7 +769,7 @@ pub fn get_item_by_id(
 from items, profiles
 where items.id = $1 and items.author_id = profiles.id"
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(items_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -777,7 +777,7 @@ where items.id = $1 and items.author_id = profiles.id"
 /// A row you get from running the `get_item_image` query
 /// defined in `./src/server/sql/get_item_image.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetItemImageRow {
@@ -792,12 +792,12 @@ pub type GetItemImageRow {
 /// Runs the `get_item_image` query
 /// defined in `./src/server/sql/get_item_image.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_item_image(
   db: pog.Connection,
-  arg_1: Uuid,
+  id: Uuid,
 ) -> Result(pog.Returned(GetItemImageRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, uuid_decoder())
@@ -811,7 +811,7 @@ pub fn get_item_image(
 FROM item_images
 WHERE id = $1"
   |> pog.query
-  |> pog.parameter(pog.text(uuid.to_string(arg_1)))
+  |> pog.parameter(pog.text(uuid.to_string(id)))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -819,7 +819,7 @@ WHERE id = $1"
 /// A row you get from running the `get_item_images_for_item` query
 /// defined in `./src/server/sql/get_item_images_for_item.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetItemImagesForItemRow {
@@ -829,12 +829,12 @@ pub type GetItemImagesForItemRow {
 /// Runs the `get_item_images_for_item` query
 /// defined in `./src/server/sql/get_item_images_for_item.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_item_images_for_item(
   db: pog.Connection,
-  arg_1: Int,
+  item_id: Int,
 ) -> Result(pog.Returned(GetItemImagesForItemRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, uuid_decoder())
@@ -843,7 +843,7 @@ pub fn get_item_images_for_item(
 
   "select id from item_images where item_id = $1 order by sort_order, created_at"
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(item_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -851,7 +851,7 @@ pub fn get_item_images_for_item(
 /// A row you get from running the `get_latest_accepted_offer` query
 /// defined in `./src/server/sql/get_latest_accepted_offer.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetLatestAcceptedOfferRow {
@@ -859,33 +859,33 @@ pub type GetLatestAcceptedOfferRow {
     id: Int,
     rent_request_id: Int,
     sender_id: Int,
-    start_date: String,
-    end_date: String,
+    start_date: Timestamp,
+    end_date: Timestamp,
     accepted_at: Option(Timestamp),
-    created_at: String,
-    updated_at: String,
+    created_at: Timestamp,
+    updated_at: Timestamp,
   )
 }
 
 /// Runs the `get_latest_accepted_offer` query
 /// defined in `./src/server/sql/get_latest_accepted_offer.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_latest_accepted_offer(
   db: pog.Connection,
-  arg_1: Int,
+  rent_request_id: Int,
 ) -> Result(pog.Returned(GetLatestAcceptedOfferRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
     use rent_request_id <- decode.field(1, decode.int)
     use sender_id <- decode.field(2, decode.int)
-    use start_date <- decode.field(3, decode.string)
-    use end_date <- decode.field(4, decode.string)
+    use start_date <- decode.field(3, pog.timestamp_decoder())
+    use end_date <- decode.field(4, pog.timestamp_decoder())
     use accepted_at <- decode.field(5, decode.optional(pog.timestamp_decoder()))
-    use created_at <- decode.field(6, decode.string)
-    use updated_at <- decode.field(7, decode.string)
+    use created_at <- decode.field(6, pog.timestamp_decoder())
+    use updated_at <- decode.field(7, pog.timestamp_decoder())
     decode.success(GetLatestAcceptedOfferRow(
       id:,
       rent_request_id:,
@@ -902,18 +902,18 @@ pub fn get_latest_accepted_offer(
   id,
   rent_request_id,
   sender_id,
-  start_date::text as start_date,
-  end_date::text as end_date,
+  start_date as start_date,
+  end_date as end_date,
   accepted_at as accepted_at,
-  created_at::text as created_at,
-  updated_at::text as updated_at
+  created_at as created_at,
+  updated_at as updated_at
 FROM rent_offers
 WHERE rent_request_id = $1 AND accepted_at IS NOT NULL
 ORDER BY accepted_at DESC
 LIMIT 1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(rent_request_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -921,7 +921,7 @@ LIMIT 1
 /// A row you get from running the `get_latest_open_offer` query
 /// defined in `./src/server/sql/get_latest_open_offer.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetLatestOpenOfferRow {
@@ -929,33 +929,33 @@ pub type GetLatestOpenOfferRow {
     id: Int,
     rent_request_id: Int,
     sender_id: Int,
-    start_date: String,
-    end_date: String,
+    start_date: Timestamp,
+    end_date: Timestamp,
     accepted_at: Option(Timestamp),
-    created_at: String,
-    updated_at: String,
+    created_at: Timestamp,
+    updated_at: Timestamp,
   )
 }
 
 /// Runs the `get_latest_open_offer` query
 /// defined in `./src/server/sql/get_latest_open_offer.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_latest_open_offer(
   db: pog.Connection,
-  arg_1: Int,
+  rent_request_id: Int,
 ) -> Result(pog.Returned(GetLatestOpenOfferRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
     use rent_request_id <- decode.field(1, decode.int)
     use sender_id <- decode.field(2, decode.int)
-    use start_date <- decode.field(3, decode.string)
-    use end_date <- decode.field(4, decode.string)
+    use start_date <- decode.field(3, pog.timestamp_decoder())
+    use end_date <- decode.field(4, pog.timestamp_decoder())
     use accepted_at <- decode.field(5, decode.optional(pog.timestamp_decoder()))
-    use created_at <- decode.field(6, decode.string)
-    use updated_at <- decode.field(7, decode.string)
+    use created_at <- decode.field(6, pog.timestamp_decoder())
+    use updated_at <- decode.field(7, pog.timestamp_decoder())
     decode.success(GetLatestOpenOfferRow(
       id:,
       rent_request_id:,
@@ -972,18 +972,18 @@ pub fn get_latest_open_offer(
   id,
   rent_request_id,
   sender_id,
-  start_date::text as start_date,
-  end_date::text as end_date,
+  start_date as start_date,
+  end_date as end_date,
   accepted_at as accepted_at,
-  created_at::text as created_at,
-  updated_at::text as updated_at
+  created_at as created_at,
+  updated_at as updated_at
 FROM rent_offers
 WHERE rent_request_id = $1 AND accepted_at IS NULL
 ORDER BY created_at DESC
 LIMIT 1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(rent_request_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -991,7 +991,7 @@ LIMIT 1
 /// A row you get from running the `get_messages_for_request` query
 /// defined in `./src/server/sql/get_messages_for_request.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetMessagesForRequestRow {
@@ -1000,26 +1000,26 @@ pub type GetMessagesForRequestRow {
     rent_request_id: Int,
     author_id: Int,
     content: String,
-    created_at: String,
+    created_at: Timestamp,
   )
 }
 
 /// Runs the `get_messages_for_request` query
 /// defined in `./src/server/sql/get_messages_for_request.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_messages_for_request(
   db: pog.Connection,
-  arg_1: Int,
+  rent_request_id: Int,
 ) -> Result(pog.Returned(GetMessagesForRequestRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
     use rent_request_id <- decode.field(1, decode.int)
     use author_id <- decode.field(2, decode.int)
     use content <- decode.field(3, decode.string)
-    use created_at <- decode.field(4, decode.string)
+    use created_at <- decode.field(4, pog.timestamp_decoder())
     decode.success(GetMessagesForRequestRow(
       id:,
       rent_request_id:,
@@ -1034,13 +1034,13 @@ pub fn get_messages_for_request(
   rent_request_id,
   author_id,
   content,
-  created_at::text as created_at
+  created_at as created_at
 FROM messages
 WHERE rent_request_id = $1
 ORDER BY created_at ASC
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(rent_request_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1048,7 +1048,7 @@ ORDER BY created_at ASC
 /// A row you get from running the `get_offer_by_id` query
 /// defined in `./src/server/sql/get_offer_by_id.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetOfferByIdRow {
@@ -1056,33 +1056,33 @@ pub type GetOfferByIdRow {
     id: Int,
     rent_request_id: Int,
     sender_id: Int,
-    start_date: String,
-    end_date: String,
+    start_date: Timestamp,
+    end_date: Timestamp,
     accepted_at: Option(Timestamp),
-    created_at: String,
-    updated_at: String,
+    created_at: Timestamp,
+    updated_at: Timestamp,
   )
 }
 
 /// Runs the `get_offer_by_id` query
 /// defined in `./src/server/sql/get_offer_by_id.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_offer_by_id(
   db: pog.Connection,
-  arg_1: Int,
+  id: Int,
 ) -> Result(pog.Returned(GetOfferByIdRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
     use rent_request_id <- decode.field(1, decode.int)
     use sender_id <- decode.field(2, decode.int)
-    use start_date <- decode.field(3, decode.string)
-    use end_date <- decode.field(4, decode.string)
+    use start_date <- decode.field(3, pog.timestamp_decoder())
+    use end_date <- decode.field(4, pog.timestamp_decoder())
     use accepted_at <- decode.field(5, decode.optional(pog.timestamp_decoder()))
-    use created_at <- decode.field(6, decode.string)
-    use updated_at <- decode.field(7, decode.string)
+    use created_at <- decode.field(6, pog.timestamp_decoder())
+    use updated_at <- decode.field(7, pog.timestamp_decoder())
     decode.success(GetOfferByIdRow(
       id:,
       rent_request_id:,
@@ -1099,16 +1099,16 @@ pub fn get_offer_by_id(
   id,
   rent_request_id,
   sender_id,
-  start_date::text as start_date,
-  end_date::text as end_date,
+  start_date as start_date,
+  end_date as end_date,
   accepted_at as accepted_at,
-  created_at::text as created_at,
-  updated_at::text as updated_at
+  created_at as created_at,
+  updated_at as updated_at
 FROM rent_offers
 WHERE id = $1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1116,7 +1116,7 @@ WHERE id = $1
 /// A row you get from running the `get_offers_for_request` query
 /// defined in `./src/server/sql/get_offers_for_request.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetOffersForRequestRow {
@@ -1124,33 +1124,33 @@ pub type GetOffersForRequestRow {
     id: Int,
     rent_request_id: Int,
     sender_id: Int,
-    start_date: String,
-    end_date: String,
+    start_date: Timestamp,
+    end_date: Timestamp,
     accepted_at: Option(Timestamp),
-    created_at: String,
-    updated_at: String,
+    created_at: Timestamp,
+    updated_at: Timestamp,
   )
 }
 
 /// Runs the `get_offers_for_request` query
 /// defined in `./src/server/sql/get_offers_for_request.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_offers_for_request(
   db: pog.Connection,
-  arg_1: Int,
+  rent_request_id: Int,
 ) -> Result(pog.Returned(GetOffersForRequestRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
     use rent_request_id <- decode.field(1, decode.int)
     use sender_id <- decode.field(2, decode.int)
-    use start_date <- decode.field(3, decode.string)
-    use end_date <- decode.field(4, decode.string)
+    use start_date <- decode.field(3, pog.timestamp_decoder())
+    use end_date <- decode.field(4, pog.timestamp_decoder())
     use accepted_at <- decode.field(5, decode.optional(pog.timestamp_decoder()))
-    use created_at <- decode.field(6, decode.string)
-    use updated_at <- decode.field(7, decode.string)
+    use created_at <- decode.field(6, pog.timestamp_decoder())
+    use updated_at <- decode.field(7, pog.timestamp_decoder())
     decode.success(GetOffersForRequestRow(
       id:,
       rent_request_id:,
@@ -1167,17 +1167,17 @@ pub fn get_offers_for_request(
   id,
   rent_request_id,
   sender_id,
-  start_date::text as start_date,
-  end_date::text as end_date,
+  start_date as start_date,
+  end_date as end_date,
   accepted_at as accepted_at,
-  created_at::text as created_at,
-  updated_at::text as updated_at
+  created_at as created_at,
+  updated_at as updated_at
 FROM rent_offers
 WHERE rent_request_id = $1
 ORDER BY created_at ASC
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(rent_request_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1185,7 +1185,7 @@ ORDER BY created_at ASC
 /// A row you get from running the `get_open_rent_request_for_item_and_user` query
 /// defined in `./src/server/sql/get_open_rent_request_for_item_and_user.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetOpenRentRequestForItemAndUserRow {
@@ -1209,13 +1209,13 @@ pub type GetOpenRentRequestForItemAndUserRow {
 /// Runs the `get_open_rent_request_for_item_and_user` query
 /// defined in `./src/server/sql/get_open_rent_request_for_item_and_user.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_open_rent_request_for_item_and_user(
   db: pog.Connection,
-  arg_1: Int,
-  arg_2: Int,
+  rr_item_id: Int,
+  rr_requester_id: Int,
 ) -> Result(pog.Returned(GetOpenRentRequestForItemAndUserRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -1274,8 +1274,8 @@ ORDER BY rr.created_at DESC
 LIMIT 1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
-  |> pog.parameter(pog.int(arg_2))
+  |> pog.parameter(pog.int(rr_item_id))
+  |> pog.parameter(pog.int(rr_requester_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1283,7 +1283,7 @@ LIMIT 1
 /// A row you get from running the `get_profile` query
 /// defined in `./src/server/sql/get_profile.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetProfileRow {
@@ -1298,12 +1298,12 @@ pub type GetProfileRow {
 /// Runs the `get_profile` query
 /// defined in `./src/server/sql/get_profile.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_profile(
   db: pog.Connection,
-  arg_1: Int,
+  id: Int,
 ) -> Result(pog.Returned(GetProfileRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -1318,7 +1318,7 @@ FROM profiles
 WHERE id = $1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1326,7 +1326,7 @@ WHERE id = $1
 /// A row you get from running the `get_rent_request_by_id` query
 /// defined in `./src/server/sql/get_rent_request_by_id.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetRentRequestByIdRow {
@@ -1350,12 +1350,12 @@ pub type GetRentRequestByIdRow {
 /// Runs the `get_rent_request_by_id` query
 /// defined in `./src/server/sql/get_rent_request_by_id.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_rent_request_by_id(
   db: pog.Connection,
-  arg_1: Int,
+  rr_id: Int,
 ) -> Result(pog.Returned(GetRentRequestByIdRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -1412,7 +1412,7 @@ JOIN profiles owner ON owner.id = items.author_id
 WHERE rr.id = $1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(rr_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1420,7 +1420,7 @@ WHERE rr.id = $1
 /// A row you get from running the `get_rent_requests_for_user` query
 /// defined in `./src/server/sql/get_rent_requests_for_user.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetRentRequestsForUserRow {
@@ -1444,12 +1444,12 @@ pub type GetRentRequestsForUserRow {
 /// Runs the `get_rent_requests_for_user` query
 /// defined in `./src/server/sql/get_rent_requests_for_user.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_rent_requests_for_user(
   db: pog.Connection,
-  arg_1: Int,
+  rr_requester_id: Int,
 ) -> Result(pog.Returned(GetRentRequestsForUserRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -1507,7 +1507,7 @@ WHERE rr.requester_id = $1 OR items.author_id = $1
 ORDER BY rr.updated_at DESC
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(rr_requester_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1515,7 +1515,7 @@ ORDER BY rr.updated_at DESC
 /// A row you get from running the `get_session_by_refresh_token` query
 /// defined in `./src/server/sql/get_session_by_refresh_token.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetSessionByRefreshTokenRow {
@@ -1535,12 +1535,12 @@ pub type GetSessionByRefreshTokenRow {
 /// Runs the `get_session_by_refresh_token` query
 /// defined in `./src/server/sql/get_session_by_refresh_token.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_session_by_refresh_token(
   db: pog.Connection,
-  arg_1: String,
+  s_refresh_token_hash: String,
 ) -> Result(pog.Returned(GetSessionByRefreshTokenRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -1574,7 +1574,7 @@ join users u on s.user_id = u.id
 where s.refresh_token_hash = $1
 "
   |> pog.query
-  |> pog.parameter(pog.text(arg_1))
+  |> pog.parameter(pog.text(s_refresh_token_hash))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1582,7 +1582,7 @@ where s.refresh_token_hash = $1
 /// A row you get from running the `get_session_by_token` query
 /// defined in `./src/server/sql/get_session_by_token.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetSessionByTokenRow {
@@ -1602,12 +1602,12 @@ pub type GetSessionByTokenRow {
 /// Runs the `get_session_by_token` query
 /// defined in `./src/server/sql/get_session_by_token.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_session_by_token(
   db: pog.Connection,
-  arg_1: String,
+  s_token_hash: String,
 ) -> Result(pog.Returned(GetSessionByTokenRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -1641,7 +1641,7 @@ join users u on s.user_id = u.id
 where s.token_hash = $1
 "
   |> pog.query
-  |> pog.parameter(pog.text(arg_1))
+  |> pog.parameter(pog.text(s_token_hash))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1649,7 +1649,7 @@ where s.token_hash = $1
 /// A row you get from running the `get_user_by_email` query
 /// defined in `./src/server/sql/get_user_by_email.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetUserByEmailRow {
@@ -1665,12 +1665,12 @@ pub type GetUserByEmailRow {
 /// Runs the `get_user_by_email` query
 /// defined in `./src/server/sql/get_user_by_email.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_user_by_email(
   db: pog.Connection,
-  arg_1: String,
+  email: String,
 ) -> Result(pog.Returned(GetUserByEmailRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -1692,7 +1692,7 @@ from users
 where email = $1
 "
   |> pog.query
-  |> pog.parameter(pog.text(arg_1))
+  |> pog.parameter(pog.text(email))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1700,7 +1700,7 @@ where email = $1
 /// A row you get from running the `get_user_by_id` query
 /// defined in `./src/server/sql/get_user_by_id.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type GetUserByIdRow {
@@ -1716,12 +1716,12 @@ pub type GetUserByIdRow {
 /// Runs the `get_user_by_id` query
 /// defined in `./src/server/sql/get_user_by_id.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn get_user_by_id(
   db: pog.Connection,
-  arg_1: Int,
+  id: Int,
 ) -> Result(pog.Returned(GetUserByIdRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -1743,7 +1743,7 @@ from users
 where id = $1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1751,7 +1751,7 @@ where id = $1
 /// A row you get from running the `insert_item_image` query
 /// defined in `./src/server/sql/insert_item_image.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type InsertItemImageRow {
@@ -1761,7 +1761,7 @@ pub type InsertItemImageRow {
 /// Runs the `insert_item_image` query
 /// defined in `./src/server/sql/insert_item_image.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn insert_item_image(
@@ -1793,7 +1793,7 @@ returning id"
 /// A row you get from running the `list_sessions` query
 /// defined in `./src/server/sql/list_sessions.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type ListSessionsRow {
@@ -1812,7 +1812,7 @@ pub type ListSessionsRow {
 /// Runs the `list_sessions` query
 /// defined in `./src/server/sql/list_sessions.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn list_sessions(
@@ -1853,7 +1853,7 @@ order by s.created_at desc
 /// A row you get from running the `list_users` query
 /// defined in `./src/server/sql/list_users.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type ListUsersRow {
@@ -1868,7 +1868,7 @@ pub type ListUsersRow {
 /// Runs the `list_users` query
 /// defined in `./src/server/sql/list_users.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn list_users(
@@ -1892,7 +1892,7 @@ pub fn list_users(
 /// A row you get from running the `update_item` query
 /// defined in `./src/server/sql/update_item.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type UpdateItemRow {
@@ -1902,7 +1902,7 @@ pub type UpdateItemRow {
 /// Runs the `update_item` query
 /// defined in `./src/server/sql/update_item.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn update_item(
@@ -1913,8 +1913,8 @@ pub fn update_item(
   arg_4: String,
   arg_5: Float,
   arg_6: Float,
-  arg_7: Int,
-  arg_8: Int,
+  id: Int,
+  author_id: Int,
 ) -> Result(pog.Returned(UpdateItemRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
@@ -1931,8 +1931,8 @@ returning id
   |> pog.parameter(pog.text(arg_4))
   |> pog.parameter(pog.float(arg_5))
   |> pog.parameter(pog.float(arg_6))
-  |> pog.parameter(pog.int(arg_7))
-  |> pog.parameter(pog.int(arg_8))
+  |> pog.parameter(pog.int(id))
+  |> pog.parameter(pog.int(author_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1940,7 +1940,7 @@ returning id
 /// A row you get from running the `update_item_image_sort_order` query
 /// defined in `./src/server/sql/update_item_image_sort_order.sql`.
 ///
-/// > 🐿️ This type definition was generated automatically using v4.6.0 of the
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
 /// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub type UpdateItemImageSortOrderRow {
@@ -1950,14 +1950,14 @@ pub type UpdateItemImageSortOrderRow {
 /// Runs the `update_item_image_sort_order` query
 /// defined in `./src/server/sql/update_item_image_sort_order.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn update_item_image_sort_order(
   db: pog.Connection,
-  arg_1: Uuid,
-  arg_2: Int,
-  arg_3: Int,
+  id: Uuid,
+  item_id: Int,
+  sort_order: Int,
 ) -> Result(pog.Returned(UpdateItemImageSortOrderRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, uuid_decoder())
@@ -1968,9 +1968,9 @@ pub fn update_item_image_sort_order(
 returning id
 "
   |> pog.query
-  |> pog.parameter(pog.text(uuid.to_string(arg_1)))
-  |> pog.parameter(pog.int(arg_2))
-  |> pog.parameter(pog.int(arg_3))
+  |> pog.parameter(pog.text(uuid.to_string(id)))
+  |> pog.parameter(pog.int(item_id))
+  |> pog.parameter(pog.int(sort_order))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1978,19 +1978,19 @@ returning id
 /// Runs the `update_last_online` query
 /// defined in `./src/server/sql/update_last_online.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn update_last_online(
   db: pog.Connection,
-  arg_1: Int,
+  id: Int,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
   "update users set last_online_at = now() where id = $1
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -1998,19 +1998,19 @@ pub fn update_last_online(
 /// Runs the `update_rent_request_borrow` query
 /// defined in `./src/server/sql/update_rent_request_borrow.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn update_rent_request_borrow(
   db: pog.Connection,
-  arg_1: Int,
+  id: Int,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
-  "UPDATE rent_requests SET borrow_confirmed_at = now(), updated_at = now() WHERE id = $1
+  "UPDATE rent_requests SET borrow_confirmed_at = now(), updated_at = now() WHERE id = $1 AND borrow_confirmed_at IS NULL
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -2018,13 +2018,13 @@ pub fn update_rent_request_borrow(
 /// Runs the `update_rent_request_latest_accepted` query
 /// defined in `./src/server/sql/update_rent_request_latest_accepted.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn update_rent_request_latest_accepted(
   db: pog.Connection,
   arg_1: Int,
-  arg_2: Int,
+  id: Int,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
@@ -2032,7 +2032,7 @@ pub fn update_rent_request_latest_accepted(
 "
   |> pog.query
   |> pog.parameter(pog.int(arg_1))
-  |> pog.parameter(pog.int(arg_2))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -2040,13 +2040,13 @@ pub fn update_rent_request_latest_accepted(
 /// Runs the `update_rent_request_latest_open` query
 /// defined in `./src/server/sql/update_rent_request_latest_open.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn update_rent_request_latest_open(
   db: pog.Connection,
   arg_1: Int,
-  arg_2: Int,
+  id: Int,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
@@ -2054,7 +2054,7 @@ pub fn update_rent_request_latest_open(
 "
   |> pog.query
   |> pog.parameter(pog.int(arg_1))
-  |> pog.parameter(pog.int(arg_2))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -2062,19 +2062,19 @@ pub fn update_rent_request_latest_open(
 /// Runs the `update_rent_request_returned` query
 /// defined in `./src/server/sql/update_rent_request_returned.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn update_rent_request_returned(
   db: pog.Connection,
-  arg_1: Int,
+  id: Int,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
-  "UPDATE rent_requests SET returned_at = now(), updated_at = now() WHERE id = $1
+  "UPDATE rent_requests SET returned_at = now(), updated_at = now() WHERE id = $1 AND returned_at IS NULL
 "
   |> pog.query
-  |> pog.parameter(pog.int(arg_1))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -2082,7 +2082,7 @@ pub fn update_rent_request_returned(
 /// Runs the `update_session_tokens` query
 /// defined in `./src/server/sql/update_session_tokens.sql`.
 ///
-/// > 🐿️ This function was generated automatically using v4.6.0 of
+/// > 🐿️ This function was generated automatically using v4.7.0 of
 /// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
 ///
 pub fn update_session_tokens(
@@ -2090,8 +2090,8 @@ pub fn update_session_tokens(
   arg_1: String,
   arg_2: Timestamp,
   arg_3: String,
-  arg_4: Timestamp,
-  arg_5: Int,
+  refresh_expires_at: Timestamp,
+  id: Int,
 ) -> Result(pog.Returned(Nil), pog.QueryError) {
   let decoder = decode.map(decode.dynamic, fn(_) { Nil })
 
@@ -2103,8 +2103,8 @@ where id = $5
   |> pog.parameter(pog.text(arg_1))
   |> pog.parameter(pog.timestamp(arg_2))
   |> pog.parameter(pog.text(arg_3))
-  |> pog.parameter(pog.timestamp(arg_4))
-  |> pog.parameter(pog.int(arg_5))
+  |> pog.parameter(pog.timestamp(refresh_expires_at))
+  |> pog.parameter(pog.int(id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }

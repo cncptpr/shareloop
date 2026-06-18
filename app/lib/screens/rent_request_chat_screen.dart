@@ -34,30 +34,49 @@ class _RentRequestChatScreenState
   final _scrollController = ScrollController();
   int? _requestId;
   bool _creatingRequest = false;
+  bool _showScrollToBottom = false;
+  bool _didInitialScroll = false;
 
   @override
   void initState() {
     super.initState();
     _requestId = widget.requestId;
+    _scrollController.addListener(_onScrollChanged);
   }
 
   @override
   void dispose() {
     _messageController.dispose();
+    _scrollController.removeListener(_onScrollChanged);
     _scrollController.dispose();
     super.dispose();
   }
 
+  void _onScrollChanged() {
+    if (!_scrollController.hasClients) return;
+    const threshold = 150.0;
+    final atBottom = _scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - threshold;
+    final shouldShow = !atBottom;
+    if (shouldShow != _showScrollToBottom && mounted) {
+      setState(() => _showScrollToBottom = shouldShow);
+    }
+  }
+
   void _scrollToBottom() {
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(
+        _scrollController.position.maxScrollExtent,
+      );
+    }
+  }
+
+  void _tryScrollToBottom() {
+    if (_scrollController.hasClients &&
+        _scrollController.position.maxScrollExtent > 0) {
+      _scrollToBottom();
+      _didInitialScroll = true;
+    }
   }
 
   Future<void> _ensureRequestCreated() async {
@@ -342,6 +361,10 @@ class _RentRequestChatScreenState
 
     final title = request?.itemTitle ?? 'Neue Anfrage';
 
+    if (!_didInitialScroll && _requestId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _tryScrollToBottom());
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -378,16 +401,29 @@ class _RentRequestChatScreenState
           if (request != null)
             _StatusBanner(request: request, isOwner: isOwner),
           Expanded(
-            child: _buildChatList(
-              messages,
-              offers,
-              userId,
-              isOwner,
-              isRequester,
-              request,
-              hasAcceptedOffer,
-              isBorrowed,
-              isReturned,
+            child: Stack(
+              children: [
+                _buildChatList(
+                  messages,
+                  offers,
+                  userId,
+                  isOwner,
+                  isRequester,
+                  request,
+                  hasAcceptedOffer,
+                  isBorrowed,
+                  isReturned,
+                ),
+                if (_showScrollToBottom)
+                  Positioned(
+                    right: 16,
+                    bottom: 16,
+                    child: FloatingActionButton.small(
+                      onPressed: _scrollToBottom,
+                      child: const Icon(Icons.arrow_downward),
+                    ),
+                  ),
+              ],
             ),
           ),
           _MessageInput(

@@ -8,7 +8,7 @@ description = "Generate Gleam types, routes, and middleware from the OpenAPI spe
 run = "gleam run -m oaspec -- generate"
 dir = "server"
 sources = ["../api/*.openapi.yaml"]
-outputs = ["./src/generated/*.gleam"]
+outputs = ["./src/openapi/*.gleam"]
 
 [tasks."server:sql:gen"]
 description = "Generate Gleam SQL bindings from .sql queries with squirrel"

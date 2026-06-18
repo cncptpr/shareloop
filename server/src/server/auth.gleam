@@ -1,4 +1,4 @@
-import generated/types
+import openapi/types
 import gleam/list
 import gleam/order
 import gleam/result

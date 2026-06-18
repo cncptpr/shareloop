@@ -59,8 +59,3 @@ lib/model/upload_item_image_request.dart
 lib/model/upload_item_image_response.dart
 lib/model/user.dart
 pubspec.yaml
-test/create_offer_request_test.dart
-test/message_test.dart
-test/rent_offer_test.dart
-test/rent_request_test.dart
-test/send_message_request_test.dart

@@ -1,6 +1,4 @@
-import generated/request_types
-import generated/response_types
-import generated/types
+/// This file is safe to edit. It will not be overridden by oaspec.
 import gleam/bit_array
 import gleam/dynamic/decode
 import gleam/io
@@ -8,6 +6,9 @@ import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/string
+import openapi/request_types
+import openapi/response_types
+import openapi/types
 import pog
 import server/auth
 import server/featured_items
@@ -85,11 +86,10 @@ pub fn get_featured_items(
 
 pub fn get_image(
   state: State,
-  req: request_types.GetImageRequest,
+  _req: request_types.GetImageRequest,
 ) -> response_types.GetImageResponse {
   let _ = state
-  let _ = req
-  response_types.GetImageResponseOk("")
+  response_types.GetImageResponseNotFound
 }
 
 pub fn create_item(
@@ -99,15 +99,12 @@ pub fn create_item(
   let body = req.body
 
   case verify_auth(state) {
-    Error(_) ->
-      response_types.CreateItemResponseCreated(types.CreateItemResponse(id: 0))
+    Error(_) -> response_types.CreateItemResponseUnauthorized
     Ok(user) -> {
       case body.city == "" || body.postal_code == "" {
         True -> {
           io.println("[handlers] city and postal_code must not be empty")
-          response_types.CreateItemResponseCreated(types.CreateItemResponse(
-            id: 0,
-          ))
+          response_types.CreateItemResponseInternalServerError
         }
         False -> {
           case
@@ -131,18 +128,14 @@ pub fn create_item(
                   )
                 Error(_) -> {
                   io.println("[handlers] No row returned from create_item")
-                  response_types.CreateItemResponseCreated(
-                    types.CreateItemResponse(id: 0),
-                  )
+                  response_types.CreateItemResponseInternalServerError
                 }
               }
             Error(e) -> {
               io.println(
                 "[handlers] DB error creating item: " <> string.inspect(e),
               )
-              response_types.CreateItemResponseCreated(types.CreateItemResponse(
-                id: 0,
-              ))
+              response_types.CreateItemResponseInternalServerError
             }
           }
         }
@@ -247,7 +240,7 @@ pub fn get_item_edit(
         created_at: row.created_at,
       ))
     Error(GetItemEditUnauthorized) ->
-      response_types.GetItemEditResponseForbidden
+      response_types.GetItemEditResponseUnauthorized
     Error(GetItemEditNotFound) -> response_types.GetItemEditResponseNotFound
     Error(GetItemEditForbidden) -> response_types.GetItemEditResponseForbidden
   }
@@ -263,7 +256,7 @@ pub fn update_item(
     True -> response_types.UpdateItemResponseNotFound
     False -> {
       case verify_auth(state) {
-        Error(_) -> response_types.UpdateItemResponseNotFound
+        Error(_) -> response_types.UpdateItemResponseUnauthorized
         Ok(user) -> {
           case sql.get_item_by_id(state.conn, req.item_id) {
             Error(_) -> response_types.UpdateItemResponseNotFound
@@ -316,16 +309,10 @@ pub fn upload_item_image(
   let body = req.body
 
   case verify_auth(state) {
-    Error(_) ->
-      response_types.UploadItemImageResponseCreated(
-        types.UploadItemImageResponse(uuid: ""),
-      )
+    Error(_) -> response_types.UploadItemImageResponseUnauthorized
     Ok(user) -> {
       case bit_array.base64_decode(body.data) {
-        Error(_) ->
-          response_types.UploadItemImageResponseCreated(
-            types.UploadItemImageResponse(uuid: ""),
-          )
+        Error(_) -> response_types.UploadItemImageResponseInternalServerError
         Ok(image_bytes) -> {
           let #(ext, mime) = detect_ext_and_mime(body.filename)
           let image_uuid = uuid.v4()
@@ -333,16 +320,10 @@ pub fn upload_item_image(
           let filepath = "uploads/" <> uuid_string <> "." <> ext
 
           case verify_item_owner(state.conn, req.item_id, user.id) {
-            Error(_) ->
-              response_types.UploadItemImageResponseCreated(
-                types.UploadItemImageResponse(uuid: ""),
-              )
+            Error(_) -> response_types.UploadItemImageResponseForbidden
             Ok(_) -> {
               case simplifile.write_bits(filepath, image_bytes) {
-                Error(_) ->
-                  response_types.UploadItemImageResponseCreated(
-                    types.UploadItemImageResponse(uuid: ""),
-                  )
+                Error(_) -> response_types.UploadItemImageResponseInternalServerError
                 Ok(_) -> {
                   io.println("[handlers] Wrote " <> filepath)
 
@@ -359,16 +340,12 @@ pub fn upload_item_image(
                     Error(e) -> {
                       io.println("[handlers] DB error: " <> string.inspect(e))
                       let _ = simplifile.delete_file(filepath)
-                      response_types.UploadItemImageResponseCreated(
-                        types.UploadItemImageResponse(uuid: ""),
-                      )
+                      response_types.UploadItemImageResponseInternalServerError
                     }
                     Ok(returned) ->
                       case list.first(returned.rows) {
                         Error(_) ->
-                          response_types.UploadItemImageResponseCreated(
-                            types.UploadItemImageResponse(uuid: ""),
-                          )
+                          response_types.UploadItemImageResponseInternalServerError
                         Ok(_row) -> {
                           io.println(
                             "[handlers] Created image id=" <> uuid_string,
@@ -394,16 +371,16 @@ pub fn edit_item_images(
   req: request_types.EditItemImagesRequest,
 ) -> response_types.EditItemImagesResponse {
   case verify_auth(state) {
-    Error(_) -> response_types.EditItemImagesResponseNoContent
+    Error(_) -> response_types.EditItemImagesResponseUnauthorized
     Ok(user) -> {
       case sql.get_item_by_id(state.conn, req.item_id) {
-        Error(_) -> response_types.EditItemImagesResponseNoContent
+        Error(_) -> response_types.EditItemImagesResponseNotFound
         Ok(r) ->
           case list.first(r.rows) {
-            Error(_) -> response_types.EditItemImagesResponseNoContent
+            Error(_) -> response_types.EditItemImagesResponseNotFound
             Ok(item_row) -> {
               case item_row.author_id == user.id {
-                False -> response_types.EditItemImagesResponseNoContent
+                False -> response_types.EditItemImagesResponseForbidden
                 True -> {
                   list.each(req.body.delete, fn(uuid_string) {
                     case uuid.from_string(uuid_string) {
@@ -530,39 +507,11 @@ pub fn create_rent_request(
   req: request_types.CreateRentRequestRequest,
 ) -> response_types.CreateRentRequestResponse {
   case verify_auth(state) {
-    Error(_) ->
-      response_types.CreateRentRequestResponseCreated(types.RentRequest(
-        id: 0,
-        item_id: 0,
-        requester: types.Person(id: 0, name: ""),
-        item_title: "",
-        owner_name: "",
-        owner_id: 0,
-        latest_accepted_offer_id: None,
-        latest_open_offer_id: None,
-        borrow_confirmed_at: None,
-        returned_at: None,
-        created_at: "",
-        updated_at: "",
-      ))
+    Error(_) -> response_types.CreateRentRequestResponseUnauthorized
     Ok(user) -> {
       case renting.create_rent_request(state.conn, user.id, req.item_id) {
         Ok(request) -> response_types.CreateRentRequestResponseCreated(request)
-        Error(_) ->
-          response_types.CreateRentRequestResponseCreated(types.RentRequest(
-            id: 0,
-            item_id: 0,
-            requester: types.Person(id: 0, name: ""),
-            item_title: "",
-            owner_name: "",
-            owner_id: 0,
-            latest_accepted_offer_id: None,
-            latest_open_offer_id: None,
-            borrow_confirmed_at: None,
-            returned_at: None,
-            created_at: "",
-            updated_at: "",
-          ))
+        Error(_) -> response_types.CreateRentRequestResponseInternalServerError
       }
     }
   }
@@ -572,11 +521,11 @@ pub fn get_rent_requests(
   state: State,
 ) -> response_types.GetRentRequestsResponse {
   case verify_auth(state) {
-    Error(_) -> response_types.GetRentRequestsResponseOk([])
+    Error(_) -> response_types.GetRentRequestsResponseUnauthorized
     Ok(user) -> {
       case renting.get_rent_requests(state.conn, user.id) {
         Ok(requests) -> response_types.GetRentRequestsResponseOk(requests)
-        Error(_) -> response_types.GetRentRequestsResponseOk([])
+        Error(_) -> response_types.GetRentRequestsResponseInternalServerError
       }
     }
   }
@@ -587,7 +536,7 @@ pub fn get_rent_request(
   req: request_types.GetRentRequestRequest,
 ) -> response_types.GetRentRequestResponse {
   case verify_auth(state) {
-    Error(_) -> response_types.GetRentRequestResponseNotFound
+    Error(_) -> response_types.GetRentRequestResponseUnauthorized
     Ok(user) -> {
       case renting.get_rent_request_by_id(state.conn, req.request_id, user.id) {
         Ok(request) -> response_types.GetRentRequestResponseOk(request)
@@ -602,14 +551,7 @@ pub fn send_message(
   req: request_types.SendMessageRequest,
 ) -> response_types.SendMessageResponse {
   case verify_auth(state) {
-    Error(_) ->
-      response_types.SendMessageResponseCreated(types.Message(
-        id: 0,
-        rent_request_id: 0,
-        author_id: 0,
-        content: "",
-        created_at: "",
-      ))
+    Error(_) -> response_types.SendMessageResponseUnauthorized
     Ok(user) -> {
       case
         renting.send_message(
@@ -620,14 +562,7 @@ pub fn send_message(
         )
       {
         Ok(message) -> response_types.SendMessageResponseCreated(message)
-        Error(_) ->
-          response_types.SendMessageResponseCreated(types.Message(
-            id: 0,
-            rent_request_id: 0,
-            author_id: 0,
-            content: "",
-            created_at: "",
-          ))
+        Error(_) -> response_types.SendMessageResponseInternalServerError
       }
     }
   }
@@ -638,11 +573,11 @@ pub fn get_messages(
   req: request_types.GetMessagesRequest,
 ) -> response_types.GetMessagesResponse {
   case verify_auth(state) {
-    Error(_) -> response_types.GetMessagesResponseOk([])
+    Error(_) -> response_types.GetMessagesResponseUnauthorized
     Ok(user) -> {
       case renting.get_messages(state.conn, req.request_id, user.id) {
         Ok(messages) -> response_types.GetMessagesResponseOk(messages)
-        Error(_) -> response_types.GetMessagesResponseOk([])
+        Error(_) -> response_types.GetMessagesResponseInternalServerError
       }
     }
   }
@@ -653,17 +588,7 @@ pub fn create_offer(
   req: request_types.CreateOfferRequest,
 ) -> response_types.CreateOfferResponse {
   case verify_auth(state) {
-    Error(_) ->
-      response_types.CreateOfferResponseCreated(types.RentOffer(
-        id: 0,
-        rent_request_id: 0,
-        sender_id: 0,
-        start_date: "",
-        end_date: "",
-        accepted_at: None,
-        created_at: "",
-        updated_at: "",
-      ))
+    Error(_) -> response_types.CreateOfferResponseUnauthorized
     Ok(user) -> {
       case
         renting.create_offer(
@@ -675,17 +600,7 @@ pub fn create_offer(
         )
       {
         Ok(offer) -> response_types.CreateOfferResponseCreated(offer)
-        Error(_) ->
-          response_types.CreateOfferResponseCreated(types.RentOffer(
-            id: 0,
-            rent_request_id: 0,
-            sender_id: 0,
-            start_date: "",
-            end_date: "",
-            accepted_at: None,
-            created_at: "",
-            updated_at: "",
-          ))
+        Error(_) -> response_types.CreateOfferResponseInternalServerError
       }
     }
   }
@@ -696,11 +611,11 @@ pub fn get_offers(
   req: request_types.GetOffersRequest,
 ) -> response_types.GetOffersResponse {
   case verify_auth(state) {
-    Error(_) -> response_types.GetOffersResponseOk([])
+    Error(_) -> response_types.GetOffersResponseUnauthorized
     Ok(user) -> {
       case renting.get_offers(state.conn, req.request_id, user.id) {
         Ok(offers) -> response_types.GetOffersResponseOk(offers)
-        Error(_) -> response_types.GetOffersResponseOk([])
+        Error(_) -> response_types.GetOffersResponseInternalServerError
       }
     }
   }
@@ -711,7 +626,7 @@ pub fn accept_offer(
   req: request_types.AcceptOfferRequest,
 ) -> response_types.AcceptOfferResponse {
   case verify_auth(state) {
-    Error(_) -> response_types.AcceptOfferResponseNotFound
+    Error(_) -> response_types.AcceptOfferResponseUnauthorized
     Ok(user) -> {
       case renting.accept_offer(state.conn, req.offer_id, user.id) {
         Ok(offer) -> response_types.AcceptOfferResponseOk(offer)
@@ -726,7 +641,7 @@ pub fn confirm_borrow(
   req: request_types.ConfirmBorrowRequest,
 ) -> response_types.ConfirmBorrowResponse {
   case verify_auth(state) {
-    Error(_) -> response_types.ConfirmBorrowResponseForbidden
+    Error(_) -> response_types.ConfirmBorrowResponseUnauthorized
     Ok(user) -> {
       case renting.confirm_borrow(state.conn, req.request_id, user.id) {
         Ok(request) -> response_types.ConfirmBorrowResponseOk(request)
@@ -741,7 +656,7 @@ pub fn confirm_return(
   req: request_types.ConfirmReturnRequest,
 ) -> response_types.ConfirmReturnResponse {
   case verify_auth(state) {
-    Error(_) -> response_types.ConfirmReturnResponseForbidden
+    Error(_) -> response_types.ConfirmReturnResponseUnauthorized
     Ok(user) -> {
       case renting.confirm_return(state.conn, req.request_id, user.id) {
         Ok(request) -> response_types.ConfirmReturnResponseOk(request)

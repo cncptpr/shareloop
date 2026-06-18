@@ -1,5 +1,5 @@
 import argv
-import generated/types
+import openapi/types
 import gleam/int
 import gleam/io
 import gleam/list

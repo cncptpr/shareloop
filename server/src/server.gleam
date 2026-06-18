@@ -1,5 +1,5 @@
-import generated/handlers
-import generated/router
+import openapi/handlers
+import openapi/router
 import gleam/bit_array
 import gleam/bytes_tree
 import gleam/dict

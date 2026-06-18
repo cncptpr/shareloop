@@ -99,6 +99,234 @@ paths:
         "404":
           description: Item not found
 
+  /items/{itemId}/rent-requests:
+    post:
+      summary: Create or get existing open rent request
+      operationId: createRentRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: Rent request created or existing one returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRequest"
+
+  /rent-requests:
+    get:
+      summary: List rent requests for current user
+      operationId: getRentRequests
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of rent requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RentRequest"
+
+  /rent-requests/{requestId}:
+    get:
+      summary: Get a single rent request
+      operationId: getRentRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Rent request details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRequest"
+        "404":
+          description: Not found
+
+  /rent-requests/{requestId}/messages:
+    post:
+      summary: Send a message in a rent request chat
+      operationId: sendMessage
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendMessageRequest"
+      responses:
+        "201":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+    get:
+      summary: Get messages for a rent request
+      operationId: getMessages
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: after
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Only return messages with id greater than this
+      responses:
+        "200":
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+
+  /rent-requests/{requestId}/offers:
+    post:
+      summary: Make or counter an offer
+      operationId: createOffer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOfferRequest"
+      responses:
+        "201":
+          description: Offer created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentOffer"
+    get:
+      summary: Get offers for a rent request
+      operationId: getOffers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of offers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RentOffer"
+
+  /offers/{offerId}/accept:
+    post:
+      summary: Accept an offer
+      operationId: acceptOffer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Offer accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentOffer"
+        "403":
+          description: Not authorized
+        "404":
+          description: Offer not found
+
+  /rent-requests/{requestId}/confirm-borrow:
+    post:
+      summary: Confirm that borrowing happened
+      operationId: confirmBorrow
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Borrow confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRequest"
+        "403":
+          description: Not the owner
+        "404":
+          description: Not found
+
+  /rent-requests/{requestId}/confirm-return:
+    post:
+      summary: Confirm item was returned
+      operationId: confirmReturn
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Return confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRequest"
+        "403":
+          description: Not the owner
+        "404":
+          description: Not found
+
   /items/{itemId}/edit:
     get:
       summary: Get item edit details (owner only)
@@ -421,7 +649,7 @@ components:
 
     ItemEditDetail:
       type: object
-      required: [id, title, description, author, score, createdAt, imageUuids]
+      required: [id, title, description, author, score, createdAt, imageUuids, lat, lng]
       properties:
         id:
           type: integer
@@ -449,11 +677,9 @@ components:
         lat:
           type: number
           format: double
-          nullable: true
         lng:
           type: number
           format: double
-          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -522,6 +748,104 @@ components:
           items:
             type: string
             format: uuid
+
+    RentRequest:
+      type: object
+      required: [id, itemId, requester, itemTitle, ownerName, ownerId, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        itemId:
+          type: integer
+        requester:
+          $ref: "#/components/schemas/Person"
+        itemTitle:
+          type: string
+        ownerName:
+          type: string
+        ownerId:
+          type: integer
+        latestAcceptedOfferId:
+          type: integer
+          nullable: true
+        latestOpenOfferId:
+          type: integer
+          nullable: true
+        borrowConfirmedAt:
+          type: string
+          format: date-time
+          nullable: true
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Message:
+      type: object
+      required: [id, rentRequestId, authorId, content, createdAt]
+      properties:
+        id:
+          type: integer
+        rentRequestId:
+          type: integer
+        authorId:
+          type: integer
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    SendMessageRequest:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+
+    RentOffer:
+      type: object
+      required: [id, rentRequestId, senderId, startDate, endDate, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        rentRequestId:
+          type: integer
+        senderId:
+          type: integer
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        acceptedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateOfferRequest:
+      type: object
+      required: [startDate, endDate]
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
 
   securitySchemes:
     bearerAuth:

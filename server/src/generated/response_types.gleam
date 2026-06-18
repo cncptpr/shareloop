@@ -58,3 +58,50 @@ pub type UploadItemImageResponse {
 pub type EditItemImagesResponse {
   EditItemImagesResponseNoContent
 }
+
+pub type CreateRentRequestResponse {
+  CreateRentRequestResponseCreated(types.RentRequest)
+}
+
+pub type AcceptOfferResponse {
+  AcceptOfferResponseOk(types.RentOffer)
+  AcceptOfferResponseForbidden
+  AcceptOfferResponseNotFound
+}
+
+pub type GetRentRequestsResponse {
+  GetRentRequestsResponseOk(List(types.RentRequest))
+}
+
+pub type GetRentRequestResponse {
+  GetRentRequestResponseOk(types.RentRequest)
+  GetRentRequestResponseNotFound
+}
+
+pub type ConfirmBorrowResponse {
+  ConfirmBorrowResponseOk(types.RentRequest)
+  ConfirmBorrowResponseForbidden
+  ConfirmBorrowResponseNotFound
+}
+
+pub type ConfirmReturnResponse {
+  ConfirmReturnResponseOk(types.RentRequest)
+  ConfirmReturnResponseForbidden
+  ConfirmReturnResponseNotFound
+}
+
+pub type GetMessagesResponse {
+  GetMessagesResponseOk(List(types.Message))
+}
+
+pub type SendMessageResponse {
+  SendMessageResponseCreated(types.Message)
+}
+
+pub type GetOffersResponse {
+  GetOffersResponseOk(List(types.RentOffer))
+}
+
+pub type CreateOfferResponse {
+  CreateOfferResponseCreated(types.RentOffer)
+}

@@ -17,6 +17,10 @@ pub type CreateItemResponse {
   CreateItemResponse(id: Int)
 }
 
+pub type CreateOfferRequest {
+  CreateOfferRequest(end_date: String, start_date: String)
+}
+
 pub type Distance {
   Distance(km: Float)
 }
@@ -63,8 +67,8 @@ pub type ItemEditDetail {
     description: String,
     id: Int,
     image_uuids: List(String),
-    lat: Option(Float),
-    lng: Option(Float),
+    lat: Float,
+    lng: Float,
     postal_code: Option(String),
     score: Float,
     title: String,
@@ -89,6 +93,16 @@ pub type LoginResult {
   )
 }
 
+pub type Message {
+  Message(
+    author_id: Int,
+    content: String,
+    created_at: String,
+    id: Int,
+    rent_request_id: Int,
+  )
+}
+
 pub type Person {
   Person(id: Int, name: String)
 }
@@ -97,8 +111,42 @@ pub type RefreshRequest {
   RefreshRequest(refresh_token: String)
 }
 
+pub type RentOffer {
+  RentOffer(
+    accepted_at: Option(String),
+    created_at: String,
+    end_date: String,
+    id: Int,
+    rent_request_id: Int,
+    sender_id: Int,
+    start_date: String,
+    updated_at: String,
+  )
+}
+
+pub type RentRequest {
+  RentRequest(
+    borrow_confirmed_at: Option(String),
+    created_at: String,
+    id: Int,
+    item_id: Int,
+    item_title: String,
+    latest_accepted_offer_id: Option(Int),
+    latest_open_offer_id: Option(Int),
+    owner_id: Int,
+    owner_name: String,
+    requester: Person,
+    returned_at: Option(String),
+    updated_at: String,
+  )
+}
+
 pub type ReorderEntry {
   ReorderEntry(sort_order: Int, uuid: String)
+}
+
+pub type SendMessageRequest {
+  SendMessageRequest(content: String)
 }
 
 pub type UpdateItemRequest {

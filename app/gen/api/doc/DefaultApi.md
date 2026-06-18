@@ -9,19 +9,170 @@ All URIs are relative to */api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**acceptOffer**](DefaultApi.md#acceptoffer) | **POST** /offers/{offerId}/accept | Accept an offer
+[**confirmBorrow**](DefaultApi.md#confirmborrow) | **POST** /rent-requests/{requestId}/confirm-borrow | Confirm that borrowing happened
+[**confirmReturn**](DefaultApi.md#confirmreturn) | **POST** /rent-requests/{requestId}/confirm-return | Confirm item was returned
 [**createItem**](DefaultApi.md#createitem) | **POST** /items | Create a new item
+[**createOffer**](DefaultApi.md#createoffer) | **POST** /rent-requests/{requestId}/offers | Make or counter an offer
+[**createRentRequest**](DefaultApi.md#createrentrequest) | **POST** /items/{itemId}/rent-requests | Create or get existing open rent request
 [**editItemImages**](DefaultApi.md#edititemimages) | **PUT** /items/{itemId}/images | Edit item images (reorder / delete)
 [**getFeaturedItems**](DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 [**getImage**](DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
 [**getItem**](DefaultApi.md#getitem) | **GET** /items/{itemId} | Get item details
 [**getItemEdit**](DefaultApi.md#getitemedit) | **GET** /items/{itemId}/edit | Get item edit details (owner only)
+[**getMessages**](DefaultApi.md#getmessages) | **GET** /rent-requests/{requestId}/messages | Get messages for a rent request
+[**getOffers**](DefaultApi.md#getoffers) | **GET** /rent-requests/{requestId}/offers | Get offers for a rent request
+[**getRentRequest**](DefaultApi.md#getrentrequest) | **GET** /rent-requests/{requestId} | Get a single rent request
+[**getRentRequests**](DefaultApi.md#getrentrequests) | **GET** /rent-requests | List rent requests for current user
 [**login**](DefaultApi.md#login) | **POST** /auth/login | Login
 [**logout**](DefaultApi.md#logout) | **POST** /auth/logout | Logout
 [**refresh**](DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
+[**sendMessage**](DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
 [**updateItem**](DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 [**uploadItemImage**](DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
 [**verify**](DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
 
+
+# **acceptOffer**
+> RentOffer acceptOffer(offerId)
+
+Accept an offer
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final offerId = 56; // int | 
+
+try {
+    final result = api_instance.acceptOffer(offerId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->acceptOffer: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **offerId** | **int**|  | 
+
+### Return type
+
+[**RentOffer**](RentOffer.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **confirmBorrow**
+> RentRequest confirmBorrow(requestId)
+
+Confirm that borrowing happened
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final requestId = 56; // int | 
+
+try {
+    final result = api_instance.confirmBorrow(requestId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->confirmBorrow: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **requestId** | **int**|  | 
+
+### Return type
+
+[**RentRequest**](RentRequest.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **confirmReturn**
+> RentRequest confirmReturn(requestId)
+
+Confirm item was returned
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final requestId = 56; // int | 
+
+try {
+    final result = api_instance.confirmReturn(requestId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->confirmReturn: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **requestId** | **int**|  | 
+
+### Return type
+
+[**RentRequest**](RentRequest.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **createItem**
 > CreateItemResponse createItem(createItemRequest)
@@ -68,6 +219,102 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **createOffer**
+> RentOffer createOffer(requestId, createOfferRequest)
+
+Make or counter an offer
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final requestId = 56; // int | 
+final createOfferRequest = CreateOfferRequest(); // CreateOfferRequest | 
+
+try {
+    final result = api_instance.createOffer(requestId, createOfferRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->createOffer: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **requestId** | **int**|  | 
+ **createOfferRequest** | [**CreateOfferRequest**](CreateOfferRequest.md)|  | 
+
+### Return type
+
+[**RentOffer**](RentOffer.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **createRentRequest**
+> RentRequest createRentRequest(itemId)
+
+Create or get existing open rent request
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final itemId = 56; // int | 
+
+try {
+    final result = api_instance.createRentRequest(itemId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->createRentRequest: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **itemId** | **int**|  | 
+
+### Return type
+
+[**RentRequest**](RentRequest.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -296,6 +543,192 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **getMessages**
+> List<Message> getMessages(requestId, after)
+
+Get messages for a rent request
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final requestId = 56; // int | 
+final after = 56; // int | Only return messages with id greater than this
+
+try {
+    final result = api_instance.getMessages(requestId, after);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getMessages: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **requestId** | **int**|  | 
+ **after** | **int**| Only return messages with id greater than this | [optional] 
+
+### Return type
+
+[**List<Message>**](Message.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getOffers**
+> List<RentOffer> getOffers(requestId)
+
+Get offers for a rent request
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final requestId = 56; // int | 
+
+try {
+    final result = api_instance.getOffers(requestId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getOffers: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **requestId** | **int**|  | 
+
+### Return type
+
+[**List<RentOffer>**](RentOffer.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getRentRequest**
+> RentRequest getRentRequest(requestId)
+
+Get a single rent request
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final requestId = 56; // int | 
+
+try {
+    final result = api_instance.getRentRequest(requestId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getRentRequest: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **requestId** | **int**|  | 
+
+### Return type
+
+[**RentRequest**](RentRequest.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getRentRequests**
+> List<RentRequest> getRentRequests()
+
+List rent requests for current user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+
+try {
+    final result = api_instance.getRentRequests();
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getRentRequests: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**List<RentRequest>**](RentRequest.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **login**
 > LoginResult login(loginRequest)
 
@@ -412,6 +845,55 @@ Name | Type | Description  | Notes
 ### Authorization
 
 No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **sendMessage**
+> Message sendMessage(requestId, sendMessageRequest)
+
+Send a message in a rent request chat
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final requestId = 56; // int | 
+final sendMessageRequest = SendMessageRequest(); // SendMessageRequest | 
+
+try {
+    final result = api_instance.sendMessage(requestId, sendMessageRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->sendMessage: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **requestId** | **int**|  | 
+ **sendMessageRequest** | [**SendMessageRequest**](SendMessageRequest.md)|  | 
+
+### Return type
+
+[**Message**](Message.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
 
 ### HTTP request headers
 

@@ -81,3 +81,72 @@ pub fn edit_item_images(
 ) -> response_types.EditItemImagesResponse {
   handlers.edit_item_images(state, req)
 }
+
+pub fn create_rent_request(
+  state: handlers.State,
+  req: request_types.CreateRentRequestRequest,
+) -> response_types.CreateRentRequestResponse {
+  handlers.create_rent_request(state, req)
+}
+
+pub fn accept_offer(
+  state: handlers.State,
+  req: request_types.AcceptOfferRequest,
+) -> response_types.AcceptOfferResponse {
+  handlers.accept_offer(state, req)
+}
+
+pub fn get_rent_requests(
+  state: handlers.State,
+) -> response_types.GetRentRequestsResponse {
+  handlers.get_rent_requests(state)
+}
+
+pub fn get_rent_request(
+  state: handlers.State,
+  req: request_types.GetRentRequestRequest,
+) -> response_types.GetRentRequestResponse {
+  handlers.get_rent_request(state, req)
+}
+
+pub fn confirm_borrow(
+  state: handlers.State,
+  req: request_types.ConfirmBorrowRequest,
+) -> response_types.ConfirmBorrowResponse {
+  handlers.confirm_borrow(state, req)
+}
+
+pub fn confirm_return(
+  state: handlers.State,
+  req: request_types.ConfirmReturnRequest,
+) -> response_types.ConfirmReturnResponse {
+  handlers.confirm_return(state, req)
+}
+
+pub fn get_messages(
+  state: handlers.State,
+  req: request_types.GetMessagesRequest,
+) -> response_types.GetMessagesResponse {
+  handlers.get_messages(state, req)
+}
+
+pub fn send_message(
+  state: handlers.State,
+  req: request_types.SendMessageRequest,
+) -> response_types.SendMessageResponse {
+  handlers.send_message(state, req)
+}
+
+pub fn get_offers(
+  state: handlers.State,
+  req: request_types.GetOffersRequest,
+) -> response_types.GetOffersResponse {
+  handlers.get_offers(state, req)
+}
+
+pub fn create_offer(
+  state: handlers.State,
+  req: request_types.CreateOfferRequest,
+) -> response_types.CreateOfferResponse {
+  handlers.create_offer(state, req)
+}

@@ -21,8 +21,9 @@ class RetryApiClient extends ApiClient {
     Object? body,
     Map<String, String> headerParams,
     Map<String, String> formParams,
-    String? contentType,
-  ) async {
+    String? contentType, {
+    Future<void>? abortTrigger,
+  }) async {
     final response = await super.invokeAPI(
       path,
       method,
@@ -31,6 +32,7 @@ class RetryApiClient extends ApiClient {
       headerParams,
       formParams,
       contentType,
+      abortTrigger: abortTrigger,
     );
 
     final isAuthError = response.statusCode == _authErrorStatusCode;
@@ -46,6 +48,7 @@ class RetryApiClient extends ApiClient {
           headerParams,
           formParams,
           contentType,
+          abortTrigger: abortTrigger,
         );
       } catch (_) {
         return response;

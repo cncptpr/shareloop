@@ -5,7 +5,7 @@ dir = "server"
 
 [tasks."server:api:gen"]
 description = "Generate Gleam types, routes, and middleware from the OpenAPI spec"
-run = "gleam run -m nori/cli -- generate"
+run = "gleam run -m oaspec -- generate"
 dir = "server"
 sources = ["../api/*.openapi.yaml"]
 outputs = ["./src/generated/*.gleam"]
@@ -47,4 +47,5 @@ DATABASE_URL = "postgres://shareloop:shareloop@localhost:5432/shareloop"
 [tools]
 flutter = { version = "3.41.9", platforms = { linux-arm64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_arm64_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' }, linux-x64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' } }, url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version }}-stable.zip", version_expr = 'fromJSON(body).releases | filter({ #.channel == "stable" }) | map({ #.version }) | sortVersions()', version_list_url = "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json" }
 gleam = "1.16.0"
+node = "latest"
 

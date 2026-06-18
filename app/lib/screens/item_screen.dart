@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/edit_item_screen.dart';
+import 'package:shareloop/screens/rent_request_chat_screen.dart';
 import 'package:shareloop/state/auth.dart' show authProvider;
 import 'package:shareloop/state/item_detail.dart';
+import 'package:shareloop/state/renting.dart';
 
 class ItemScreen extends ConsumerWidget {
   final int itemId;
@@ -33,7 +35,10 @@ class ItemScreen extends ConsumerWidget {
         ],
       ),
       body: asyncItem.when(
-        data: (item) => _Content(item: item),
+        data: (item) => _Content(
+          item: item,
+          userId: asyncUser.hasValue ? asyncUser.value?.id : null,
+        ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('$e')),
       ),
@@ -43,11 +48,13 @@ class ItemScreen extends ConsumerWidget {
 
 class _Content extends StatelessWidget {
   final ItemDetail item;
+  final int? userId;
 
-  const _Content({required this.item});
+  const _Content({required this.item, required this.userId});
 
   @override
   Widget build(BuildContext context) {
+    final isOwnItem = userId != null && item.author.id == userId;
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,19 +84,30 @@ class _Content extends StatelessWidget {
                   Text(item.score.toString()),
                 ]),
                 const SizedBox(height: 16),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Anfragen (noch nicht implementiert)')),
-                      );
-                    },
-                    icon: const Icon(Icons.send),
-                    label: const Text('Anfragen'),
+                if (!isOwnItem) ...[
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        final request = await createRentRequest(item.id);
+                        if (request != null && context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => RentRequestChatScreen(
+                                requestId: request.id,
+                                rentRequest: request,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.send),
+                      label: const Text('Anfragen'),
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),

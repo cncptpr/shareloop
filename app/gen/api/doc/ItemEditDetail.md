@@ -17,8 +17,8 @@ Name | Type | Description | Notes
 **postalCode** | **String** |  | [optional] 
 **imageUuids** | **List<String>** |  | [default to const []]
 **category** | **String** |  | [optional] 
-**lat** | **double** |  | [optional] 
-**lng** | **double** |  | [optional] 
+**lat** | **double** |  | 
+**lng** | **double** |  | 
 **createdAt** | [**DateTime**](DateTime.md) |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

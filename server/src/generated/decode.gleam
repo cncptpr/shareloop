@@ -65,6 +65,35 @@ pub fn decode_create_item_response_list(
   json.parse(json_string, create_item_response_decoder_list())
 }
 
+pub fn create_offer_request_decoder() -> decode.Decoder(
+  types.CreateOfferRequest,
+) {
+  use end_date <- decode.field("endDate", decode.string)
+  use start_date <- decode.field("startDate", decode.string)
+  decode.success(types.CreateOfferRequest(
+    end_date: end_date,
+    start_date: start_date,
+  ))
+}
+
+pub fn decode_create_offer_request(
+  json_string: String,
+) -> Result(types.CreateOfferRequest, json.DecodeError) {
+  json.parse(json_string, create_offer_request_decoder())
+}
+
+pub fn create_offer_request_decoder_list() -> decode.Decoder(
+  List(types.CreateOfferRequest),
+) {
+  decode.list(create_offer_request_decoder())
+}
+
+pub fn decode_create_offer_request_list(
+  json_string: String,
+) -> Result(List(types.CreateOfferRequest), json.DecodeError) {
+  json.parse(json_string, create_offer_request_decoder_list())
+}
+
 pub fn distance_decoder() -> decode.Decoder(types.Distance) {
   use km <- decode.field("km", decode.float)
   decode.success(types.Distance(km: km))
@@ -236,16 +265,8 @@ pub fn item_edit_detail_decoder() -> decode.Decoder(types.ItemEditDetail) {
   use description <- decode.field("description", decode.string)
   use id <- decode.field("id", decode.int)
   use image_uuids <- decode.field("imageUuids", decode.list(decode.string))
-  use lat <- decode.optional_field(
-    "lat",
-    option.None,
-    decode.optional(decode.float),
-  )
-  use lng <- decode.optional_field(
-    "lng",
-    option.None,
-    decode.optional(decode.float),
-  )
+  use lat <- decode.field("lat", decode.float)
+  use lng <- decode.field("lng", decode.float)
   use postal_code <- decode.optional_field(
     "postalCode",
     option.None,
@@ -362,6 +383,37 @@ pub fn decode_login_result_list(
   json.parse(json_string, login_result_decoder_list())
 }
 
+pub fn message_decoder() -> decode.Decoder(types.Message) {
+  use author_id <- decode.field("authorId", decode.int)
+  use content <- decode.field("content", decode.string)
+  use created_at <- decode.field("createdAt", decode.string)
+  use id <- decode.field("id", decode.int)
+  use rent_request_id <- decode.field("rentRequestId", decode.int)
+  decode.success(types.Message(
+    author_id: author_id,
+    content: content,
+    created_at: created_at,
+    id: id,
+    rent_request_id: rent_request_id,
+  ))
+}
+
+pub fn decode_message(
+  json_string: String,
+) -> Result(types.Message, json.DecodeError) {
+  json.parse(json_string, message_decoder())
+}
+
+pub fn message_decoder_list() -> decode.Decoder(List(types.Message)) {
+  decode.list(message_decoder())
+}
+
+pub fn decode_message_list(
+  json_string: String,
+) -> Result(List(types.Message), json.DecodeError) {
+  json.parse(json_string, message_decoder_list())
+}
+
 pub fn person_decoder() -> decode.Decoder(types.Person) {
   use id <- decode.field("id", decode.int)
   use name <- decode.field("name", decode.string)
@@ -407,6 +459,108 @@ pub fn decode_refresh_request_list(
   json.parse(json_string, refresh_request_decoder_list())
 }
 
+pub fn rent_offer_decoder() -> decode.Decoder(types.RentOffer) {
+  use accepted_at <- decode.optional_field(
+    "acceptedAt",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use created_at <- decode.field("createdAt", decode.string)
+  use end_date <- decode.field("endDate", decode.string)
+  use id <- decode.field("id", decode.int)
+  use rent_request_id <- decode.field("rentRequestId", decode.int)
+  use sender_id <- decode.field("senderId", decode.int)
+  use start_date <- decode.field("startDate", decode.string)
+  use updated_at <- decode.field("updatedAt", decode.string)
+  decode.success(types.RentOffer(
+    accepted_at: accepted_at,
+    created_at: created_at,
+    end_date: end_date,
+    id: id,
+    rent_request_id: rent_request_id,
+    sender_id: sender_id,
+    start_date: start_date,
+    updated_at: updated_at,
+  ))
+}
+
+pub fn decode_rent_offer(
+  json_string: String,
+) -> Result(types.RentOffer, json.DecodeError) {
+  json.parse(json_string, rent_offer_decoder())
+}
+
+pub fn rent_offer_decoder_list() -> decode.Decoder(List(types.RentOffer)) {
+  decode.list(rent_offer_decoder())
+}
+
+pub fn decode_rent_offer_list(
+  json_string: String,
+) -> Result(List(types.RentOffer), json.DecodeError) {
+  json.parse(json_string, rent_offer_decoder_list())
+}
+
+pub fn rent_request_decoder() -> decode.Decoder(types.RentRequest) {
+  use borrow_confirmed_at <- decode.optional_field(
+    "borrowConfirmedAt",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use created_at <- decode.field("createdAt", decode.string)
+  use id <- decode.field("id", decode.int)
+  use item_id <- decode.field("itemId", decode.int)
+  use item_title <- decode.field("itemTitle", decode.string)
+  use latest_accepted_offer_id <- decode.optional_field(
+    "latestAcceptedOfferId",
+    option.None,
+    decode.optional(decode.int),
+  )
+  use latest_open_offer_id <- decode.optional_field(
+    "latestOpenOfferId",
+    option.None,
+    decode.optional(decode.int),
+  )
+  use owner_id <- decode.field("ownerId", decode.int)
+  use owner_name <- decode.field("ownerName", decode.string)
+  use requester <- decode.field("requester", person_decoder())
+  use returned_at <- decode.optional_field(
+    "returnedAt",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use updated_at <- decode.field("updatedAt", decode.string)
+  decode.success(types.RentRequest(
+    borrow_confirmed_at: borrow_confirmed_at,
+    created_at: created_at,
+    id: id,
+    item_id: item_id,
+    item_title: item_title,
+    latest_accepted_offer_id: latest_accepted_offer_id,
+    latest_open_offer_id: latest_open_offer_id,
+    owner_id: owner_id,
+    owner_name: owner_name,
+    requester: requester,
+    returned_at: returned_at,
+    updated_at: updated_at,
+  ))
+}
+
+pub fn decode_rent_request(
+  json_string: String,
+) -> Result(types.RentRequest, json.DecodeError) {
+  json.parse(json_string, rent_request_decoder())
+}
+
+pub fn rent_request_decoder_list() -> decode.Decoder(List(types.RentRequest)) {
+  decode.list(rent_request_decoder())
+}
+
+pub fn decode_rent_request_list(
+  json_string: String,
+) -> Result(List(types.RentRequest), json.DecodeError) {
+  json.parse(json_string, rent_request_decoder_list())
+}
+
 pub fn reorder_entry_decoder() -> decode.Decoder(types.ReorderEntry) {
   use sort_order <- decode.field("sortOrder", decode.int)
   use uuid <- decode.field("uuid", decode.string)
@@ -427,6 +581,31 @@ pub fn decode_reorder_entry_list(
   json_string: String,
 ) -> Result(List(types.ReorderEntry), json.DecodeError) {
   json.parse(json_string, reorder_entry_decoder_list())
+}
+
+pub fn send_message_request_decoder() -> decode.Decoder(
+  types.SendMessageRequest,
+) {
+  use content <- decode.field("content", decode.string)
+  decode.success(types.SendMessageRequest(content: content))
+}
+
+pub fn decode_send_message_request(
+  json_string: String,
+) -> Result(types.SendMessageRequest, json.DecodeError) {
+  json.parse(json_string, send_message_request_decoder())
+}
+
+pub fn send_message_request_decoder_list() -> decode.Decoder(
+  List(types.SendMessageRequest),
+) {
+  decode.list(send_message_request_decoder())
+}
+
+pub fn decode_send_message_request_list(
+  json_string: String,
+) -> Result(List(types.SendMessageRequest), json.DecodeError) {
+  json.parse(json_string, send_message_request_decoder_list())
 }
 
 pub fn update_item_request_decoder() -> decode.Decoder(types.UpdateItemRequest) {
@@ -569,4 +748,36 @@ pub fn decode_get_image_response_ok(
   json_string: String,
 ) -> Result(String, json.DecodeError) {
   json.parse(json_string, decode.string)
+}
+
+pub fn get_rent_requests_response_ok_decoder() -> decode.Decoder(
+  List(types.RentRequest),
+) {
+  decode.list(rent_request_decoder())
+}
+
+pub fn decode_get_rent_requests_response_ok(
+  json_string: String,
+) -> Result(List(types.RentRequest), json.DecodeError) {
+  json.parse(json_string, get_rent_requests_response_ok_decoder())
+}
+
+pub fn get_messages_response_ok_decoder() -> decode.Decoder(List(types.Message)) {
+  decode.list(message_decoder())
+}
+
+pub fn decode_get_messages_response_ok(
+  json_string: String,
+) -> Result(List(types.Message), json.DecodeError) {
+  json.parse(json_string, get_messages_response_ok_decoder())
+}
+
+pub fn get_offers_response_ok_decoder() -> decode.Decoder(List(types.RentOffer)) {
+  decode.list(rent_offer_decoder())
+}
+
+pub fn decode_get_offers_response_ok(
+  json_string: String,
+) -> Result(List(types.RentOffer), json.DecodeError) {
+  json.parse(json_string, get_offers_response_ok_decoder())
 }

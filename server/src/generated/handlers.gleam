@@ -11,6 +11,7 @@ import gleam/string
 import pog
 import server/auth
 import server/featured_items
+import server/renting
 import server/sql
 import simplifile
 import youid/uuid
@@ -245,7 +246,8 @@ pub fn get_item_edit(
         lng: row.lng,
         created_at: row.created_at,
       ))
-    Error(GetItemEditUnauthorized) -> response_types.GetItemEditResponseForbidden
+    Error(GetItemEditUnauthorized) ->
+      response_types.GetItemEditResponseForbidden
     Error(GetItemEditNotFound) -> response_types.GetItemEditResponseNotFound
     Error(GetItemEditForbidden) -> response_types.GetItemEditResponseForbidden
   }
@@ -521,6 +523,232 @@ fn detect_ext_and_mime(filename: String) -> #(String, String) {
     _ -> "image/jpeg"
   }
   #(ext, mime)
+}
+
+pub fn create_rent_request(
+  state: State,
+  req: request_types.CreateRentRequestRequest,
+) -> response_types.CreateRentRequestResponse {
+  case verify_auth(state) {
+    Error(_) ->
+      response_types.CreateRentRequestResponseCreated(types.RentRequest(
+        id: 0,
+        item_id: 0,
+        requester: types.Person(id: 0, name: ""),
+        item_title: "",
+        owner_name: "",
+        owner_id: 0,
+        latest_accepted_offer_id: None,
+        latest_open_offer_id: None,
+        borrow_confirmed_at: None,
+        returned_at: None,
+        created_at: "",
+        updated_at: "",
+      ))
+    Ok(user) -> {
+      case renting.create_rent_request(state.conn, user.id, req.item_id) {
+        Ok(request) -> response_types.CreateRentRequestResponseCreated(request)
+        Error(_) ->
+          response_types.CreateRentRequestResponseCreated(types.RentRequest(
+            id: 0,
+            item_id: 0,
+            requester: types.Person(id: 0, name: ""),
+            item_title: "",
+            owner_name: "",
+            owner_id: 0,
+            latest_accepted_offer_id: None,
+            latest_open_offer_id: None,
+            borrow_confirmed_at: None,
+            returned_at: None,
+            created_at: "",
+            updated_at: "",
+          ))
+      }
+    }
+  }
+}
+
+pub fn get_rent_requests(
+  state: State,
+) -> response_types.GetRentRequestsResponse {
+  case verify_auth(state) {
+    Error(_) -> response_types.GetRentRequestsResponseOk([])
+    Ok(user) -> {
+      case renting.get_rent_requests(state.conn, user.id) {
+        Ok(requests) -> response_types.GetRentRequestsResponseOk(requests)
+        Error(_) -> response_types.GetRentRequestsResponseOk([])
+      }
+    }
+  }
+}
+
+pub fn get_rent_request(
+  state: State,
+  req: request_types.GetRentRequestRequest,
+) -> response_types.GetRentRequestResponse {
+  case verify_auth(state) {
+    Error(_) -> response_types.GetRentRequestResponseNotFound
+    Ok(user) -> {
+      case renting.get_rent_request_by_id(state.conn, req.request_id, user.id) {
+        Ok(request) -> response_types.GetRentRequestResponseOk(request)
+        Error(_) -> response_types.GetRentRequestResponseNotFound
+      }
+    }
+  }
+}
+
+pub fn send_message(
+  state: State,
+  req: request_types.SendMessageRequest,
+) -> response_types.SendMessageResponse {
+  case verify_auth(state) {
+    Error(_) ->
+      response_types.SendMessageResponseCreated(types.Message(
+        id: 0,
+        rent_request_id: 0,
+        author_id: 0,
+        content: "",
+        created_at: "",
+      ))
+    Ok(user) -> {
+      case
+        renting.send_message(
+          state.conn,
+          req.request_id,
+          user.id,
+          req.body.content,
+        )
+      {
+        Ok(message) -> response_types.SendMessageResponseCreated(message)
+        Error(_) ->
+          response_types.SendMessageResponseCreated(types.Message(
+            id: 0,
+            rent_request_id: 0,
+            author_id: 0,
+            content: "",
+            created_at: "",
+          ))
+      }
+    }
+  }
+}
+
+pub fn get_messages(
+  state: State,
+  req: request_types.GetMessagesRequest,
+) -> response_types.GetMessagesResponse {
+  case verify_auth(state) {
+    Error(_) -> response_types.GetMessagesResponseOk([])
+    Ok(user) -> {
+      case renting.get_messages(state.conn, req.request_id, user.id) {
+        Ok(messages) -> response_types.GetMessagesResponseOk(messages)
+        Error(_) -> response_types.GetMessagesResponseOk([])
+      }
+    }
+  }
+}
+
+pub fn create_offer(
+  state: State,
+  req: request_types.CreateOfferRequest,
+) -> response_types.CreateOfferResponse {
+  case verify_auth(state) {
+    Error(_) ->
+      response_types.CreateOfferResponseCreated(types.RentOffer(
+        id: 0,
+        rent_request_id: 0,
+        sender_id: 0,
+        start_date: "",
+        end_date: "",
+        accepted_at: None,
+        created_at: "",
+        updated_at: "",
+      ))
+    Ok(user) -> {
+      case
+        renting.create_offer(
+          state.conn,
+          req.request_id,
+          user.id,
+          req.body.start_date,
+          req.body.end_date,
+        )
+      {
+        Ok(offer) -> response_types.CreateOfferResponseCreated(offer)
+        Error(_) ->
+          response_types.CreateOfferResponseCreated(types.RentOffer(
+            id: 0,
+            rent_request_id: 0,
+            sender_id: 0,
+            start_date: "",
+            end_date: "",
+            accepted_at: None,
+            created_at: "",
+            updated_at: "",
+          ))
+      }
+    }
+  }
+}
+
+pub fn get_offers(
+  state: State,
+  req: request_types.GetOffersRequest,
+) -> response_types.GetOffersResponse {
+  case verify_auth(state) {
+    Error(_) -> response_types.GetOffersResponseOk([])
+    Ok(user) -> {
+      case renting.get_offers(state.conn, req.request_id, user.id) {
+        Ok(offers) -> response_types.GetOffersResponseOk(offers)
+        Error(_) -> response_types.GetOffersResponseOk([])
+      }
+    }
+  }
+}
+
+pub fn accept_offer(
+  state: State,
+  req: request_types.AcceptOfferRequest,
+) -> response_types.AcceptOfferResponse {
+  case verify_auth(state) {
+    Error(_) -> response_types.AcceptOfferResponseNotFound
+    Ok(user) -> {
+      case renting.accept_offer(state.conn, req.offer_id, user.id) {
+        Ok(offer) -> response_types.AcceptOfferResponseOk(offer)
+        Error(_) -> response_types.AcceptOfferResponseNotFound
+      }
+    }
+  }
+}
+
+pub fn confirm_borrow(
+  state: State,
+  req: request_types.ConfirmBorrowRequest,
+) -> response_types.ConfirmBorrowResponse {
+  case verify_auth(state) {
+    Error(_) -> response_types.ConfirmBorrowResponseForbidden
+    Ok(user) -> {
+      case renting.confirm_borrow(state.conn, req.request_id, user.id) {
+        Ok(request) -> response_types.ConfirmBorrowResponseOk(request)
+        Error(_) -> response_types.ConfirmBorrowResponseForbidden
+      }
+    }
+  }
+}
+
+pub fn confirm_return(
+  state: State,
+  req: request_types.ConfirmReturnRequest,
+) -> response_types.ConfirmReturnResponse {
+  case verify_auth(state) {
+    Error(_) -> response_types.ConfirmReturnResponseForbidden
+    Ok(user) -> {
+      case renting.confirm_return(state.conn, req.request_id, user.id) {
+        Ok(request) -> response_types.ConfirmReturnResponseOk(request)
+        Error(_) -> response_types.ConfirmReturnResponseForbidden
+      }
+    }
+  }
 }
 
 fn detect_ext(filename: String) -> String {

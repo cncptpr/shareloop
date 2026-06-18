@@ -35,7 +35,7 @@ pub fn route(
   app_state: handlers.State,
   method: String,
   path: List(String),
-  _query: Dict(String, List(String)),
+  query: Dict(String, List(String)),
   _headers: Dict(String, String),
   body: String,
 ) -> ServerResponse {
@@ -348,6 +348,324 @@ pub fn route(
               case response {
                 response_types.EditItemImagesResponseNoContent ->
                   ServerResponse(status: 204, body: EmptyBody, headers: [])
+              }
+            }
+            Error(_) ->
+              ServerResponse(
+                status: 400,
+                body: TextBody(
+                  "{\"type\":\"about:blank\",\"title\":\"invalid request body\"}",
+                ),
+                headers: [#("content-type", "application/problem+json")],
+              )
+          }
+        }
+        Error(_) ->
+          ServerResponse(
+            status: 400,
+            body: TextBody(
+              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
+            ),
+            headers: [#("content-type", "application/problem+json")],
+          )
+      }
+    }
+    "POST", ["items", item_id, "rent-requests"] -> {
+      case int.parse(item_id) {
+        Ok(item_id_parsed) -> {
+          let request =
+            request_types.CreateRentRequestRequest(item_id: item_id_parsed)
+          let response =
+            handlers_generated.create_rent_request(app_state, request)
+          case response {
+            response_types.CreateRentRequestResponseCreated(data) ->
+              ServerResponse(
+                status: 201,
+                body: TextBody(
+                  json.to_string(encode.encode_rent_request_json(data)),
+                ),
+                headers: [#("content-type", "application/json")],
+              )
+          }
+        }
+        Error(_) ->
+          ServerResponse(
+            status: 400,
+            body: TextBody(
+              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
+            ),
+            headers: [#("content-type", "application/problem+json")],
+          )
+      }
+    }
+    "POST", ["offers", offer_id, "accept"] -> {
+      case int.parse(offer_id) {
+        Ok(offer_id_parsed) -> {
+          let request =
+            request_types.AcceptOfferRequest(offer_id: offer_id_parsed)
+          let response = handlers_generated.accept_offer(app_state, request)
+          case response {
+            response_types.AcceptOfferResponseOk(data) ->
+              ServerResponse(
+                status: 200,
+                body: TextBody(
+                  json.to_string(encode.encode_rent_offer_json(data)),
+                ),
+                headers: [#("content-type", "application/json")],
+              )
+            response_types.AcceptOfferResponseForbidden ->
+              ServerResponse(status: 403, body: EmptyBody, headers: [])
+            response_types.AcceptOfferResponseNotFound ->
+              ServerResponse(status: 404, body: EmptyBody, headers: [])
+          }
+        }
+        Error(_) ->
+          ServerResponse(
+            status: 400,
+            body: TextBody(
+              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
+            ),
+            headers: [#("content-type", "application/problem+json")],
+          )
+      }
+    }
+    "GET", ["rent-requests"] -> {
+      let response = handlers_generated.get_rent_requests(app_state)
+      case response {
+        response_types.GetRentRequestsResponseOk(data) ->
+          ServerResponse(
+            status: 200,
+            body: TextBody(
+              json.to_string(fn(items) {
+                json.array(items, encode.encode_rent_request_json)
+              }(data)),
+            ),
+            headers: [#("content-type", "application/json")],
+          )
+      }
+    }
+    "GET", ["rent-requests", request_id] -> {
+      case int.parse(request_id) {
+        Ok(request_id_parsed) -> {
+          let request =
+            request_types.GetRentRequestRequest(request_id: request_id_parsed)
+          let response = handlers_generated.get_rent_request(app_state, request)
+          case response {
+            response_types.GetRentRequestResponseOk(data) ->
+              ServerResponse(
+                status: 200,
+                body: TextBody(
+                  json.to_string(encode.encode_rent_request_json(data)),
+                ),
+                headers: [#("content-type", "application/json")],
+              )
+            response_types.GetRentRequestResponseNotFound ->
+              ServerResponse(status: 404, body: EmptyBody, headers: [])
+          }
+        }
+        Error(_) ->
+          ServerResponse(
+            status: 400,
+            body: TextBody(
+              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
+            ),
+            headers: [#("content-type", "application/problem+json")],
+          )
+      }
+    }
+    "POST", ["rent-requests", request_id, "confirm-borrow"] -> {
+      case int.parse(request_id) {
+        Ok(request_id_parsed) -> {
+          let request =
+            request_types.ConfirmBorrowRequest(request_id: request_id_parsed)
+          let response = handlers_generated.confirm_borrow(app_state, request)
+          case response {
+            response_types.ConfirmBorrowResponseOk(data) ->
+              ServerResponse(
+                status: 200,
+                body: TextBody(
+                  json.to_string(encode.encode_rent_request_json(data)),
+                ),
+                headers: [#("content-type", "application/json")],
+              )
+            response_types.ConfirmBorrowResponseForbidden ->
+              ServerResponse(status: 403, body: EmptyBody, headers: [])
+            response_types.ConfirmBorrowResponseNotFound ->
+              ServerResponse(status: 404, body: EmptyBody, headers: [])
+          }
+        }
+        Error(_) ->
+          ServerResponse(
+            status: 400,
+            body: TextBody(
+              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
+            ),
+            headers: [#("content-type", "application/problem+json")],
+          )
+      }
+    }
+    "POST", ["rent-requests", request_id, "confirm-return"] -> {
+      case int.parse(request_id) {
+        Ok(request_id_parsed) -> {
+          let request =
+            request_types.ConfirmReturnRequest(request_id: request_id_parsed)
+          let response = handlers_generated.confirm_return(app_state, request)
+          case response {
+            response_types.ConfirmReturnResponseOk(data) ->
+              ServerResponse(
+                status: 200,
+                body: TextBody(
+                  json.to_string(encode.encode_rent_request_json(data)),
+                ),
+                headers: [#("content-type", "application/json")],
+              )
+            response_types.ConfirmReturnResponseForbidden ->
+              ServerResponse(status: 403, body: EmptyBody, headers: [])
+            response_types.ConfirmReturnResponseNotFound ->
+              ServerResponse(status: 404, body: EmptyBody, headers: [])
+          }
+        }
+        Error(_) ->
+          ServerResponse(
+            status: 400,
+            body: TextBody(
+              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
+            ),
+            headers: [#("content-type", "application/problem+json")],
+          )
+      }
+    }
+    "GET", ["rent-requests", request_id, "messages"] -> {
+      case int.parse(request_id) {
+        Ok(request_id_parsed) -> {
+          let request =
+            request_types.GetMessagesRequest(
+              request_id: request_id_parsed,
+              after: case dict.get(query, "after") {
+                Ok([v, ..]) -> {
+                  case int.parse(v) {
+                    Ok(n) -> Some(n)
+                    _ -> None
+                  }
+                }
+                _ -> None
+              },
+            )
+          let response = handlers_generated.get_messages(app_state, request)
+          case response {
+            response_types.GetMessagesResponseOk(data) ->
+              ServerResponse(
+                status: 200,
+                body: TextBody(
+                  json.to_string(fn(items) {
+                    json.array(items, encode.encode_message_json)
+                  }(data)),
+                ),
+                headers: [#("content-type", "application/json")],
+              )
+          }
+        }
+        Error(_) ->
+          ServerResponse(
+            status: 400,
+            body: TextBody(
+              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
+            ),
+            headers: [#("content-type", "application/problem+json")],
+          )
+      }
+    }
+    "POST", ["rent-requests", request_id, "messages"] -> {
+      case int.parse(request_id) {
+        Ok(request_id_parsed) -> {
+          case decode.decode_send_message_request(body) {
+            Ok(decoded_body) -> {
+              let request =
+                request_types.SendMessageRequest(
+                  request_id: request_id_parsed,
+                  body: decoded_body,
+                )
+              let response = handlers_generated.send_message(app_state, request)
+              case response {
+                response_types.SendMessageResponseCreated(data) ->
+                  ServerResponse(
+                    status: 201,
+                    body: TextBody(
+                      json.to_string(encode.encode_message_json(data)),
+                    ),
+                    headers: [#("content-type", "application/json")],
+                  )
+              }
+            }
+            Error(_) ->
+              ServerResponse(
+                status: 400,
+                body: TextBody(
+                  "{\"type\":\"about:blank\",\"title\":\"invalid request body\"}",
+                ),
+                headers: [#("content-type", "application/problem+json")],
+              )
+          }
+        }
+        Error(_) ->
+          ServerResponse(
+            status: 400,
+            body: TextBody(
+              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
+            ),
+            headers: [#("content-type", "application/problem+json")],
+          )
+      }
+    }
+    "GET", ["rent-requests", request_id, "offers"] -> {
+      case int.parse(request_id) {
+        Ok(request_id_parsed) -> {
+          let request =
+            request_types.GetOffersRequest(request_id: request_id_parsed)
+          let response = handlers_generated.get_offers(app_state, request)
+          case response {
+            response_types.GetOffersResponseOk(data) ->
+              ServerResponse(
+                status: 200,
+                body: TextBody(
+                  json.to_string(fn(items) {
+                    json.array(items, encode.encode_rent_offer_json)
+                  }(data)),
+                ),
+                headers: [#("content-type", "application/json")],
+              )
+          }
+        }
+        Error(_) ->
+          ServerResponse(
+            status: 400,
+            body: TextBody(
+              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
+            ),
+            headers: [#("content-type", "application/problem+json")],
+          )
+      }
+    }
+    "POST", ["rent-requests", request_id, "offers"] -> {
+      case int.parse(request_id) {
+        Ok(request_id_parsed) -> {
+          case decode.decode_create_offer_request(body) {
+            Ok(decoded_body) -> {
+              let request =
+                request_types.CreateOfferRequest(
+                  request_id: request_id_parsed,
+                  body: decoded_body,
+                )
+              let response = handlers_generated.create_offer(app_state, request)
+              case response {
+                response_types.CreateOfferResponseCreated(data) ->
+                  ServerResponse(
+                    status: 201,
+                    body: TextBody(
+                      json.to_string(encode.encode_rent_offer_json(data)),
+                    ),
+                    headers: [#("content-type", "application/json")],
+                  )
               }
             }
             Error(_) ->

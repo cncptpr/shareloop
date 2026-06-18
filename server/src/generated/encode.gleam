@@ -32,6 +32,19 @@ pub fn encode_create_item_response(value: types.CreateItemResponse) -> String {
   encode_create_item_response_json(value) |> json.to_string()
 }
 
+pub fn encode_create_offer_request_json(
+  value: types.CreateOfferRequest,
+) -> json.Json {
+  json.object([
+    #("endDate", json.string(value.end_date)),
+    #("startDate", json.string(value.start_date)),
+  ])
+}
+
+pub fn encode_create_offer_request(value: types.CreateOfferRequest) -> String {
+  encode_create_offer_request_json(value) |> json.to_string()
+}
+
 pub fn encode_distance_json(value: types.Distance) -> json.Json {
   json.object([#("km", json.float(value.km))])
 }
@@ -124,8 +137,8 @@ pub fn encode_item_edit_detail_json(value: types.ItemEditDetail) -> json.Json {
       [#("description", json.string(value.description))],
       [#("id", json.int(value.id))],
       [#("imageUuids", json.array(value.image_uuids, json.string))],
-      [#("lat", json.nullable(value.lat, json.float))],
-      [#("lng", json.nullable(value.lng, json.float))],
+      [#("lat", json.float(value.lat))],
+      [#("lng", json.float(value.lng))],
       case value.postal_code {
         option.None -> []
         option.Some(x) -> [#("postalCode", json.string(x))]
@@ -173,6 +186,20 @@ pub fn encode_login_result(value: types.LoginResult) -> String {
   encode_login_result_json(value) |> json.to_string()
 }
 
+pub fn encode_message_json(value: types.Message) -> json.Json {
+  json.object([
+    #("authorId", json.int(value.author_id)),
+    #("content", json.string(value.content)),
+    #("createdAt", json.string(value.created_at)),
+    #("id", json.int(value.id)),
+    #("rentRequestId", json.int(value.rent_request_id)),
+  ])
+}
+
+pub fn encode_message(value: types.Message) -> String {
+  encode_message_json(value) |> json.to_string()
+}
+
 pub fn encode_person_json(value: types.Person) -> json.Json {
   json.object([#("id", json.int(value.id)), #("name", json.string(value.name))])
 }
@@ -189,6 +216,50 @@ pub fn encode_refresh_request(value: types.RefreshRequest) -> String {
   encode_refresh_request_json(value) |> json.to_string()
 }
 
+pub fn encode_rent_offer_json(value: types.RentOffer) -> json.Json {
+  json.object([
+    #("acceptedAt", json.nullable(value.accepted_at, json.string)),
+    #("createdAt", json.string(value.created_at)),
+    #("endDate", json.string(value.end_date)),
+    #("id", json.int(value.id)),
+    #("rentRequestId", json.int(value.rent_request_id)),
+    #("senderId", json.int(value.sender_id)),
+    #("startDate", json.string(value.start_date)),
+    #("updatedAt", json.string(value.updated_at)),
+  ])
+}
+
+pub fn encode_rent_offer(value: types.RentOffer) -> String {
+  encode_rent_offer_json(value) |> json.to_string()
+}
+
+pub fn encode_rent_request_json(value: types.RentRequest) -> json.Json {
+  json.object([
+    #(
+      "borrowConfirmedAt",
+      json.nullable(value.borrow_confirmed_at, json.string),
+    ),
+    #("createdAt", json.string(value.created_at)),
+    #("id", json.int(value.id)),
+    #("itemId", json.int(value.item_id)),
+    #("itemTitle", json.string(value.item_title)),
+    #(
+      "latestAcceptedOfferId",
+      json.nullable(value.latest_accepted_offer_id, json.int),
+    ),
+    #("latestOpenOfferId", json.nullable(value.latest_open_offer_id, json.int)),
+    #("ownerId", json.int(value.owner_id)),
+    #("ownerName", json.string(value.owner_name)),
+    #("requester", encode_person_json(value.requester)),
+    #("returnedAt", json.nullable(value.returned_at, json.string)),
+    #("updatedAt", json.string(value.updated_at)),
+  ])
+}
+
+pub fn encode_rent_request(value: types.RentRequest) -> String {
+  encode_rent_request_json(value) |> json.to_string()
+}
+
 pub fn encode_reorder_entry_json(value: types.ReorderEntry) -> json.Json {
   json.object([
     #("sortOrder", json.int(value.sort_order)),
@@ -198,6 +269,16 @@ pub fn encode_reorder_entry_json(value: types.ReorderEntry) -> json.Json {
 
 pub fn encode_reorder_entry(value: types.ReorderEntry) -> String {
   encode_reorder_entry_json(value) |> json.to_string()
+}
+
+pub fn encode_send_message_request_json(
+  value: types.SendMessageRequest,
+) -> json.Json {
+  json.object([#("content", json.string(value.content))])
+}
+
+pub fn encode_send_message_request(value: types.SendMessageRequest) -> String {
+  encode_send_message_request_json(value) |> json.to_string()
 }
 
 pub fn encode_update_item_request_json(

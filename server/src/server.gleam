@@ -18,6 +18,7 @@ import server/consts
 import server/db
 import server/migration
 import server/sql
+import simplifile
 import youid/uuid
 
 pub fn main() {
@@ -26,6 +27,9 @@ pub fn main() {
 
   let assert Ok(_) = migration.run_all()
   io.println("Migrations applied")
+
+  let assert Ok(_) = simplifile.create_directory_all("uploads")
+  io.println("Uploads directory ensured")
 
   let assert Ok(_) =
     handler(_, conn)
@@ -154,6 +158,16 @@ fn route_is_protected(method: String, segments: List(String)) -> Bool {
     "PUT", ["items", _] -> True
     "POST", ["items", _, "images"] -> True
     "PUT", ["items", _, "images"] -> True
+    "POST", ["items", _, "rent-requests"] -> True
+    "GET", ["rent-requests"] -> True
+    "GET", ["rent-requests", _] -> True
+    "POST", ["rent-requests", _, "messages"] -> True
+    "GET", ["rent-requests", _, "messages"] -> True
+    "POST", ["rent-requests", _, "offers"] -> True
+    "GET", ["rent-requests", _, "offers"] -> True
+    "POST", ["offers", _, "accept"] -> True
+    "POST", ["rent-requests", _, "confirm-borrow"] -> True
+    "POST", ["rent-requests", _, "confirm-return"] -> True
     _, _ -> False
   }
 }

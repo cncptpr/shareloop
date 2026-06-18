@@ -22,8 +22,8 @@ class ItemEditDetail {
     this.postalCode,
     this.imageUuids = const [],
     this.category,
-    this.lat,
-    this.lng,
+    required this.lat,
+    required this.lng,
     required this.createdAt,
   });
 
@@ -57,9 +57,9 @@ class ItemEditDetail {
 
   String? category;
 
-  double? lat;
+  double lat;
 
-  double? lng;
+  double lng;
 
   DateTime createdAt;
 
@@ -90,8 +90,8 @@ class ItemEditDetail {
     (postalCode == null ? 0 : postalCode!.hashCode) +
     (imageUuids.hashCode) +
     (category == null ? 0 : category!.hashCode) +
-    (lat == null ? 0 : lat!.hashCode) +
-    (lng == null ? 0 : lng!.hashCode) +
+    (lat.hashCode) +
+    (lng.hashCode) +
     (createdAt.hashCode);
 
   @override
@@ -120,16 +120,8 @@ class ItemEditDetail {
     } else {
       json[r'category'] = null;
     }
-    if (this.lat != null) {
       json[r'lat'] = this.lat;
-    } else {
-      json[r'lat'] = null;
-    }
-    if (this.lng != null) {
       json[r'lng'] = this.lng;
-    } else {
-      json[r'lng'] = null;
-    }
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
     return json;
   }
@@ -157,6 +149,10 @@ class ItemEditDetail {
         assert(json[r'score'] != null, 'Required key "ItemEditDetail[score]" has a null value in JSON.');
         assert(json.containsKey(r'imageUuids'), 'Required key "ItemEditDetail[imageUuids]" is missing from JSON.');
         assert(json[r'imageUuids'] != null, 'Required key "ItemEditDetail[imageUuids]" has a null value in JSON.');
+        assert(json.containsKey(r'lat'), 'Required key "ItemEditDetail[lat]" is missing from JSON.');
+        assert(json[r'lat'] != null, 'Required key "ItemEditDetail[lat]" has a null value in JSON.');
+        assert(json.containsKey(r'lng'), 'Required key "ItemEditDetail[lng]" is missing from JSON.');
+        assert(json[r'lng'] != null, 'Required key "ItemEditDetail[lng]" has a null value in JSON.');
         assert(json.containsKey(r'createdAt'), 'Required key "ItemEditDetail[createdAt]" is missing from JSON.');
         assert(json[r'createdAt'] != null, 'Required key "ItemEditDetail[createdAt]" has a null value in JSON.');
         return true;
@@ -174,8 +170,8 @@ class ItemEditDetail {
             ? (json[r'imageUuids'] as Iterable).cast<String>().toList(growable: false)
             : const [],
         category: mapValueOfType<String>(json, r'category'),
-        lat: mapValueOfType<double>(json, r'lat'),
-        lng: mapValueOfType<double>(json, r'lng'),
+        lat: mapValueOfType<double>(json, r'lat')!,
+        lng: mapValueOfType<double>(json, r'lng')!,
         createdAt: mapDateTime(json, r'createdAt', r'')!,
       );
     }
@@ -230,6 +226,8 @@ class ItemEditDetail {
     'author',
     'score',
     'imageUuids',
+    'lat',
+    'lng',
     'createdAt',
   };
 }

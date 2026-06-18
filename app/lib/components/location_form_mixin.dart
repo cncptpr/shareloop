@@ -8,8 +8,6 @@ mixin LocationFormMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   SearchedLocation? get selectedLocation;
   set selectedLocation(SearchedLocation? value);
 
-  void setProviderLocation(SelectedLocation? loc);
-
   String? locationLabel() {
     final loc = selectedLocation;
     if (loc == null) return null;
@@ -19,12 +17,10 @@ mixin LocationFormMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   void applyLocation(SearchedLocation loc) {
     selectedLocation = loc;
-    setProviderLocation(loc);
   }
 
   void clearLocation() {
     selectedLocation = null;
-    setProviderLocation(null);
   }
 
   Future<void> openLocationPicker() async {

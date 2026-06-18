@@ -1,3 +1,4 @@
+// See docs/rent-request-chat-flow.md — state machine, providers, and invalidation rules.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import '../app_config.dart';

@@ -1,3 +1,4 @@
+// See docs/item-edit-create-flow.md — Riverpod provider is the single source of truth.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
@@ -9,20 +10,20 @@ import 'package:shareloop/state/location_search.dart';
 import 'package:shareloop/app_config.dart';
 
 class EditItemScreen extends ConsumerStatefulWidget {
-  final ItemEditDetail existingItem;
+  final int itemId;
 
-  const EditItemScreen({super.key, required this.existingItem});
+  const EditItemScreen({super.key, required this.itemId});
 
   @override
   ConsumerState<EditItemScreen> createState() => _EditItemScreenState();
 
   static Future<bool?> push(BuildContext ctx, int itemId) async {
-    final editDetail = await AppConfig.apiClient.getItemEdit(itemId);
-    if (editDetail == null) throw Exception('Item not found or access denied');
     if (!ctx.mounted) return null;
     return Navigator.push<bool>(
       ctx,
-      MaterialPageRoute(builder: (_) => EditItemScreen(existingItem: editDetail)),
+      MaterialPageRoute(
+        builder: (_) => EditItemScreen(itemId: itemId),
+      ),
     );
   }
 }
@@ -32,49 +33,52 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  String? _category;
   bool _loading = false;
-  SearchedLocation? _selectedLocation;
+  bool _initializedControllers = false;
 
   @override
-  SearchedLocation? get selectedLocation => _selectedLocation;
+  SearchedLocation? get selectedLocation {
+    final s = ref.read(editItemFormProvider(widget.itemId)).selectedLocation;
+    return s is SearchedLocation ? s : null;
+  }
 
   @override
-  set selectedLocation(SearchedLocation? value) =>
-      setState(() => _selectedLocation = value);
+  set selectedLocation(SearchedLocation? value) {
+    ref
+        .read(editItemFormProvider(widget.itemId).notifier)
+        .setSelectedLocation(value);
+  }
 
-  @override
-  void setProviderLocation(SelectedLocation? loc) {
-    ref.read(editItemFormProvider(widget.existingItem).notifier)
-        .setSelectedLocation(loc);
+  void _onFormStateChange(ItemFormState? prev, ItemFormState next) {
+    if (!_initializedControllers && next.title.isNotEmpty) {
+      _initializedControllers = true;
+      _titleController.text = next.title;
+      _descriptionController.text = next.description;
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    final formState = ref.read(editItemFormProvider(widget.existingItem));
-    _titleController.text = formState.title.isNotEmpty
-        ? formState.title
-        : widget.existingItem.title;
-    _descriptionController.text = formState.description.isNotEmpty
-        ? formState.description
-        : widget.existingItem.description;
+    final formState = ref.read(editItemFormProvider(widget.itemId));
+    if (formState.title.isNotEmpty) {
+      _titleController.text = formState.title;
+      _descriptionController.text = formState.description;
+      _initializedControllers = true;
+    }
     _titleController.addListener(_onTitleChanged);
     _descriptionController.addListener(_onDescriptionChanged);
-    _selectedLocation = formState.selectedLocation is SearchedLocation
-        ? formState.selectedLocation as SearchedLocation
-        : null;
   }
 
   void _onTitleChanged() {
     ref
-        .read(editItemFormProvider(widget.existingItem).notifier)
+        .read(editItemFormProvider(widget.itemId).notifier)
         .setTitle(_titleController.text);
   }
 
   void _onDescriptionChanged() {
     ref
-        .read(editItemFormProvider(widget.existingItem).notifier)
+        .read(editItemFormProvider(widget.itemId).notifier)
         .setDescription(_descriptionController.text);
   }
 
@@ -90,7 +94,10 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    var selected = _selectedLocation;
+    final formState = ref.read(editItemFormProvider(widget.itemId));
+    final selected = formState.selectedLocation is SearchedLocation
+        ? formState.selectedLocation as SearchedLocation
+        : null;
     if (selected == null || selected.city.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -141,8 +148,8 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
   }
 
   Future<void> _submitEdit(SearchedLocation location) async {
-    final itemId = widget.existingItem.id;
-    final state = ref.read(editItemFormProvider(widget.existingItem));
+    final itemId = widget.itemId;
+    final state = ref.read(editItemFormProvider(widget.itemId));
 
     List<Future> futures = [];
 
@@ -158,8 +165,8 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
     }
 
     final textRequest = UpdateItemRequest(
-      title: _titleController.text.trim(),
-      description: _descriptionController.text.trim(),
+      title: state.title,
+      description: state.description,
       city: location.city,
       postalCode: location.postalCode,
       lat: location.lat,
@@ -181,7 +188,6 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
     await Future.wait([...futures, textFuture, imagesFuture]);
     debugPrint('[editItem] Update done');
 
-    ref.read(editItemFormProvider(widget.existingItem).notifier).reset();
     ref.invalidate(featuredItemsProvider);
     if (mounted) {
       Navigator.pop(context, true);
@@ -190,7 +196,8 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
 
   @override
   Widget build(BuildContext context) {
-    final provider = editItemFormProvider(widget.existingItem);
+    ref.listen(editItemFormProvider(widget.itemId), _onFormStateChange);
+    final provider = editItemFormProvider(widget.itemId);
     final formState = ref.watch(provider);
     final label = locationLabel();
 
@@ -200,8 +207,10 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
         formKey: _formKey,
         titleController: _titleController,
         descriptionController: _descriptionController,
-        category: _category,
-        onCategoryChanged: (v) => setState(() => _category = v),
+        category: formState.category,
+        onCategoryChanged: (v) {
+          ref.read(provider.notifier).setCategory(v);
+        },
         locationLabel: label,
         onLocationTap: openLocationPicker,
         images: formState.images,

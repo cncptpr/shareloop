@@ -1,3 +1,4 @@
+// See docs/item-edit-create-flow.md (edit flow) and docs/rent-request-chat-flow.md (rent request flow).
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';

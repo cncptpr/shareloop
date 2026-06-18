@@ -1,3 +1,4 @@
+// See docs/rent-request-chat-flow.md — state machine, guards, and timestamp handling.
 import generated/types
 import gleam/list
 import gleam/option.{type Option, None, Some}

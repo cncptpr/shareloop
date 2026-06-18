@@ -1,3 +1,4 @@
+// See docs/item-edit-create-flow.md — Riverpod provider is the single source of truth.
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -107,46 +108,64 @@ class ItemFormNotifier extends Notifier<ItemFormState> {
   void reset() => state = const ItemFormState();
 }
 
-final itemFormProvider = NotifierProvider<ItemFormNotifier, ItemFormState>(
+final createItemFormProvider = NotifierProvider<ItemFormNotifier, ItemFormState>(
   ItemFormNotifier.new,
 );
 
 class EditItemFormNotifier extends ItemFormNotifier {
-  final ItemEditDetail _item;
+  final int itemId;
 
-  EditItemFormNotifier({required ItemEditDetail item}) : _item = item;
+  EditItemFormNotifier({required this.itemId});
 
   @override
   ItemFormState build() {
-    SearchedLocation? location;
-    if (_item.lat != null && _item.lng != null) {
-      final city = _item.city ?? '';
-      final postalCode = _item.postalCode ?? '';
-      final parts = [postalCode, city]..removeWhere((s) => s.isEmpty);
-      final name = parts.isEmpty ? '${_item.lat}, ${_item.lng}' : parts.join(' ');
-      location = SearchedLocation(
-        name: name,
-        displayName: name,
-        lat: _item.lat!,
-        lng: _item.lng!,
-        city: city,
-        postalCode: postalCode,
+    _loadFromServer();
+    return const ItemFormState();
+  }
+
+  Future<void> _loadFromServer() async {
+    try {
+      final item = await AppConfig.apiClient.getItemEdit(itemId);
+      if (item == null) return;
+      SearchedLocation? location;
+      if (item.city != null) {
+        final city = item.city ?? '';
+        final postalCode = item.postalCode ?? '';
+        final parts = [postalCode, city]..removeWhere((s) => s.isEmpty);
+        final name = parts.isEmpty
+            ? '${item.lat}, ${item.lng}'
+            : parts.join(' ');
+        location = SearchedLocation(
+          name: name,
+          displayName: name,
+          lat: item.lat,
+          lng: item.lng,
+          city: city,
+          postalCode: postalCode,
+        );
+      }
+      state = ItemFormState(
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        images: item.imageUuids
+            .map((uuid) => ServerItemImage(uuid: UuidValue.fromString(uuid)))
+            .toList(),
+        selectedLocation: location,
       );
-    }
-    return ItemFormState(
-      title: _item.title,
-      description: _item.description,
-      images: _item.imageUuids
-          .map((uuid) => ServerItemImage(uuid: UuidValue.fromString(uuid)))
-          .toList(),
-      selectedLocation: location,
-    );
+    } catch (_) {}
+  }
+
+  @override
+  void reset() {
+    super.reset();
+    _loadFromServer();
   }
 }
 
 final editItemFormProvider =
-    NotifierProvider.family<EditItemFormNotifier, ItemFormState, ItemEditDetail>(
-  (arg) => EditItemFormNotifier(item: arg),
+    NotifierProvider.family<EditItemFormNotifier, ItemFormState, int>(
+  (itemId) => EditItemFormNotifier(itemId: itemId),
 );
 
 Future<int?> createItem(CreateItemRequest request) async {

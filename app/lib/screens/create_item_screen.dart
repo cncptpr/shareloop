@@ -1,3 +1,4 @@
+// See docs/item-edit-create-flow.md — Riverpod provider is the single source of truth.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
@@ -31,36 +32,29 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  String? _category;
   bool _loading = false;
   bool _redirectedToLoginScreen = false;
-  SearchedLocation? _selectedLocation;
 
   @override
-  SearchedLocation? get selectedLocation => _selectedLocation;
+  SearchedLocation? get selectedLocation {
+    final s = ref.read(createItemFormProvider).selectedLocation;
+    return s is SearchedLocation ? s : null;
+  }
 
   @override
-  set selectedLocation(SearchedLocation? value) =>
-      setState(() => _selectedLocation = value);
-
-  @override
-  void setProviderLocation(SelectedLocation? loc) {
-    ref.read(itemFormProvider.notifier).setSelectedLocation(loc);
+  set selectedLocation(SearchedLocation? value) {
+    ref.read(createItemFormProvider.notifier).setSelectedLocation(value);
   }
 
   @override
   void initState() {
     super.initState();
-    final saved = ref.read(itemFormProvider);
+    final saved = ref.read(createItemFormProvider);
     _titleController.text = saved.title;
     _descriptionController.text = saved.description;
-    _category = saved.category;
-    _selectedLocation = saved.selectedLocation is SearchedLocation
-        ? saved.selectedLocation as SearchedLocation
-        : null;
     _titleController.addListener(_onTitleChanged);
     _descriptionController.addListener(_onDescriptionChanged);
-    if (_selectedLocation == null) {
+    if (saved.selectedLocation == null || saved.selectedLocation is! SearchedLocation) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _initLocation());
     }
   }
@@ -90,12 +84,12 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
   }
 
   void _onTitleChanged() {
-    ref.read(itemFormProvider.notifier).setTitle(_titleController.text);
+    ref.read(createItemFormProvider.notifier).setTitle(_titleController.text);
   }
 
   void _onDescriptionChanged() {
     ref
-        .read(itemFormProvider.notifier)
+        .read(createItemFormProvider.notifier)
         .setDescription(_descriptionController.text);
   }
 
@@ -111,7 +105,10 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final selected = _selectedLocation;
+    final formState = ref.read(createItemFormProvider);
+    final selected = formState.selectedLocation is SearchedLocation
+        ? formState.selectedLocation as SearchedLocation
+        : null;
     if (selected == null || selected.city.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -136,8 +133,8 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
     setState(() => _loading = true);
     try {
       final request = CreateItemRequest(
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
+        title: formState.title,
+        description: formState.description,
         city: selected.city,
         postalCode: selected.postalCode,
         lat: selected.lat,
@@ -151,7 +148,7 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
       if (result != null && mounted) {
         final itemId = result.id;
 
-        final state = ref.read(itemFormProvider);
+        final state = ref.read(createItemFormProvider);
         if (state.images.whereType<LocalItemImage>().isNotEmpty) {
           debugPrint(
             '[createItem] Uploading ${state.images.whereType<LocalItemImage>().length} image(s)...',
@@ -178,7 +175,7 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
           }
         }
 
-        ref.read(itemFormProvider.notifier).reset();
+        ref.read(createItemFormProvider.notifier).reset();
         ref.invalidate(featuredItemsProvider);
         if (mounted) {
           Navigator.pushReplacement(
@@ -219,7 +216,7 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
   @override
   Widget build(BuildContext context) {
     final authAsync = ref.watch(authProvider);
-    final formState = ref.watch(itemFormProvider);
+    final formState = ref.watch(createItemFormProvider);
     final label = locationLabel();
 
     return Scaffold(
@@ -255,22 +252,21 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
             formKey: _formKey,
             titleController: _titleController,
             descriptionController: _descriptionController,
-            category: _category,
+            category: formState.category,
             onCategoryChanged: (v) {
-              setState(() => _category = v);
-              ref.read(itemFormProvider.notifier).setCategory(v);
+              ref.read(createItemFormProvider.notifier).setCategory(v);
             },
             locationLabel: label,
             onLocationTap: openLocationPicker,
             images: formState.images,
             onReorderImages: (oldIndex, newIndex) {
-              ref.read(itemFormProvider.notifier).moveImage(oldIndex, newIndex);
+              ref.read(createItemFormProvider.notifier).moveImage(oldIndex, newIndex);
             },
             onRemoveImage: (i) {
-              ref.read(itemFormProvider.notifier).removeImage(i);
+              ref.read(createItemFormProvider.notifier).removeImage(i);
             },
             onAddImage: (file) {
-              ref.read(itemFormProvider.notifier).addImage(file);
+              ref.read(createItemFormProvider.notifier).addImage(file);
             },
             onSubmit: _submit,
             isLoading: _loading,

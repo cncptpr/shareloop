@@ -4,26 +4,21 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shareloop/app_config.dart';
 import 'package:shareloop/router.dart';
 
-/// This sample app shows an app with two screens.
-///
-/// The first route '/' is mapped to [HomeScreen], and the second route
-/// '/details' is mapped to [DetailsScreen].
-///
-/// The buttons use context.go() to navigate to each destination. On mobile
-/// devices, each destination is deep-linkable and on the web, can be navigated
-/// to using the address bar.
 void main() => runApp(const ProviderScope(child: MyApp()));
 
-/// The main app.
 class MyApp extends StatelessWidget {
-  /// Constructs a [MyApp]
   const MyApp({super.key});
+
+  static String get _title {
+    final ns = AppConfig.storageNamespace;
+    return ns.isEmpty ? 'shareloop' : 'shareloop [$ns]';
+  }
 
   @override
   Widget build(BuildContext context) {
-    print("[DEBUG] Print test");
-    return MaterialApp.router(routerConfig: router);
+    return MaterialApp.router(title: _title, routerConfig: router);
   }
 }

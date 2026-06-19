@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shareloop/app_config.dart';
 
 enum UnauthorizedException {
   missingTokens(message: "Missing Tokens."),
@@ -13,23 +14,20 @@ enum UnauthorizedException {
 
 const _secureStorage = FlutterSecureStorage();
 
-const accessTokenKey = 'access_token';
-const refreshTokenKey = 'refresh_token';
-
 Future<bool> hasTokens() async {
   final (a, r) = await (
-    _secureStorage.containsKey(key: accessTokenKey),
-    _secureStorage.containsKey(key: refreshTokenKey),
+    _secureStorage.containsKey(key: AppConfig.accessTokenKey),
+    _secureStorage.containsKey(key: AppConfig.refreshTokenKey),
   ).wait;
   return a && r;
 }
 
 Future<String?> getAccessToken() async {
-  return await _secureStorage.read(key: accessTokenKey);
+  return await _secureStorage.read(key: AppConfig.accessTokenKey);
 }
 
 Future<String?> getRefreshToken() async {
-  return await _secureStorage.read(key: refreshTokenKey);
+  return await _secureStorage.read(key: AppConfig.refreshTokenKey);
 }
 
 Future<void> saveTokens({
@@ -37,14 +35,14 @@ Future<void> saveTokens({
   required String refresh,
 }) async {
   await (
-    _secureStorage.write(key: accessTokenKey, value: access),
-    _secureStorage.write(key: refreshTokenKey, value: refresh),
+    _secureStorage.write(key: AppConfig.accessTokenKey, value: access),
+    _secureStorage.write(key: AppConfig.refreshTokenKey, value: refresh),
   ).wait;
 }
 
 Future<void> deleteTokens() async {
   await (
-    _secureStorage.delete(key: accessTokenKey),
-    _secureStorage.delete(key: refreshTokenKey),
+    _secureStorage.delete(key: AppConfig.accessTokenKey),
+    _secureStorage.delete(key: AppConfig.refreshTokenKey),
   ).wait;
 }

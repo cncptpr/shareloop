@@ -33,6 +33,11 @@ description = "Run the app in dev mode"
 run = "flutter run"
 dir = "app"
 
+[tasks."app:dev2"]
+description = "Run the app in dev mode (second user, isolated storage)"
+run = "flutter run --dart-define=STORAGE_NAMESPACE=dev2_"
+dir = "app"
+
 [tasks."app:api:gen"]
 description = "Generate the Flutter API client from the OpenAPI spec"
 run = "openapi-generator-cli generate -i ../api/shareloop.openapi.yaml -g dart -o ./gen/api"

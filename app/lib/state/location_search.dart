@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:openapi/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shareloop/app_config.dart';
 import 'package:shareloop/state/location.dart';
 
 sealed class SelectedLocation {
@@ -79,16 +80,14 @@ class RateLimitException implements Exception {
 }
 
 const _maxStoredLocations = 20;
-const _keySelectedLocation = 'selected_location';
-const _keyStoredLocations = 'stored_locations';
 
 Future<void> _saveSelectedLocation(SelectedLocation? location) async {
   final prefs = await SharedPreferences.getInstance();
   if (location == null) {
-    await prefs.remove(_keySelectedLocation);
+    await prefs.remove(AppConfig.selectedLocationKey);
   } else {
     await prefs.setString(
-      _keySelectedLocation,
+      AppConfig.selectedLocationKey,
       jsonEncode(location.selectedToJson()),
     );
   }
@@ -97,14 +96,14 @@ Future<void> _saveSelectedLocation(SelectedLocation? location) async {
 Future<void> _saveStoredLocations(List<SearchedLocation> locations) async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString(
-    _keyStoredLocations,
+    AppConfig.storedLocationsKey,
     jsonEncode(locations.map((l) => l.toJson()).toList()),
   );
 }
 
 Future<List<SearchedLocation>> _loadStoredLocations() async {
   final prefs = await SharedPreferences.getInstance();
-  final raw = prefs.getString(_keyStoredLocations);
+  final raw = prefs.getString(AppConfig.storedLocationsKey);
   if (raw == null) return [];
   final list = jsonDecode(raw) as List;
   return list
@@ -133,7 +132,7 @@ class SelectedLocationNotifier extends Notifier<SelectedLocation?> {
 
   Future<void> _loadFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_keySelectedLocation);
+    final raw = prefs.getString(AppConfig.selectedLocationKey);
     if (raw != null) {
       final location = SelectedLocation.selectedFromJson(
         jsonDecode(raw) as Map<String, dynamic>,

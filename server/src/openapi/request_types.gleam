@@ -67,16 +67,8 @@ pub type ConfirmReturnRequest {
   ConfirmReturnRequest(request_id: Int)
 }
 
-pub type GetMessagesRequest {
-  GetMessagesRequest(request_id: Int, after: Option(Int))
-}
-
 pub type SendMessageRequest {
   SendMessageRequest(request_id: Int, body: types.SendMessageRequest)
-}
-
-pub type GetOffersRequest {
-  GetOffersRequest(request_id: Int)
 }
 
 pub type CreateOfferRequest {

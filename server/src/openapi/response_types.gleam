@@ -124,25 +124,11 @@ pub type ConfirmReturnResponse {
   ConfirmReturnResponseInternalServerError
 }
 
-pub type GetMessagesResponse {
-  GetMessagesResponseOk(List(types.Message))
-  GetMessagesResponseUnauthorized
-  GetMessagesResponseNotFound
-  GetMessagesResponseInternalServerError
-}
-
 pub type SendMessageResponse {
   SendMessageResponseCreated(types.Message)
   SendMessageResponseUnauthorized
   SendMessageResponseNotFound
   SendMessageResponseInternalServerError
-}
-
-pub type GetOffersResponse {
-  GetOffersResponseOk(List(types.RentOffer))
-  GetOffersResponseUnauthorized
-  GetOffersResponseNotFound
-  GetOffersResponseInternalServerError
 }
 
 pub type CreateOfferResponse {

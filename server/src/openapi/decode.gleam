@@ -510,6 +510,11 @@ pub fn rent_request_decoder() -> decode.Decoder(types.RentRequest) {
   use id <- decode.field("id", decode.int)
   use item_id <- decode.field("itemId", decode.int)
   use item_title <- decode.field("itemTitle", decode.string)
+  use last_read <- decode.optional_field(
+    "lastRead",
+    option.None,
+    decode.optional(decode.string),
+  )
   use latest_accepted_offer_id <- decode.optional_field(
     "latestAcceptedOfferId",
     option.None,
@@ -519,6 +524,16 @@ pub fn rent_request_decoder() -> decode.Decoder(types.RentRequest) {
     "latestOpenOfferId",
     option.None,
     decode.optional(decode.int),
+  )
+  use messages <- decode.optional_field(
+    "messages",
+    option.None,
+    decode.optional(decode.list(message_decoder())),
+  )
+  use offers <- decode.optional_field(
+    "offers",
+    option.None,
+    decode.optional(decode.list(rent_offer_decoder())),
   )
   use owner_id <- decode.field("ownerId", decode.int)
   use owner_name <- decode.field("ownerName", decode.string)
@@ -535,8 +550,11 @@ pub fn rent_request_decoder() -> decode.Decoder(types.RentRequest) {
     id: id,
     item_id: item_id,
     item_title: item_title,
+    last_read: last_read,
     latest_accepted_offer_id: latest_accepted_offer_id,
     latest_open_offer_id: latest_open_offer_id,
+    messages: messages,
+    offers: offers,
     owner_id: owner_id,
     owner_name: owner_name,
     requester: requester,
@@ -760,24 +778,4 @@ pub fn decode_get_rent_requests_response_ok(
   json_string: String,
 ) -> Result(List(types.RentRequest), json.DecodeError) {
   json.parse(json_string, get_rent_requests_response_ok_decoder())
-}
-
-pub fn get_messages_response_ok_decoder() -> decode.Decoder(List(types.Message)) {
-  decode.list(message_decoder())
-}
-
-pub fn decode_get_messages_response_ok(
-  json_string: String,
-) -> Result(List(types.Message), json.DecodeError) {
-  json.parse(json_string, get_messages_response_ok_decoder())
-}
-
-pub fn get_offers_response_ok_decoder() -> decode.Decoder(List(types.RentOffer)) {
-  decode.list(rent_offer_decoder())
-}
-
-pub fn decode_get_offers_response_ok(
-  json_string: String,
-) -> Result(List(types.RentOffer), json.DecodeError) {
-  json.parse(json_string, get_offers_response_ok_decoder())
 }

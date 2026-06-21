@@ -988,6 +988,66 @@ LIMIT 1
   |> pog.execute(db)
 }
 
+/// A row you get from running the `get_messages_after_timestamp` query
+/// defined in `./src/server/sql/get_messages_after_timestamp.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type GetMessagesAfterTimestampRow {
+  GetMessagesAfterTimestampRow(
+    id: Int,
+    rent_request_id: Int,
+    author_id: Int,
+    content: String,
+    created_at: Timestamp,
+  )
+}
+
+/// Runs the `get_messages_after_timestamp` query
+/// defined in `./src/server/sql/get_messages_after_timestamp.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.7.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn get_messages_after_timestamp(
+  db: pog.Connection,
+  rent_request_id: Int,
+  arg_2: Timestamp,
+) -> Result(pog.Returned(GetMessagesAfterTimestampRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, decode.int)
+    use rent_request_id <- decode.field(1, decode.int)
+    use author_id <- decode.field(2, decode.int)
+    use content <- decode.field(3, decode.string)
+    use created_at <- decode.field(4, pog.timestamp_decoder())
+    decode.success(GetMessagesAfterTimestampRow(
+      id:,
+      rent_request_id:,
+      author_id:,
+      content:,
+      created_at:,
+    ))
+  }
+
+  "SELECT
+  id,
+  rent_request_id,
+  author_id,
+  content,
+  created_at as created_at
+FROM messages
+WHERE rent_request_id = $1
+  AND created_at > $2
+ORDER BY created_at ASC
+"
+  |> pog.query
+  |> pog.parameter(pog.int(rent_request_id))
+  |> pog.parameter(pog.timestamp(arg_2))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
 /// A row you get from running the `get_messages_for_request` query
 /// defined in `./src/server/sql/get_messages_for_request.sql`.
 ///
@@ -1113,6 +1173,78 @@ WHERE id = $1
   |> pog.execute(db)
 }
 
+/// A row you get from running the `get_offers_after_timestamp` query
+/// defined in `./src/server/sql/get_offers_after_timestamp.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type GetOffersAfterTimestampRow {
+  GetOffersAfterTimestampRow(
+    id: Int,
+    rent_request_id: Int,
+    sender_id: Int,
+    start_date: Timestamp,
+    end_date: Timestamp,
+    accepted_at: Option(Timestamp),
+    created_at: Timestamp,
+    updated_at: Timestamp,
+  )
+}
+
+/// Runs the `get_offers_after_timestamp` query
+/// defined in `./src/server/sql/get_offers_after_timestamp.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.7.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn get_offers_after_timestamp(
+  db: pog.Connection,
+  rent_request_id: Int,
+  arg_2: Timestamp,
+) -> Result(pog.Returned(GetOffersAfterTimestampRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, decode.int)
+    use rent_request_id <- decode.field(1, decode.int)
+    use sender_id <- decode.field(2, decode.int)
+    use start_date <- decode.field(3, pog.timestamp_decoder())
+    use end_date <- decode.field(4, pog.timestamp_decoder())
+    use accepted_at <- decode.field(5, decode.optional(pog.timestamp_decoder()))
+    use created_at <- decode.field(6, pog.timestamp_decoder())
+    use updated_at <- decode.field(7, pog.timestamp_decoder())
+    decode.success(GetOffersAfterTimestampRow(
+      id:,
+      rent_request_id:,
+      sender_id:,
+      start_date:,
+      end_date:,
+      accepted_at:,
+      created_at:,
+      updated_at:,
+    ))
+  }
+
+  "SELECT
+  id,
+  rent_request_id,
+  sender_id,
+  start_date as start_date,
+  end_date as end_date,
+  accepted_at as accepted_at,
+  created_at as created_at,
+  updated_at as updated_at
+FROM rent_offers
+WHERE rent_request_id = $1
+  AND created_at > $2
+ORDER BY created_at ASC
+"
+  |> pog.query
+  |> pog.parameter(pog.int(rent_request_id))
+  |> pog.parameter(pog.timestamp(arg_2))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
 /// A row you get from running the `get_offers_for_request` query
 /// defined in `./src/server/sql/get_offers_for_request.sql`.
 ///
@@ -1197,8 +1329,10 @@ pub type GetOpenRentRequestForItemAndUserRow {
     latest_open_offer_id: Option(Int),
     borrow_confirmed_at: Option(Timestamp),
     returned_at: Option(Timestamp),
-    created_at: String,
-    updated_at: String,
+    created_at: Timestamp,
+    updated_at: Timestamp,
+    requester_read_at: Option(Timestamp),
+    owner_read_at: Option(Timestamp),
     item_title: String,
     requester_name: String,
     owner_name: String,
@@ -1228,12 +1362,20 @@ pub fn get_open_rent_request_for_item_and_user(
       decode.optional(pog.timestamp_decoder()),
     )
     use returned_at <- decode.field(6, decode.optional(pog.timestamp_decoder()))
-    use created_at <- decode.field(7, decode.string)
-    use updated_at <- decode.field(8, decode.string)
-    use item_title <- decode.field(9, decode.string)
-    use requester_name <- decode.field(10, decode.string)
-    use owner_name <- decode.field(11, decode.string)
-    use owner_id <- decode.field(12, decode.int)
+    use created_at <- decode.field(7, pog.timestamp_decoder())
+    use updated_at <- decode.field(8, pog.timestamp_decoder())
+    use requester_read_at <- decode.field(
+      9,
+      decode.optional(pog.timestamp_decoder()),
+    )
+    use owner_read_at <- decode.field(
+      10,
+      decode.optional(pog.timestamp_decoder()),
+    )
+    use item_title <- decode.field(11, decode.string)
+    use requester_name <- decode.field(12, decode.string)
+    use owner_name <- decode.field(13, decode.string)
+    use owner_id <- decode.field(14, decode.int)
     decode.success(GetOpenRentRequestForItemAndUserRow(
       id:,
       item_id:,
@@ -1244,6 +1386,8 @@ pub fn get_open_rent_request_for_item_and_user(
       returned_at:,
       created_at:,
       updated_at:,
+      requester_read_at:,
+      owner_read_at:,
       item_title:,
       requester_name:,
       owner_name:,
@@ -1259,8 +1403,10 @@ pub fn get_open_rent_request_for_item_and_user(
   rr.latest_open_offer_id,
   rr.borrow_confirmed_at as borrow_confirmed_at,
   rr.returned_at as returned_at,
-  rr.created_at::text as created_at,
-  rr.updated_at::text as updated_at,
+  rr.created_at as created_at,
+  rr.updated_at as updated_at,
+  rr.requester_read_at as requester_read_at,
+  rr.owner_read_at as owner_read_at,
   items.title as item_title,
   requester.name as requester_name,
   owner.name as owner_name,
@@ -1323,6 +1469,46 @@ WHERE id = $1
   |> pog.execute(db)
 }
 
+/// A row you get from running the `get_read_at` query
+/// defined in `./src/server/sql/get_read_at.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type GetReadAtRow {
+  GetReadAtRow(read_at: String)
+}
+
+/// Runs the `get_read_at` query
+/// defined in `./src/server/sql/get_read_at.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.7.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn get_read_at(
+  db: pog.Connection,
+  id: Int,
+  requester_id: Int,
+) -> Result(pog.Returned(GetReadAtRow), pog.QueryError) {
+  let decoder = {
+    use read_at <- decode.field(0, decode.string)
+    decode.success(GetReadAtRow(read_at:))
+  }
+
+  "SELECT
+  CASE WHEN $2 = requester_id THEN requester_read_at::text ELSE owner_read_at::text END AS read_at
+FROM rent_requests
+WHERE id = $1 AND (
+  $2 = requester_id OR $2 = (SELECT author_id FROM items WHERE id = rent_requests.item_id)
+)
+"
+  |> pog.query
+  |> pog.parameter(pog.int(id))
+  |> pog.parameter(pog.int(requester_id))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
 /// A row you get from running the `get_rent_request_by_id` query
 /// defined in `./src/server/sql/get_rent_request_by_id.sql`.
 ///
@@ -1338,8 +1524,10 @@ pub type GetRentRequestByIdRow {
     latest_open_offer_id: Option(Int),
     borrow_confirmed_at: Option(Timestamp),
     returned_at: Option(Timestamp),
-    created_at: String,
-    updated_at: String,
+    created_at: Timestamp,
+    updated_at: Timestamp,
+    requester_read_at: Option(Timestamp),
+    owner_read_at: Option(Timestamp),
     item_title: String,
     requester_name: String,
     owner_name: String,
@@ -1368,12 +1556,20 @@ pub fn get_rent_request_by_id(
       decode.optional(pog.timestamp_decoder()),
     )
     use returned_at <- decode.field(6, decode.optional(pog.timestamp_decoder()))
-    use created_at <- decode.field(7, decode.string)
-    use updated_at <- decode.field(8, decode.string)
-    use item_title <- decode.field(9, decode.string)
-    use requester_name <- decode.field(10, decode.string)
-    use owner_name <- decode.field(11, decode.string)
-    use owner_id <- decode.field(12, decode.int)
+    use created_at <- decode.field(7, pog.timestamp_decoder())
+    use updated_at <- decode.field(8, pog.timestamp_decoder())
+    use requester_read_at <- decode.field(
+      9,
+      decode.optional(pog.timestamp_decoder()),
+    )
+    use owner_read_at <- decode.field(
+      10,
+      decode.optional(pog.timestamp_decoder()),
+    )
+    use item_title <- decode.field(11, decode.string)
+    use requester_name <- decode.field(12, decode.string)
+    use owner_name <- decode.field(13, decode.string)
+    use owner_id <- decode.field(14, decode.int)
     decode.success(GetRentRequestByIdRow(
       id:,
       item_id:,
@@ -1384,6 +1580,8 @@ pub fn get_rent_request_by_id(
       returned_at:,
       created_at:,
       updated_at:,
+      requester_read_at:,
+      owner_read_at:,
       item_title:,
       requester_name:,
       owner_name:,
@@ -1399,8 +1597,10 @@ pub fn get_rent_request_by_id(
   rr.latest_open_offer_id,
   rr.borrow_confirmed_at as borrow_confirmed_at,
   rr.returned_at as returned_at,
-  rr.created_at::text as created_at,
-  rr.updated_at::text as updated_at,
+  rr.created_at as created_at,
+  rr.updated_at as updated_at,
+  rr.requester_read_at as requester_read_at,
+  rr.owner_read_at as owner_read_at,
   items.title as item_title,
   requester.name as requester_name,
   owner.name as owner_name,
@@ -1432,8 +1632,10 @@ pub type GetRentRequestsForUserRow {
     latest_open_offer_id: Option(Int),
     borrow_confirmed_at: Option(Timestamp),
     returned_at: Option(Timestamp),
-    created_at: String,
-    updated_at: String,
+    requester_read_at: Option(Timestamp),
+    owner_read_at: Option(Timestamp),
+    created_at: Timestamp,
+    updated_at: Timestamp,
     item_title: String,
     requester_name: String,
     owner_name: String,
@@ -1462,12 +1664,20 @@ pub fn get_rent_requests_for_user(
       decode.optional(pog.timestamp_decoder()),
     )
     use returned_at <- decode.field(6, decode.optional(pog.timestamp_decoder()))
-    use created_at <- decode.field(7, decode.string)
-    use updated_at <- decode.field(8, decode.string)
-    use item_title <- decode.field(9, decode.string)
-    use requester_name <- decode.field(10, decode.string)
-    use owner_name <- decode.field(11, decode.string)
-    use owner_id <- decode.field(12, decode.int)
+    use requester_read_at <- decode.field(
+      7,
+      decode.optional(pog.timestamp_decoder()),
+    )
+    use owner_read_at <- decode.field(
+      8,
+      decode.optional(pog.timestamp_decoder()),
+    )
+    use created_at <- decode.field(9, pog.timestamp_decoder())
+    use updated_at <- decode.field(10, pog.timestamp_decoder())
+    use item_title <- decode.field(11, decode.string)
+    use requester_name <- decode.field(12, decode.string)
+    use owner_name <- decode.field(13, decode.string)
+    use owner_id <- decode.field(14, decode.int)
     decode.success(GetRentRequestsForUserRow(
       id:,
       item_id:,
@@ -1476,6 +1686,8 @@ pub fn get_rent_requests_for_user(
       latest_open_offer_id:,
       borrow_confirmed_at:,
       returned_at:,
+      requester_read_at:,
+      owner_read_at:,
       created_at:,
       updated_at:,
       item_title:,
@@ -1493,8 +1705,10 @@ pub fn get_rent_requests_for_user(
   rr.latest_open_offer_id,
   rr.borrow_confirmed_at as borrow_confirmed_at,
   rr.returned_at as returned_at,
-  rr.created_at::text as created_at,
-  rr.updated_at::text as updated_at,
+  rr.requester_read_at as requester_read_at,
+  rr.owner_read_at as owner_read_at,
+  rr.created_at as created_at,
+  rr.updated_at as updated_at,
   items.title as item_title,
   requester.name as requester_name,
   owner.name as owner_name,
@@ -1885,6 +2099,34 @@ pub fn list_users(
   "select id, email, last_online_at, created_at from users order by id
 "
   |> pog.query
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
+/// Runs the `mark_rent_request_read` query
+/// defined in `./src/server/sql/mark_rent_request_read.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.7.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn mark_rent_request_read(
+  db: pog.Connection,
+  id: Int,
+  requester_id: Int,
+) -> Result(pog.Returned(Nil), pog.QueryError) {
+  let decoder = decode.map(decode.dynamic, fn(_) { Nil })
+
+  "UPDATE rent_requests
+SET
+  requester_read_at = CASE WHEN $2 = requester_id THEN NOW() ELSE requester_read_at END,
+  owner_read_at = CASE WHEN $2 = (SELECT author_id FROM items WHERE id = rent_requests.item_id) THEN NOW() ELSE owner_read_at END
+WHERE id = $1 AND (
+  $2 = requester_id OR $2 = (SELECT author_id FROM items WHERE id = rent_requests.item_id)
+)
+"
+  |> pog.query
+  |> pog.parameter(pog.int(id))
+  |> pog.parameter(pog.int(requester_id))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }

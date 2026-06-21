@@ -1,24 +1,32 @@
 /// This file is safe to edit. It will not be overridden by oaspec.
 import gleam/bit_array
 import gleam/dynamic/decode
+import gleam/erlang/process.{type Subject}
 import gleam/io
+import gleam/json
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/string
+import openapi/encode as openapi_encode
 import openapi/request_types
 import openapi/response_types
 import openapi/types
 import pog
 import server/auth
 import server/featured_items
+import server/notifications
 import server/renting
 import server/sql
 import simplifile
 import youid/uuid
 
 pub type State {
-  State(conn: pog.Connection, bearer_token: Option(String))
+  State(
+    conn: pog.Connection,
+    bearer_token: Option(String),
+    registry: Subject(notifications.RegistryMessage),
+  )
 }
 
 fn verify_auth(state: State) -> Result(types.User, Nil) {
@@ -323,7 +331,8 @@ pub fn upload_item_image(
             Error(_) -> response_types.UploadItemImageResponseForbidden
             Ok(_) -> {
               case simplifile.write_bits(filepath, image_bytes) {
-                Error(_) -> response_types.UploadItemImageResponseInternalServerError
+                Error(_) ->
+                  response_types.UploadItemImageResponseInternalServerError
                 Ok(_) -> {
                   io.println("[handlers] Wrote " <> filepath)
 
@@ -539,7 +548,24 @@ pub fn get_rent_request(
     Error(_) -> response_types.GetRentRequestResponseUnauthorized
     Ok(user) -> {
       case renting.get_rent_request_by_id(state.conn, req.request_id, user.id) {
-        Ok(request) -> response_types.GetRentRequestResponseOk(request)
+        Ok(request) -> {
+          let messages_result =
+            renting.get_messages(state.conn, req.request_id, user.id)
+          let offers_result =
+            renting.get_offers(state.conn, req.request_id, user.id)
+
+          let messages = case messages_result {
+            Ok(msgs) -> Some(msgs)
+            _ -> Some([])
+          }
+          let offers = case offers_result {
+            Ok(ofs) -> Some(ofs)
+            _ -> Some([])
+          }
+          response_types.GetRentRequestResponseOk(
+            types.RentRequest(..request, messages: messages, offers: offers),
+          )
+        }
         Error(_) -> response_types.GetRentRequestResponseNotFound
       }
     }
@@ -561,23 +587,18 @@ pub fn send_message(
           req.body.content,
         )
       {
-        Ok(message) -> response_types.SendMessageResponseCreated(message)
+        Ok(message) -> {
+          let _ =
+            notify_other_participant(
+              state,
+              req.request_id,
+              user.id,
+              "message.created",
+              openapi_encode.encode_message_json(message),
+            )
+          response_types.SendMessageResponseCreated(message)
+        }
         Error(_) -> response_types.SendMessageResponseInternalServerError
-      }
-    }
-  }
-}
-
-pub fn get_messages(
-  state: State,
-  req: request_types.GetMessagesRequest,
-) -> response_types.GetMessagesResponse {
-  case verify_auth(state) {
-    Error(_) -> response_types.GetMessagesResponseUnauthorized
-    Ok(user) -> {
-      case renting.get_messages(state.conn, req.request_id, user.id) {
-        Ok(messages) -> response_types.GetMessagesResponseOk(messages)
-        Error(_) -> response_types.GetMessagesResponseInternalServerError
       }
     }
   }
@@ -599,23 +620,18 @@ pub fn create_offer(
           req.body.end_date,
         )
       {
-        Ok(offer) -> response_types.CreateOfferResponseCreated(offer)
+        Ok(offer) -> {
+          let _ =
+            notify_other_participant(
+              state,
+              req.request_id,
+              user.id,
+              "offer.created",
+              openapi_encode.encode_rent_offer_json(offer),
+            )
+          response_types.CreateOfferResponseCreated(offer)
+        }
         Error(_) -> response_types.CreateOfferResponseInternalServerError
-      }
-    }
-  }
-}
-
-pub fn get_offers(
-  state: State,
-  req: request_types.GetOffersRequest,
-) -> response_types.GetOffersResponse {
-  case verify_auth(state) {
-    Error(_) -> response_types.GetOffersResponseUnauthorized
-    Ok(user) -> {
-      case renting.get_offers(state.conn, req.request_id, user.id) {
-        Ok(offers) -> response_types.GetOffersResponseOk(offers)
-        Error(_) -> response_types.GetOffersResponseInternalServerError
       }
     }
   }
@@ -629,7 +645,17 @@ pub fn accept_offer(
     Error(_) -> response_types.AcceptOfferResponseUnauthorized
     Ok(user) -> {
       case renting.accept_offer(state.conn, req.offer_id, user.id) {
-        Ok(offer) -> response_types.AcceptOfferResponseOk(offer)
+        Ok(offer) -> {
+          let _ =
+            notify_other_participant(
+              state,
+              offer.rent_request_id,
+              user.id,
+              "offer.accepted",
+              openapi_encode.encode_rent_offer_json(offer),
+            )
+          response_types.AcceptOfferResponseOk(offer)
+        }
         Error(_) -> response_types.AcceptOfferResponseNotFound
       }
     }
@@ -644,7 +670,17 @@ pub fn confirm_borrow(
     Error(_) -> response_types.ConfirmBorrowResponseUnauthorized
     Ok(user) -> {
       case renting.confirm_borrow(state.conn, req.request_id, user.id) {
-        Ok(request) -> response_types.ConfirmBorrowResponseOk(request)
+        Ok(request) -> {
+          let _ =
+            notify_other_participant(
+              state,
+              req.request_id,
+              user.id,
+              "borrow.confirmed",
+              openapi_encode.encode_rent_request_json(request),
+            )
+          response_types.ConfirmBorrowResponseOk(request)
+        }
         Error(_) -> response_types.ConfirmBorrowResponseForbidden
       }
     }
@@ -659,7 +695,17 @@ pub fn confirm_return(
     Error(_) -> response_types.ConfirmReturnResponseUnauthorized
     Ok(user) -> {
       case renting.confirm_return(state.conn, req.request_id, user.id) {
-        Ok(request) -> response_types.ConfirmReturnResponseOk(request)
+        Ok(request) -> {
+          let _ =
+            notify_other_participant(
+              state,
+              req.request_id,
+              user.id,
+              "return.confirmed",
+              openapi_encode.encode_rent_request_json(request),
+            )
+          response_types.ConfirmReturnResponseOk(request)
+        }
         Error(_) -> response_types.ConfirmReturnResponseForbidden
       }
     }
@@ -676,4 +722,41 @@ fn detect_ext(filename: String) -> String {
     Ok("webp") -> "webp"
     _ -> "jpg"
   }
+}
+
+fn notify_other_participant(
+  state: State,
+  request_id: Int,
+  current_user_id: Int,
+  event_type: String,
+  data: json.Json,
+) -> Nil {
+  let _ = case sql.get_rent_request_by_id(state.conn, request_id) {
+    Ok(returned) -> {
+      case list.first(returned.rows) {
+        Ok(row) -> {
+          let other_id = case row.requester_id == current_user_id {
+            True -> row.owner_id
+            False -> row.requester_id
+          }
+          let payload =
+            json.to_string(
+              json.object([
+                #("type", json.string(event_type)),
+                #("rent_request_id", json.int(request_id)),
+                #("data", data),
+              ]),
+            )
+          notifications.notify(
+            state.registry,
+            other_id,
+            notifications.NotifyEvent(payload),
+          )
+        }
+        _ -> Nil
+      }
+    }
+    _ -> Nil
+  }
+  Nil
 }

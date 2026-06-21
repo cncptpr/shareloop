@@ -20,6 +20,9 @@ Name | Type | Description | Notes
 **returnedAt** | [**DateTime**](DateTime.md) |  | [optional] 
 **createdAt** | [**DateTime**](DateTime.md) |  | 
 **updatedAt** | [**DateTime**](DateTime.md) |  | 
+**messages** | [**List<Message>**](Message.md) |  | [optional] [default to const []]
+**offers** | [**List<RentOffer>**](RentOffer.md) |  | [optional] [default to const []]
+**lastRead** | [**DateTime**](DateTime.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

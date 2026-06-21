@@ -234,26 +234,57 @@ pub fn encode_rent_offer(value: types.RentOffer) -> String {
 }
 
 pub fn encode_rent_request_json(value: types.RentRequest) -> json.Json {
-  json.object([
-    #(
-      "borrowConfirmedAt",
-      json.nullable(value.borrow_confirmed_at, json.string),
-    ),
-    #("createdAt", json.string(value.created_at)),
-    #("id", json.int(value.id)),
-    #("itemId", json.int(value.item_id)),
-    #("itemTitle", json.string(value.item_title)),
-    #(
-      "latestAcceptedOfferId",
-      json.nullable(value.latest_accepted_offer_id, json.int),
-    ),
-    #("latestOpenOfferId", json.nullable(value.latest_open_offer_id, json.int)),
-    #("ownerId", json.int(value.owner_id)),
-    #("ownerName", json.string(value.owner_name)),
-    #("requester", encode_person_json(value.requester)),
-    #("returnedAt", json.nullable(value.returned_at, json.string)),
-    #("updatedAt", json.string(value.updated_at)),
-  ])
+  json.object(
+    list.flatten([
+      [
+        #(
+          "borrowConfirmedAt",
+          json.nullable(value.borrow_confirmed_at, json.string),
+        ),
+      ],
+      [#("createdAt", json.string(value.created_at))],
+      [#("id", json.int(value.id))],
+      [#("itemId", json.int(value.item_id))],
+      [#("itemTitle", json.string(value.item_title))],
+      case value.last_read {
+        option.None -> []
+        option.Some(x) -> [#("lastRead", json.string(x))]
+      },
+      [
+        #(
+          "latestAcceptedOfferId",
+          json.nullable(value.latest_accepted_offer_id, json.int),
+        ),
+      ],
+      [
+        #(
+          "latestOpenOfferId",
+          json.nullable(value.latest_open_offer_id, json.int),
+        ),
+      ],
+      [
+        #(
+          "messages",
+          json.nullable(value.messages, fn(items) {
+            json.array(items, encode_message_json)
+          }),
+        ),
+      ],
+      [
+        #(
+          "offers",
+          json.nullable(value.offers, fn(items) {
+            json.array(items, encode_rent_offer_json)
+          }),
+        ),
+      ],
+      [#("ownerId", json.int(value.owner_id))],
+      [#("ownerName", json.string(value.owner_name))],
+      [#("requester", encode_person_json(value.requester))],
+      [#("returnedAt", json.nullable(value.returned_at, json.string))],
+      [#("updatedAt", json.string(value.updated_at))],
+    ]),
+  )
 }
 
 pub fn encode_rent_request(value: types.RentRequest) -> String {

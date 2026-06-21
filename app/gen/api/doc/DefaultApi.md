@@ -20,9 +20,7 @@ Method | HTTP request | Description
 [**getImage**](DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
 [**getItem**](DefaultApi.md#getitem) | **GET** /items/{itemId} | Get item details
 [**getItemEdit**](DefaultApi.md#getitemedit) | **GET** /items/{itemId}/edit | Get item edit details (owner only)
-[**getMessages**](DefaultApi.md#getmessages) | **GET** /rent-requests/{requestId}/messages | Get messages for a rent request
-[**getOffers**](DefaultApi.md#getoffers) | **GET** /rent-requests/{requestId}/offers | Get offers for a rent request
-[**getRentRequest**](DefaultApi.md#getrentrequest) | **GET** /rent-requests/{requestId} | Get a single rent request
+[**getRentRequest**](DefaultApi.md#getrentrequest) | **GET** /rent-requests/{requestId} | Get a single rent request with messages and offers
 [**getRentRequests**](DefaultApi.md#getrentrequests) | **GET** /rent-requests | List rent requests for current user
 [**login**](DefaultApi.md#login) | **POST** /auth/login | Login
 [**logout**](DefaultApi.md#logout) | **POST** /auth/logout | Logout
@@ -543,106 +541,10 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **getMessages**
-> List<Message> getMessages(requestId, after)
-
-Get messages for a rent request
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-
-final api_instance = DefaultApi();
-final requestId = 56; // int | 
-final after = 56; // int | Only return messages with id greater than this
-
-try {
-    final result = api_instance.getMessages(requestId, after);
-    print(result);
-} catch (e) {
-    print('Exception when calling DefaultApi->getMessages: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **requestId** | **int**|  | 
- **after** | **int**| Only return messages with id greater than this | [optional] 
-
-### Return type
-
-[**List<Message>**](Message.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **getOffers**
-> List<RentOffer> getOffers(requestId)
-
-Get offers for a rent request
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-// TODO Configure HTTP Bearer authorization: bearerAuth
-// Case 1. Use String Token
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
-// Case 2. Use Function which generate token.
-// String yourTokenGeneratorFunction() { ... }
-//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
-
-final api_instance = DefaultApi();
-final requestId = 56; // int | 
-
-try {
-    final result = api_instance.getOffers(requestId);
-    print(result);
-} catch (e) {
-    print('Exception when calling DefaultApi->getOffers: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **requestId** | **int**|  | 
-
-### Return type
-
-[**List<RentOffer>**](RentOffer.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **getRentRequest**
 > RentRequest getRentRequest(requestId)
 
-Get a single rent request
+Get a single rent request with messages and offers
 
 ### Example
 ```dart

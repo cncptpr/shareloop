@@ -76,9 +76,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**getImage**](doc//DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
 *DefaultApi* | [**getItem**](doc//DefaultApi.md#getitem) | **GET** /items/{itemId} | Get item details
 *DefaultApi* | [**getItemEdit**](doc//DefaultApi.md#getitemedit) | **GET** /items/{itemId}/edit | Get item edit details (owner only)
-*DefaultApi* | [**getMessages**](doc//DefaultApi.md#getmessages) | **GET** /rent-requests/{requestId}/messages | Get messages for a rent request
-*DefaultApi* | [**getOffers**](doc//DefaultApi.md#getoffers) | **GET** /rent-requests/{requestId}/offers | Get offers for a rent request
-*DefaultApi* | [**getRentRequest**](doc//DefaultApi.md#getrentrequest) | **GET** /rent-requests/{requestId} | Get a single rent request
+*DefaultApi* | [**getRentRequest**](doc//DefaultApi.md#getrentrequest) | **GET** /rent-requests/{requestId} | Get a single rent request with messages and offers
 *DefaultApi* | [**getRentRequests**](doc//DefaultApi.md#getrentrequests) | **GET** /rent-requests | List rent requests for current user
 *DefaultApi* | [**login**](doc//DefaultApi.md#login) | **POST** /auth/login | Login
 *DefaultApi* | [**logout**](doc//DefaultApi.md#logout) | **POST** /auth/logout | Logout

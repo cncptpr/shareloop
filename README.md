@@ -10,6 +10,9 @@ mobile Flutter app, and [`./server`](/server/README.md) a backend for the app.
 Both communicate over an API generated from the OpenAPI spec
 located in `./api`.
 
+The server also exposes a **WebSocket** endpoint (`/ws`) for realtime chat and
+notification updates. See [`docs/WebSocket.md`](docs/WebSocket.md) for details.
+
 The different tools and commands to run the different parts of this project are
 documented in `mise.toml`. Either setup [mise-en-place](https://mise.jdx.dev/)
 on your machine, or just copy out the commands you need.

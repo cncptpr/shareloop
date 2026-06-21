@@ -230,8 +230,8 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
   Widget _gpsTile() {
     final canUseGps = !Platform.isLinux && !Platform.isWindows;
     if (!canUseGps) {
-      return _SuggestionTile(
-        leading: const Icon(Icons.my_location),
+      return const _SuggestionTile(
+        leading: Icon(Icons.my_location),
         title: 'Aktuellen Standort verwenden',
         subtitle: 'GPS auf diesem Gerät nicht verfügbar',
         onTap: null,

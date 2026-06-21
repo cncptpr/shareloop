@@ -24,15 +24,15 @@ final rentRequestProvider =
 
 final messagesProvider = FutureProvider.autoDispose.family<List<Message>, int>(
   (ref, requestId) async {
-    final result = await AppConfig.apiClient.getMessages(requestId);
-    return result ?? [];
+    final request = ref.watch(rentRequestProvider(requestId)).value;
+    return request?.messages ?? [];
   },
 );
 
 final offersProvider = FutureProvider.autoDispose.family<List<RentOffer>, int>(
   (ref, requestId) async {
-    final result = await AppConfig.apiClient.getOffers(requestId);
-    return result ?? [];
+    final request = ref.watch(rentRequestProvider(requestId)).value;
+    return request?.offers ?? [];
   },
 );
 

@@ -1,3 +1,6 @@
+import gleam/dynamic/decode
+import gleam/int
+import gleam/json
 import openapi/handlers
 import openapi/router
 import gleam/bit_array
@@ -17,6 +20,7 @@ import server/auth
 import server/consts
 import server/db
 import server/migration
+import server/notifications
 import server/sql
 import simplifile
 import youid/uuid
@@ -31,8 +35,11 @@ pub fn main() {
   let assert Ok(_) = simplifile.create_directory_all("uploads")
   io.println("Uploads directory ensured")
 
+  let registry = notifications.start_registry()
+  io.println("Notification registry started")
+
   let assert Ok(_) =
-    handler(_, conn)
+    handler(_, conn, registry)
     |> mist.new
     |> mist.bind("0.0.0.0")
     |> mist.port(4000)
@@ -44,6 +51,7 @@ pub fn main() {
 fn handler(
   req: request.Request(mist.Connection),
   conn,
+  registry: process.Subject(notifications.RegistryMessage),
 ) -> response.Response(mist.ResponseData) {
   let method = req.method |> http.method_to_string
   let segments = request.path_segments(req)
@@ -51,10 +59,146 @@ fn handler(
   io.println("[Info] " <> method <> " " <> req.path)
 
   case segments {
+    ["ws"] -> handle_websocket(req, conn, registry)
     ["api", "images", image_id] if method == "GET" ->
       handle_image_get(conn, image_id)
-    ["api", ..rest] -> route_via_oaspec(method, rest, req, conn)
+    ["api", ..rest] -> route_via_oaspec(method, rest, req, conn, registry)
     _ -> respond_not_found()
+  }
+}
+
+fn handle_websocket(
+  req: request.Request(mist.Connection),
+  conn,
+  registry: process.Subject(notifications.RegistryMessage),
+) -> response.Response(mist.ResponseData) {
+  mist.websocket(
+    req,
+    on_init: fn(_ws_conn) {
+      let subject = process.new_subject()
+      let state = notifications.WsState(
+        authenticated: False,
+        user_id: None,
+        notify_subject: Some(subject),
+      )
+      let _ = process.send_after(subject, 5000, notifications.AuthTimeout)
+      let selector = process.new_selector() |> process.select(for: subject)
+      #(state, Some(selector))
+    },
+    handler: fn(state, msg, ws_conn) {
+      case msg {
+        mist.Text(text) -> handle_ws_text(state, text, ws_conn, conn, registry)
+        mist.Closed -> handle_ws_close(state, registry)
+        mist.Shutdown -> handle_ws_close(state, registry)
+        mist.Custom(event) -> handle_ws_custom(state, event, ws_conn)
+        mist.Binary(_) -> mist.continue(state)
+      }
+    },
+    on_close: fn(state) {
+      case state.user_id, state.notify_subject {
+        Some(uid), Some(subj) ->
+          process.send(
+            registry,
+            notifications.Unregister(uid, subj),
+          )
+        _, _ -> Nil
+      }
+    },
+  )
+}
+
+fn handle_ws_text(
+  state: notifications.WsState,
+  text: String,
+  ws_conn: mist.WebsocketConnection,
+  conn,
+  registry: process.Subject(notifications.RegistryMessage),
+) -> mist.Next(notifications.WsState, notifications.WsEvent) {
+  case state.authenticated {
+    True -> {
+      let _ = io.println("[ws] Received text after auth, ignoring")
+      mist.continue(state)
+    }
+    False -> {
+      let result = decode_auth_message(text)
+      case result {
+        Error(_) -> {
+          let _ = io.println("[ws] Invalid auth message")
+          let _ = mist.send_text_frame(ws_conn, "{\"type\":\"auth\",\"status\":\"error\"}")
+          mist.stop_abnormal("Auth failed")
+        }
+        Ok(token) -> {
+          case auth.verify_token(conn, token) {
+            Error(_) -> {
+              let _ = io.println("[ws] Invalid token")
+              let _ = mist.send_text_frame(ws_conn, "{\"type\":\"auth\",\"status\":\"error\"}")
+              mist.stop_abnormal("Auth failed")
+            }
+            Ok(user) -> {
+              let auth_state = notifications.WsState(
+                ..state,
+                authenticated: True,
+                user_id: Some(user.id),
+              )
+              case auth_state.notify_subject {
+                Some(subj) ->
+                  process.send(
+                    registry,
+                    notifications.Register(user.id, subj),
+                  )
+                None -> Nil
+              }
+              let _ = io.println("[ws] Authenticated user " <> int.to_string(user.id))
+              let _ = mist.send_text_frame(ws_conn, "{\"type\":\"auth\",\"status\":\"ok\"}")
+              mist.continue(auth_state)
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+fn handle_ws_close(
+  state: notifications.WsState,
+  registry: process.Subject(notifications.RegistryMessage),
+) -> mist.Next(notifications.WsState, notifications.WsEvent) {
+  case state.user_id, state.notify_subject {
+    Some(uid), Some(subj) ->
+      process.send(registry, notifications.Unregister(uid, subj))
+    _, _ -> Nil
+  }
+  mist.stop()
+}
+
+fn handle_ws_custom(
+  state: notifications.WsState,
+  event: notifications.WsEvent,
+  ws_conn: mist.WebsocketConnection,
+) -> mist.Next(notifications.WsState, notifications.WsEvent) {
+  case event {
+    notifications.AuthTimeout -> {
+      case state.authenticated {
+        False -> {
+          let _ = io.println("[ws] Auth timeout, closing")
+          let _ = mist.send_text_frame(ws_conn, "{\"type\":\"auth\",\"status\":\"timeout\"}")
+          mist.stop_abnormal("Auth timeout")
+        }
+        True -> mist.continue(state)
+      }
+    }
+    notifications.NotifyEvent(payload) -> {
+      let user_str = case state.user_id {
+        Some(uid) -> int.to_string(uid)
+        None -> "?"
+      }
+      let _ = io.println("[ws] Sending notification to user " <> user_str)
+      let _ = mist.send_text_frame(ws_conn, payload)
+      mist.continue(state)
+    }
+    notifications.CloseConnection -> {
+      mist.stop()
+    }
   }
 }
 
@@ -103,6 +247,7 @@ fn route_via_oaspec(
   segments: List(String),
   req: request.Request(mist.Connection),
   conn,
+  registry: process.Subject(notifications.RegistryMessage),
 ) -> response.Response(mist.ResponseData) {
   let bearer_token = extract_bearer_token(req.headers)
 
@@ -121,8 +266,12 @@ fn route_via_oaspec(
         Some(token) -> {
           case auth.verify_token(conn, token) {
             Error(_) -> respond_error(401)
-            Ok(_) -> {
-              let app_state = handlers.State(conn: conn, bearer_token: Some(token))
+            Ok(_user) -> {
+              let app_state = handlers.State(
+                conn: conn,
+                bearer_token: Some(token),
+                registry: registry,
+              )
               let serv_resp = router.route(
                 app_state,
                 method,
@@ -138,7 +287,11 @@ fn route_via_oaspec(
       }
     }
     False -> {
-      let app_state = handlers.State(conn: conn, bearer_token: bearer_token)
+      let app_state = handlers.State(
+        conn: conn,
+        bearer_token: bearer_token,
+        registry: registry,
+      )
       let serv_resp = router.route(
         app_state,
         method,
@@ -162,9 +315,7 @@ fn route_is_protected(method: String, segments: List(String)) -> Bool {
     "GET", ["rent-requests"] -> True
     "GET", ["rent-requests", _] -> True
     "POST", ["rent-requests", _, "messages"] -> True
-    "GET", ["rent-requests", _, "messages"] -> True
     "POST", ["rent-requests", _, "offers"] -> True
-    "GET", ["rent-requests", _, "offers"] -> True
     "POST", ["offers", _, "accept"] -> True
     "POST", ["rent-requests", _, "confirm-borrow"] -> True
     "POST", ["rent-requests", _, "confirm-return"] -> True
@@ -202,6 +353,19 @@ fn do_find_auth_header(
         _ -> do_find_auth_header(rest)
       }
     }
+  }
+}
+
+fn decode_auth_message(text: String) -> Result(String, Nil) {
+  use obj <- result.try(
+    json.parse(text, using: decode.dict(decode.string, decode.string))
+    |> result.map_error(fn(_) { Nil }),
+  )
+  use raw_type <- result.try(dict.get(obj, "type") |> result.map_error(fn(_) { Nil }))
+  use raw_token <- result.try(dict.get(obj, "token") |> result.map_error(fn(_) { Nil }))
+  case raw_type {
+    "auth" -> Ok(raw_token)
+    _ -> Error(Nil)
   }
 }
 

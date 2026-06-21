@@ -1,10 +1,10 @@
 // See docs/rent-request-chat-flow.md — state machine, guards, and timestamp handling.
-import openapi/types
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/time/calendar
 import gleam/time/timestamp.{type Timestamp}
+import openapi/types
 import pog
 import server/sql
 
@@ -17,19 +17,22 @@ fn parse_timestamp(s: String) -> Result(Timestamp, Nil) {
 }
 
 fn rent_request_from_row(
-  id: Int,
-  item_id: Int,
-  requester_id: Int,
-  requester_name: String,
-  item_title: String,
-  owner_name: String,
-  owner_id: Int,
-  latest_accepted_offer_id: Option(Int),
-  latest_open_offer_id: Option(Int),
-  borrow_confirmed_at: Option(Timestamp),
-  returned_at: Option(Timestamp),
-  created_at: String,
-  updated_at: String,
+  auth_user_id: Int,
+  id id: Int,
+  item_id item_id: Int,
+  requester_id requester_id: Int,
+  requester_name requester_name: String,
+  item_title item_title: String,
+  owner_name owner_name: String,
+  owner_id owner_id: Int,
+  latest_accepted_offer_id latest_accepted_offer_id: Option(Int),
+  latest_open_offer_id latest_open_offer_id: Option(Int),
+  borrow_confirmed_at borrow_confirmed_at: Option(Timestamp),
+  returned_at returned_at: Option(Timestamp),
+  created_at created_at: Timestamp,
+  updated_at updated_at: Timestamp,
+  requester_read_at requester_read_at: Option(Timestamp),
+  owner_read_at owner_read_at: Option(Timestamp),
 ) -> types.RentRequest {
   types.RentRequest(
     id:,
@@ -40,10 +43,17 @@ fn rent_request_from_row(
     owner_id:,
     latest_accepted_offer_id:,
     latest_open_offer_id:,
-    borrow_confirmed_at: option.map(borrow_confirmed_at, timestamp_to_string),
-    returned_at: option.map(returned_at, timestamp_to_string),
-    created_at:,
-    updated_at:,
+    borrow_confirmed_at: borrow_confirmed_at |> option.map(timestamp_to_string),
+    returned_at: returned_at |> option.map(timestamp_to_string),
+    created_at: created_at |> timestamp_to_string,
+    updated_at: updated_at |> timestamp_to_string,
+    messages: None,
+    offers: None,
+    last_read: case auth_user_id == requester_id {
+      True -> requester_read_at
+      False -> owner_read_at
+    }
+      |> option.map(timestamp_to_string),
   )
 }
 
@@ -90,6 +100,7 @@ fn get_request_for_participant(
   case row.requester_id == user_id || row.owner_id == user_id {
     True ->
       Ok(rent_request_from_row(
+        user_id,
         row.id,
         row.item_id,
         row.requester_id,
@@ -103,6 +114,8 @@ fn get_request_for_participant(
         row.returned_at,
         row.created_at,
         row.updated_at,
+        row.requester_read_at,
+        row.owner_read_at,
       ))
     False -> Error(Nil)
   }
@@ -113,13 +126,15 @@ pub fn create_rent_request(
   user_id: Int,
   item_id: Int,
 ) -> Result(types.RentRequest, Nil) {
-  let existing = sql.get_open_rent_request_for_item_and_user(conn, item_id, user_id)
-  |> result.map(fn(returned) { returned.rows })
-  |> result.unwrap([])
+  let existing =
+    sql.get_open_rent_request_for_item_and_user(conn, item_id, user_id)
+    |> result.map(fn(returned) { returned.rows })
+    |> result.unwrap([])
 
   case existing {
     [row] ->
       Ok(rent_request_from_row(
+        user_id,
         row.id,
         row.item_id,
         row.requester_id,
@@ -133,13 +148,17 @@ pub fn create_rent_request(
         row.returned_at,
         row.created_at,
         row.updated_at,
+        row.requester_read_at,
+        row.owner_read_at,
       ))
     _ -> {
       use created <- result.try(
         sql.create_rent_request(conn, item_id, user_id)
         |> result.map_error(fn(_) { Nil }),
       )
-      use id <- result.try(single_row(created.rows) |> result.map(fn(r) { r.id }))
+      use id <- result.try(
+        single_row(created.rows) |> result.map(fn(r) { r.id }),
+      )
 
       use returned <- result.try(
         sql.get_rent_request_by_id(conn, id)
@@ -148,6 +167,7 @@ pub fn create_rent_request(
       use row <- result.try(single_row(returned.rows))
 
       Ok(rent_request_from_row(
+        user_id,
         row.id,
         row.item_id,
         row.requester_id,
@@ -161,6 +181,8 @@ pub fn create_rent_request(
         row.returned_at,
         row.created_at,
         row.updated_at,
+        row.requester_read_at,
+        row.owner_read_at,
       ))
     }
   }
@@ -175,23 +197,28 @@ pub fn get_rent_requests(
     |> result.map_error(fn(_) { Nil }),
   )
 
-  Ok(list.map(returned.rows, fn(row) {
-    rent_request_from_row(
-      row.id,
-      row.item_id,
-      row.requester_id,
-      row.requester_name,
-      row.item_title,
-      row.owner_name,
-      row.owner_id,
-      row.latest_accepted_offer_id,
-      row.latest_open_offer_id,
-      row.borrow_confirmed_at,
-      row.returned_at,
-      row.created_at,
-      row.updated_at,
-    )
-  }))
+  Ok(
+    list.map(returned.rows, fn(row) {
+      rent_request_from_row(
+        user_id,
+        row.id,
+        row.item_id,
+        row.requester_id,
+        row.requester_name,
+        row.item_title,
+        row.owner_name,
+        row.owner_id,
+        row.latest_accepted_offer_id,
+        row.latest_open_offer_id,
+        row.borrow_confirmed_at,
+        row.returned_at,
+        row.created_at,
+        row.updated_at,
+        row.requester_read_at,
+        row.owner_read_at,
+      )
+    }),
+  )
 }
 
 pub fn get_rent_request_by_id(
@@ -208,7 +235,11 @@ pub fn send_message(
   user_id: Int,
   content: String,
 ) -> Result(types.Message, Nil) {
-  use _request <- result.try(get_request_for_participant(conn, request_id, user_id))
+  use _request <- result.try(get_request_for_participant(
+    conn,
+    request_id,
+    user_id,
+  ))
 
   use created <- result.try(
     sql.create_message(conn, request_id, user_id, content)
@@ -240,22 +271,91 @@ pub fn get_messages(
   request_id: Int,
   user_id: Int,
 ) -> Result(List(types.Message), Nil) {
-  use _request <- result.try(get_request_for_participant(conn, request_id, user_id))
+  use _request <- result.try(get_request_for_participant(
+    conn,
+    request_id,
+    user_id,
+  ))
 
   use returned <- result.try(
     sql.get_messages_for_request(conn, request_id)
     |> result.map_error(fn(_) { Nil }),
   )
 
-  Ok(list.map(returned.rows, fn(row) {
-    types.Message(
-      id: row.id,
-      rent_request_id: row.rent_request_id,
-      author_id: row.author_id,
-      content: row.content,
-      created_at: timestamp_to_string(row.created_at),
-    )
-  }))
+  Ok(
+    list.map(returned.rows, fn(row) {
+      types.Message(
+        id: row.id,
+        rent_request_id: row.rent_request_id,
+        author_id: row.author_id,
+        content: row.content,
+        created_at: timestamp_to_string(row.created_at),
+      )
+    }),
+  )
+}
+
+pub fn get_messages_after(
+  conn: pog.Connection,
+  request_id: Int,
+  user_id: Int,
+  after: Timestamp,
+) -> Result(List(types.Message), Nil) {
+  use _request <- result.try(get_request_for_participant(
+    conn,
+    request_id,
+    user_id,
+  ))
+
+  use returned <- result.try(
+    sql.get_messages_after_timestamp(conn, request_id, after)
+    |> result.map_error(fn(_) { Nil }),
+  )
+
+  Ok(
+    list.map(returned.rows, fn(row) {
+      types.Message(
+        id: row.id,
+        rent_request_id: row.rent_request_id,
+        author_id: row.author_id,
+        content: row.content,
+        created_at: timestamp_to_string(row.created_at),
+      )
+    }),
+  )
+}
+
+pub fn get_offers_after(
+  conn: pog.Connection,
+  request_id: Int,
+  user_id: Int,
+  after: Timestamp,
+) -> Result(List(types.RentOffer), Nil) {
+  use _request <- result.try(get_request_for_participant(
+    conn,
+    request_id,
+    user_id,
+  ))
+
+  use returned <- result.try(
+    sql.get_offers_after_timestamp(conn, request_id, after)
+    |> result.map_error(fn(_) { Nil }),
+  )
+
+  Ok(
+    list.map(returned.rows, fn(row) {
+      offer_from_row(
+        row.id,
+        row.rent_request_id,
+        row.sender_id,
+        row.start_date,
+        row.end_date,
+        row.accepted_at,
+        row.created_at,
+        row.updated_at,
+      )
+    }),
+  )
 }
 
 pub fn create_offer(
@@ -265,7 +365,11 @@ pub fn create_offer(
   start_date: String,
   end_date: String,
 ) -> Result(types.RentOffer, Nil) {
-  use _request <- result.try(get_request_for_participant(conn, request_id, user_id))
+  use _request <- result.try(get_request_for_participant(
+    conn,
+    request_id,
+    user_id,
+  ))
 
   use start <- result.try(parse_timestamp(start_date))
   use end <- result.try(parse_timestamp(end_date))
@@ -304,25 +408,31 @@ pub fn get_offers(
   request_id: Int,
   user_id: Int,
 ) -> Result(List(types.RentOffer), Nil) {
-  use _request <- result.try(get_request_for_participant(conn, request_id, user_id))
+  use _request <- result.try(get_request_for_participant(
+    conn,
+    request_id,
+    user_id,
+  ))
 
   use returned <- result.try(
     sql.get_offers_for_request(conn, request_id)
     |> result.map_error(fn(_) { Nil }),
   )
 
-  Ok(list.map(returned.rows, fn(row) {
-    offer_from_row(
-      row.id,
-      row.rent_request_id,
-      row.sender_id,
-      row.start_date,
-      row.end_date,
-      row.accepted_at,
-      row.created_at,
-      row.updated_at,
-    )
-  }))
+  Ok(
+    list.map(returned.rows, fn(row) {
+      offer_from_row(
+        row.id,
+        row.rent_request_id,
+        row.sender_id,
+        row.start_date,
+        row.end_date,
+        row.accepted_at,
+        row.created_at,
+        row.updated_at,
+      )
+    }),
+  )
 }
 
 pub fn accept_offer(
@@ -336,9 +446,11 @@ pub fn accept_offer(
   )
   use offer <- result.try(single_row(returned.rows))
 
-  use request <- result.try(
-    get_request_for_participant(conn, offer.rent_request_id, user_id),
-  )
+  use request <- result.try(get_request_for_participant(
+    conn,
+    offer.rent_request_id,
+    user_id,
+  ))
 
   case offer.sender_id == user_id {
     True -> Error(Nil)
@@ -349,10 +461,16 @@ pub fn accept_offer(
             sql.accept_offer(conn, offer_id)
             |> result.map_error(fn(_) { Nil }),
           )
-          use _ <- result.try(single_row(accepted.rows) |> result.map(fn(_) { Nil }))
+          use _ <- result.try(
+            single_row(accepted.rows) |> result.map(fn(_) { Nil }),
+          )
 
           use _ <- result.try(
-            sql.update_rent_request_latest_accepted(conn, offer_id, offer.rent_request_id)
+            sql.update_rent_request_latest_accepted(
+              conn,
+              offer_id,
+              offer.rent_request_id,
+            )
             |> result.map_error(fn(_) { Nil }),
           )
 
@@ -384,28 +502,26 @@ pub fn confirm_borrow(
   request_id: Int,
   user_id: Int,
 ) -> Result(types.RentRequest, Nil) {
-  use request <- result.try(get_request_for_participant(conn, request_id, user_id))
+  use request <- result.try(get_request_for_participant(
+    conn,
+    request_id,
+    user_id,
+  ))
 
   case request.owner_id == user_id {
     True -> {
-      use _ <- result.try(
-        case request.latest_accepted_offer_id {
-          None -> Error(Nil)
-          Some(_) -> Ok(Nil)
-        }
-      )
-      use _ <- result.try(
-        case request.borrow_confirmed_at {
-          None -> Ok(Nil)
-          Some(_) -> Error(Nil)
-        }
-      )
-      use _ <- result.try(
-        case request.returned_at {
-          None -> Ok(Nil)
-          Some(_) -> Error(Nil)
-        }
-      )
+      use _ <- result.try(case request.latest_accepted_offer_id {
+        None -> Error(Nil)
+        Some(_) -> Ok(Nil)
+      })
+      use _ <- result.try(case request.borrow_confirmed_at {
+        None -> Ok(Nil)
+        Some(_) -> Error(Nil)
+      })
+      use _ <- result.try(case request.returned_at {
+        None -> Ok(Nil)
+        Some(_) -> Error(Nil)
+      })
       use _ <- result.try(
         sql.update_rent_request_borrow(conn, request_id)
         |> result.map_error(fn(_) { Nil }),
@@ -418,6 +534,7 @@ pub fn confirm_borrow(
       use row <- result.try(single_row(returned.rows))
 
       Ok(rent_request_from_row(
+        user_id,
         row.id,
         row.item_id,
         row.requester_id,
@@ -431,6 +548,8 @@ pub fn confirm_borrow(
         row.returned_at,
         row.created_at,
         row.updated_at,
+        row.requester_read_at,
+        row.owner_read_at,
       ))
     }
     False -> Error(Nil)
@@ -442,22 +561,22 @@ pub fn confirm_return(
   request_id: Int,
   user_id: Int,
 ) -> Result(types.RentRequest, Nil) {
-  use request <- result.try(get_request_for_participant(conn, request_id, user_id))
+  use request <- result.try(get_request_for_participant(
+    conn,
+    request_id,
+    user_id,
+  ))
 
   case request.owner_id == user_id {
     True -> {
-      use _ <- result.try(
-        case request.borrow_confirmed_at {
-          None -> Error(Nil)
-          Some(_) -> Ok(Nil)
-        }
-      )
-      use _ <- result.try(
-        case request.returned_at {
-          None -> Ok(Nil)
-          Some(_) -> Error(Nil)
-        }
-      )
+      use _ <- result.try(case request.borrow_confirmed_at {
+        None -> Error(Nil)
+        Some(_) -> Ok(Nil)
+      })
+      use _ <- result.try(case request.returned_at {
+        None -> Ok(Nil)
+        Some(_) -> Error(Nil)
+      })
       use _ <- result.try(
         sql.update_rent_request_returned(conn, request_id)
         |> result.map_error(fn(_) { Nil }),
@@ -470,6 +589,7 @@ pub fn confirm_return(
       use row <- result.try(single_row(returned.rows))
 
       Ok(rent_request_from_row(
+        user_id,
         row.id,
         row.item_id,
         row.requester_id,
@@ -483,6 +603,8 @@ pub fn confirm_return(
         row.returned_at,
         row.created_at,
         row.updated_at,
+        row.requester_read_at,
+        row.owner_read_at,
       ))
     }
     False -> Error(Nil)

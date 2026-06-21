@@ -123,25 +123,11 @@ pub fn confirm_return(
   handlers.confirm_return(state, req)
 }
 
-pub fn get_messages(
-  state: handlers.State,
-  req: request_types.GetMessagesRequest,
-) -> response_types.GetMessagesResponse {
-  handlers.get_messages(state, req)
-}
-
 pub fn send_message(
   state: handlers.State,
   req: request_types.SendMessageRequest,
 ) -> response_types.SendMessageResponse {
   handlers.send_message(state, req)
-}
-
-pub fn get_offers(
-  state: handlers.State,
-  req: request_types.GetOffersRequest,
-) -> response_types.GetOffersResponse {
-  handlers.get_offers(state, req)
 }
 
 pub fn create_offer(

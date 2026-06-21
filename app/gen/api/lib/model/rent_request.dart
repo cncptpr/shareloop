@@ -25,6 +25,9 @@ class RentRequest {
     this.returnedAt,
     required this.createdAt,
     required this.updatedAt,
+    this.messages = const [],
+    this.offers = const [],
+    this.lastRead,
   });
 
   int id;
@@ -51,6 +54,18 @@ class RentRequest {
 
   DateTime updatedAt;
 
+  List<Message>? messages;
+
+  List<RentOffer>? offers;
+
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  DateTime? lastRead;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is RentRequest &&
     other.id == id &&
@@ -64,7 +79,10 @@ class RentRequest {
     other.borrowConfirmedAt == borrowConfirmedAt &&
     other.returnedAt == returnedAt &&
     other.createdAt == createdAt &&
-    other.updatedAt == updatedAt;
+    other.updatedAt == updatedAt &&
+    _deepEquality.equals(other.messages, messages) &&
+    _deepEquality.equals(other.offers, offers) &&
+    other.lastRead == lastRead;
 
   @override
   int get hashCode =>
@@ -80,10 +98,13 @@ class RentRequest {
     (borrowConfirmedAt == null ? 0 : borrowConfirmedAt!.hashCode) +
     (returnedAt == null ? 0 : returnedAt!.hashCode) +
     (createdAt.hashCode) +
-    (updatedAt.hashCode);
+    (updatedAt.hashCode) +
+    (messages == null ? 0 : messages!.hashCode) +
+    (offers == null ? 0 : offers!.hashCode) +
+    (lastRead == null ? 0 : lastRead!.hashCode);
 
   @override
-  String toString() => 'RentRequest[id=$id, itemId=$itemId, requester=$requester, itemTitle=$itemTitle, ownerName=$ownerName, ownerId=$ownerId, latestAcceptedOfferId=$latestAcceptedOfferId, latestOpenOfferId=$latestOpenOfferId, borrowConfirmedAt=$borrowConfirmedAt, returnedAt=$returnedAt, createdAt=$createdAt, updatedAt=$updatedAt]';
+  String toString() => 'RentRequest[id=$id, itemId=$itemId, requester=$requester, itemTitle=$itemTitle, ownerName=$ownerName, ownerId=$ownerId, latestAcceptedOfferId=$latestAcceptedOfferId, latestOpenOfferId=$latestOpenOfferId, borrowConfirmedAt=$borrowConfirmedAt, returnedAt=$returnedAt, createdAt=$createdAt, updatedAt=$updatedAt, messages=$messages, offers=$offers, lastRead=$lastRead]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -115,6 +136,21 @@ class RentRequest {
     }
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
       json[r'updatedAt'] = this.updatedAt.toUtc().toIso8601String();
+    if (this.messages != null) {
+      json[r'messages'] = this.messages;
+    } else {
+      json[r'messages'] = null;
+    }
+    if (this.offers != null) {
+      json[r'offers'] = this.offers;
+    } else {
+      json[r'offers'] = null;
+    }
+    if (this.lastRead != null) {
+      json[r'lastRead'] = this.lastRead!.toUtc().toIso8601String();
+    } else {
+      json[r'lastRead'] = null;
+    }
     return json;
   }
 
@@ -161,6 +197,9 @@ class RentRequest {
         returnedAt: mapDateTime(json, r'returnedAt', r''),
         createdAt: mapDateTime(json, r'createdAt', r'')!,
         updatedAt: mapDateTime(json, r'updatedAt', r'')!,
+        messages: Message.listFromJson(json[r'messages']),
+        offers: RentOffer.listFromJson(json[r'offers']),
+        lastRead: mapDateTime(json, r'lastRead', r''),
       );
     }
     return null;

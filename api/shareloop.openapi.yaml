@@ -157,7 +157,7 @@ paths:
 
   /rent-requests/{requestId}:
     get:
-      summary: Get a single rent request
+      summary: Get a single rent request with messages and offers
       operationId: getRentRequest
       security:
         - bearerAuth: []
@@ -169,7 +169,7 @@ paths:
             type: integer
       responses:
         "200":
-          description: Rent request details
+          description: Rent request details with optional messages and offers
           content:
             application/json:
               schema:
@@ -212,38 +212,6 @@ paths:
           description: Not found
         "500":
           description: Internal server error
-    get:
-      summary: Get messages for a rent request
-      operationId: getMessages
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: requestId
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: after
-          in: query
-          required: false
-          schema:
-            type: integer
-          description: Only return messages with id greater than this
-      responses:
-        "200":
-          description: List of messages
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Message"
-        "401":
-          description: Unauthorized
-        "404":
-          description: Not found
-        "500":
-          description: Internal server error
 
   /rent-requests/{requestId}/offers:
     post:
@@ -270,32 +238,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RentOffer"
-        "401":
-          description: Unauthorized
-        "404":
-          description: Not found
-        "500":
-          description: Internal server error
-    get:
-      summary: Get offers for a rent request
-      operationId: getOffers
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: requestId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: List of offers
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/RentOffer"
         "401":
           description: Unauthorized
         "404":
@@ -875,6 +817,19 @@ components:
           type: string
           format: date-time
         updatedAt:
+          type: string
+          format: date-time
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+          nullable: true
+        offers:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentOffer"
+          nullable: true
+        lastRead:
           type: string
           format: date-time
 

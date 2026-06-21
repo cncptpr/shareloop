@@ -627,131 +627,7 @@ class DefaultApi {
     return null;
   }
 
-  /// Get messages for a rent request
-  ///
-  /// Note: This method returns the HTTP [Response].
-  ///
-  /// Parameters:
-  ///
-  /// * [int] requestId (required):
-  ///
-  /// * [int] after:
-  ///   Only return messages with id greater than this
-  Future<Response> getMessagesWithHttpInfo(int requestId, { int? after, Future<void>? abortTrigger, }) async {
-    // ignore: prefer_const_declarations
-    final path = r'/rent-requests/{requestId}/messages'
-      .replaceAll('{requestId}', requestId.toString());
-
-    // ignore: prefer_final_locals
-    Object? postBody;
-
-    final queryParams = <QueryParam>[];
-    final headerParams = <String, String>{};
-    final formParams = <String, String>{};
-
-    if (after != null) {
-      queryParams.addAll(_queryParams('', 'after', after));
-    }
-
-    const contentTypes = <String>[];
-
-
-    return apiClient.invokeAPI(
-      path,
-      'GET',
-      queryParams,
-      postBody,
-      headerParams,
-      formParams,
-      contentTypes.isEmpty ? null : contentTypes.first,
-      abortTrigger: abortTrigger,
-    );
-  }
-
-  /// Get messages for a rent request
-  ///
-  /// Parameters:
-  ///
-  /// * [int] requestId (required):
-  ///
-  /// * [int] after:
-  ///   Only return messages with id greater than this
-  Future<List<Message>?> getMessages(int requestId, { int? after, Future<void>? abortTrigger, }) async {
-    final response = await getMessagesWithHttpInfo(requestId, after: after, abortTrigger: abortTrigger,);
-    if (response.statusCode >= HttpStatus.badRequest) {
-      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
-    }
-    // When a remote server returns no body with a status of 204, we shall not decode it.
-    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
-    // FormatException when trying to decode an empty string.
-    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      final responseBody = await _decodeBodyBytes(response);
-      return (await apiClient.deserializeAsync(responseBody, 'List<Message>') as List)
-        .cast<Message>()
-        .toList(growable: false);
-
-    }
-    return null;
-  }
-
-  /// Get offers for a rent request
-  ///
-  /// Note: This method returns the HTTP [Response].
-  ///
-  /// Parameters:
-  ///
-  /// * [int] requestId (required):
-  Future<Response> getOffersWithHttpInfo(int requestId, { Future<void>? abortTrigger, }) async {
-    // ignore: prefer_const_declarations
-    final path = r'/rent-requests/{requestId}/offers'
-      .replaceAll('{requestId}', requestId.toString());
-
-    // ignore: prefer_final_locals
-    Object? postBody;
-
-    final queryParams = <QueryParam>[];
-    final headerParams = <String, String>{};
-    final formParams = <String, String>{};
-
-    const contentTypes = <String>[];
-
-
-    return apiClient.invokeAPI(
-      path,
-      'GET',
-      queryParams,
-      postBody,
-      headerParams,
-      formParams,
-      contentTypes.isEmpty ? null : contentTypes.first,
-      abortTrigger: abortTrigger,
-    );
-  }
-
-  /// Get offers for a rent request
-  ///
-  /// Parameters:
-  ///
-  /// * [int] requestId (required):
-  Future<List<RentOffer>?> getOffers(int requestId, { Future<void>? abortTrigger, }) async {
-    final response = await getOffersWithHttpInfo(requestId, abortTrigger: abortTrigger,);
-    if (response.statusCode >= HttpStatus.badRequest) {
-      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
-    }
-    // When a remote server returns no body with a status of 204, we shall not decode it.
-    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
-    // FormatException when trying to decode an empty string.
-    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      final responseBody = await _decodeBodyBytes(response);
-      return (await apiClient.deserializeAsync(responseBody, 'List<RentOffer>') as List)
-        .cast<RentOffer>()
-        .toList(growable: false);
-
-    }
-    return null;
-  }
-
-  /// Get a single rent request
+  /// Get a single rent request with messages and offers
   ///
   /// Note: This method returns the HTTP [Response].
   ///
@@ -785,7 +661,7 @@ class DefaultApi {
     );
   }
 
-  /// Get a single rent request
+  /// Get a single rent request with messages and offers
   ///
   /// Parameters:
   ///

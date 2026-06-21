@@ -58,11 +58,13 @@ class _MessageScreenState extends ConsumerState<MessageScreen> {
 
           final userId = asyncUser.value!.id;
           final incoming = filtered.where((r) => r.ownerId == userId).toList();
-          final outgoing = filtered.where((r) => r.requester.id == userId).toList();
+          final outgoing =
+              filtered.where((r) => r.requester.id == userId).toList();
 
           if (filtered.isEmpty) {
             return Center(
-              child: Text(_showClosed ? 'Keine Anfragen' : 'Keine offenen Anfragen'),
+              child: Text(
+                  _showClosed ? 'Keine Anfragen' : 'Keine offenen Anfragen'),
             );
           }
 
@@ -73,11 +75,11 @@ class _MessageScreenState extends ConsumerState<MessageScreen> {
             child: ListView(
               children: [
                 if (incoming.isNotEmpty) ...[
-                  _SectionHeader(title: 'Eingehend'),
+                  const _SectionHeader(title: 'Eingehend'),
                   ...incoming.map((req) => _requestTile(req, userId)),
                 ],
                 if (outgoing.isNotEmpty) ...[
-                  _SectionHeader(title: 'Ausgehend'),
+                  const _SectionHeader(title: 'Ausgehend'),
                   ...outgoing.map((req) => _requestTile(req, userId)),
                 ],
               ],

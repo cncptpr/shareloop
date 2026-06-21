@@ -35,7 +35,7 @@ pub fn route(
   app_state: handlers.State,
   method: String,
   path: List(String),
-  query: Dict(String, List(String)),
+  _query: Dict(String, List(String)),
   _headers: Dict(String, String),
   body: String,
 ) -> ServerResponse {
@@ -603,52 +603,6 @@ pub fn route(
           )
       }
     }
-    "GET", ["rent-requests", request_id, "messages"] -> {
-      case int.parse(request_id) {
-        Ok(request_id_parsed) -> {
-          let request =
-            request_types.GetMessagesRequest(
-              request_id: request_id_parsed,
-              after: case dict.get(query, "after") {
-                Ok([v, ..]) -> {
-                  case int.parse(v) {
-                    Ok(n) -> Some(n)
-                    _ -> None
-                  }
-                }
-                _ -> None
-              },
-            )
-          let response = handlers_generated.get_messages(app_state, request)
-          case response {
-            response_types.GetMessagesResponseOk(data) ->
-              ServerResponse(
-                status: 200,
-                body: TextBody(
-                  json.to_string(fn(items) {
-                    json.array(items, encode.encode_message_json)
-                  }(data)),
-                ),
-                headers: [#("content-type", "application/json")],
-              )
-            response_types.GetMessagesResponseUnauthorized ->
-              ServerResponse(status: 401, body: EmptyBody, headers: [])
-            response_types.GetMessagesResponseNotFound ->
-              ServerResponse(status: 404, body: EmptyBody, headers: [])
-            response_types.GetMessagesResponseInternalServerError ->
-              ServerResponse(status: 500, body: EmptyBody, headers: [])
-          }
-        }
-        Error(_) ->
-          ServerResponse(
-            status: 400,
-            body: TextBody(
-              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
-            ),
-            headers: [#("content-type", "application/problem+json")],
-          )
-      }
-    }
     "POST", ["rent-requests", request_id, "messages"] -> {
       case int.parse(request_id) {
         Ok(request_id_parsed) -> {
@@ -685,41 +639,6 @@ pub fn route(
                 ),
                 headers: [#("content-type", "application/problem+json")],
               )
-          }
-        }
-        Error(_) ->
-          ServerResponse(
-            status: 400,
-            body: TextBody(
-              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
-            ),
-            headers: [#("content-type", "application/problem+json")],
-          )
-      }
-    }
-    "GET", ["rent-requests", request_id, "offers"] -> {
-      case int.parse(request_id) {
-        Ok(request_id_parsed) -> {
-          let request =
-            request_types.GetOffersRequest(request_id: request_id_parsed)
-          let response = handlers_generated.get_offers(app_state, request)
-          case response {
-            response_types.GetOffersResponseOk(data) ->
-              ServerResponse(
-                status: 200,
-                body: TextBody(
-                  json.to_string(fn(items) {
-                    json.array(items, encode.encode_rent_offer_json)
-                  }(data)),
-                ),
-                headers: [#("content-type", "application/json")],
-              )
-            response_types.GetOffersResponseUnauthorized ->
-              ServerResponse(status: 401, body: EmptyBody, headers: [])
-            response_types.GetOffersResponseNotFound ->
-              ServerResponse(status: 404, body: EmptyBody, headers: [])
-            response_types.GetOffersResponseInternalServerError ->
-              ServerResponse(status: 500, body: EmptyBody, headers: [])
           }
         }
         Error(_) ->

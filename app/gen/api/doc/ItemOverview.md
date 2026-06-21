@@ -1,4 +1,4 @@
-# openapi.model.ItemDetail
+# openapi.model.ItemOverview
 
 ## Load the model package
 ```dart
@@ -12,12 +12,12 @@ Name | Type | Description | Notes
 **title** | **String** |  | 
 **description** | **String** |  | 
 **author** | [**Person**](Person.md) |  | 
-**score** | **double** |  | 
+**distance** | [**Distance**](Distance.md) |  | [optional] 
 **city** | **String** |  | [optional] 
 **postalCode** | **String** |  | [optional] 
-**imageUuids** | **List<String>** |  | [default to const []]
+**score** | **double** |  | 
+**imageUuid** | **String** |  | [optional] 
 **category** | **String** |  | 
-**createdAt** | [**DateTime**](DateTime.md) |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

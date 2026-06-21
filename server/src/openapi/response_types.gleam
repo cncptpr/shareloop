@@ -27,7 +27,7 @@ pub type VerifyResponse {
 }
 
 pub type GetFeaturedItemsResponse {
-  GetFeaturedItemsResponseOk(List(types.FeaturedItem))
+  GetFeaturedItemsResponseOk(List(types.ItemOverview))
   GetFeaturedItemsResponseInternalServerError
 }
 
@@ -41,6 +41,11 @@ pub type CreateItemResponse {
   CreateItemResponseCreated(types.CreateItemResponse)
   CreateItemResponseUnauthorized
   CreateItemResponseInternalServerError
+}
+
+pub type SearchItemsResponse {
+  SearchItemsResponseOk(List(types.ItemOverview))
+  SearchItemsResponseInternalServerError
 }
 
 pub type GetItemResponse {

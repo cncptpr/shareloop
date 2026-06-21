@@ -431,7 +431,7 @@ class DefaultApi {
   /// Parameters:
   ///
   /// * [LatLng] latLng:
-  Future<List<FeaturedItem>?> getFeaturedItems({ LatLng? latLng, }) async {
+  Future<List<ItemOverview>?> getFeaturedItems({ LatLng? latLng, }) async {
     final response = await getFeaturedItemsWithHttpInfo( latLng: latLng, );
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
@@ -441,8 +441,8 @@ class DefaultApi {
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
       final responseBody = await _decodeBodyBytes(response);
-      return (await apiClient.deserializeAsync(responseBody, 'List<FeaturedItem>') as List)
-        .cast<FeaturedItem>()
+      return (await apiClient.deserializeAsync(responseBody, 'List<ItemOverview>') as List)
+        .cast<ItemOverview>()
         .toList(growable: false);
 
     }
@@ -897,6 +897,65 @@ class DefaultApi {
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
       return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LoginResult',) as LoginResult;
     
+    }
+    return null;
+  }
+
+  /// Search items
+  ///
+  /// Search items with filters
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [ItemSearchRequest] itemSearchRequest:
+  Future<Response> searchItemsWithHttpInfo({ ItemSearchRequest? itemSearchRequest, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/items/search';
+
+    // ignore: prefer_final_locals
+    Object? postBody = itemSearchRequest;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Search items
+  ///
+  /// Search items with filters
+  ///
+  /// Parameters:
+  ///
+  /// * [ItemSearchRequest] itemSearchRequest:
+  Future<List<ItemOverview>?> searchItems({ ItemSearchRequest? itemSearchRequest, }) async {
+    final response = await searchItemsWithHttpInfo( itemSearchRequest: itemSearchRequest, );
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      final responseBody = await _decodeBodyBytes(response);
+      return (await apiClient.deserializeAsync(responseBody, 'List<ItemOverview>') as List)
+        .cast<ItemOverview>()
+        .toList(growable: false);
+
     }
     return null;
   }

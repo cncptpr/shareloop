@@ -16,7 +16,7 @@ Name | Type | Description | Notes
 **city** | **String** |  | [optional] 
 **postalCode** | **String** |  | [optional] 
 **imageUuids** | **List<String>** |  | [default to const []]
-**category** | **String** |  | [optional] 
+**category** | **String** |  | 
 **lat** | **double** |  | 
 **lng** | **double** |  | 
 **createdAt** | [**DateTime**](DateTime.md) |  | 

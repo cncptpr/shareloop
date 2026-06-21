@@ -82,6 +82,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**logout**](doc//DefaultApi.md#logout) | **POST** /auth/logout | Logout
 *DefaultApi* | [**markRentRequestRead**](doc//DefaultApi.md#markrentrequestread) | **POST** /rent-requests/{requestId}/mark-read | Mark a rent request as read
 *DefaultApi* | [**refresh**](doc//DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
+*DefaultApi* | [**searchItems**](doc//DefaultApi.md#searchitems) | **POST** /items/search | Search items
 *DefaultApi* | [**sendMessage**](doc//DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
 *DefaultApi* | [**updateItem**](doc//DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 *DefaultApi* | [**uploadItemImage**](doc//DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
@@ -95,9 +96,10 @@ Class | Method | HTTP request | Description
  - [CreateOfferRequest](doc//CreateOfferRequest.md)
  - [Distance](doc//Distance.md)
  - [EditItemImagesRequest](doc//EditItemImagesRequest.md)
- - [FeaturedItem](doc//FeaturedItem.md)
  - [ItemDetail](doc//ItemDetail.md)
  - [ItemEditDetail](doc//ItemEditDetail.md)
+ - [ItemOverview](doc//ItemOverview.md)
+ - [ItemSearchRequest](doc//ItemSearchRequest.md)
  - [LatLng](doc//LatLng.md)
  - [LoginRequest](doc//LoginRequest.md)
  - [LoginResult](doc//LoginResult.md)

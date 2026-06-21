@@ -136,13 +136,14 @@ pub fn create_item(
   arg_6: Float,
   arg_7: String,
   arg_8: String,
+  arg_9: String,
 ) -> Result(pog.Returned(CreateItemRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
     decode.success(CreateItemRow(id:))
   }
 
-  "INSERT INTO items (title, description, author_id, score, location, city, postal_code) VALUES ($1, $2, $3, $4, st_setsrid(st_makepoint($5, $6), 4326)::geography, $7, $8)
+  "INSERT INTO items (title, description, author_id, score, location, city, postal_code, category) VALUES ($1, $2, $3, $4, st_setsrid(st_makepoint($5, $6), 4326)::geography, $7, $8, $9)
 returning id
 "
   |> pog.query
@@ -154,6 +155,7 @@ returning id
   |> pog.parameter(pog.float(arg_6))
   |> pog.parameter(pog.text(arg_7))
   |> pog.parameter(pog.text(arg_8))
+  |> pog.parameter(pog.text(arg_9))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }
@@ -612,6 +614,7 @@ pub type GetFeaturedItemsRow {
     score: Float,
     city: Option(String),
     postal_code: Option(String),
+    category: String,
     distance_km: Float,
     first_image_uuid: Option(Uuid),
   )
@@ -637,8 +640,9 @@ pub fn get_featured_items(
     use score <- decode.field(5, decode.float)
     use city <- decode.field(6, decode.optional(decode.string))
     use postal_code <- decode.field(7, decode.optional(decode.string))
-    use distance_km <- decode.field(8, decode.float)
-    use first_image_uuid <- decode.field(9, decode.optional(uuid_decoder()))
+    use category <- decode.field(8, decode.string)
+    use distance_km <- decode.field(9, decode.float)
+    use first_image_uuid <- decode.field(10, decode.optional(uuid_decoder()))
     decode.success(GetFeaturedItemsRow(
       id:,
       title:,
@@ -648,6 +652,7 @@ pub fn get_featured_items(
       score:,
       city:,
       postal_code:,
+      category:,
       distance_km:,
       first_image_uuid:,
     ))
@@ -662,6 +667,7 @@ pub fn get_featured_items(
   items.score,
   items.city,
   items.postal_code,
+  items.category,
   coalesce(
     st_distance(location, st_setsrid(st_makepoint($2, $1), 4326)::geography) / 1000,
     0.0
@@ -700,6 +706,7 @@ pub type GetFeaturedItemsWithoutDistanceRow {
     score: Float,
     city: Option(String),
     postal_code: Option(String),
+    category: String,
     first_image_uuid: Option(Uuid),
   )
 }
@@ -722,7 +729,8 @@ pub fn get_featured_items_without_distance(
     use score <- decode.field(5, decode.float)
     use city <- decode.field(6, decode.optional(decode.string))
     use postal_code <- decode.field(7, decode.optional(decode.string))
-    use first_image_uuid <- decode.field(8, decode.optional(uuid_decoder()))
+    use category <- decode.field(8, decode.string)
+    use first_image_uuid <- decode.field(9, decode.optional(uuid_decoder()))
     decode.success(GetFeaturedItemsWithoutDistanceRow(
       id:,
       title:,
@@ -732,6 +740,7 @@ pub fn get_featured_items_without_distance(
       score:,
       city:,
       postal_code:,
+      category:,
       first_image_uuid:,
     ))
   }
@@ -745,6 +754,7 @@ pub fn get_featured_items_without_distance(
   items.score,
   items.city,
   items.postal_code,
+  items.category,
   first_img.id as first_image_uuid
 from items, profiles
 left join lateral (
@@ -776,6 +786,7 @@ pub type GetItemByIdRow {
     score: Float,
     city: Option(String),
     postal_code: Option(String),
+    category: String,
     created_at: String,
     author_id: Int,
     lng: Float,
@@ -801,10 +812,11 @@ pub fn get_item_by_id(
     use score <- decode.field(4, decode.float)
     use city <- decode.field(5, decode.optional(decode.string))
     use postal_code <- decode.field(6, decode.optional(decode.string))
-    use created_at <- decode.field(7, decode.string)
-    use author_id <- decode.field(8, decode.int)
-    use lng <- decode.field(9, decode.float)
-    use lat <- decode.field(10, decode.float)
+    use category <- decode.field(7, decode.string)
+    use created_at <- decode.field(8, decode.string)
+    use author_id <- decode.field(9, decode.int)
+    use lng <- decode.field(10, decode.float)
+    use lat <- decode.field(11, decode.float)
     decode.success(GetItemByIdRow(
       id:,
       title:,
@@ -813,6 +825,7 @@ pub fn get_item_by_id(
       score:,
       city:,
       postal_code:,
+      category:,
       created_at:,
       author_id:,
       lng:,
@@ -828,6 +841,7 @@ pub fn get_item_by_id(
   items.score,
   items.city,
   items.postal_code,
+  items.category,
   items.created_at::text as created_at,
   items.author_id,
   st_x(items.location::geometry) as lng,
@@ -2197,6 +2211,119 @@ WHERE id = $1 AND (
   |> pog.execute(db)
 }
 
+/// A row you get from running the `search_items` query
+/// defined in `./src/server/sql/search_items.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type SearchItemsRow {
+  SearchItemsRow(
+    id: Int,
+    title: String,
+    description: String,
+    author_name: String,
+    author_id: Int,
+    score: Float,
+    city: Option(String),
+    postal_code: Option(String),
+    category: String,
+    distance_km: Float,
+    first_image_uuid: Option(Uuid),
+  )
+}
+
+/// Runs the `search_items` query
+/// defined in `./src/server/sql/search_items.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.7.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn search_items(
+  db: pog.Connection,
+  arg_1: Float,
+  arg_2: Float,
+  arg_3: String,
+  arg_4: String,
+  arg_5: Float,
+  arg_6: Float,
+  arg_7: String,
+) -> Result(pog.Returned(SearchItemsRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, decode.int)
+    use title <- decode.field(1, decode.string)
+    use description <- decode.field(2, decode.string)
+    use author_name <- decode.field(3, decode.string)
+    use author_id <- decode.field(4, decode.int)
+    use score <- decode.field(5, decode.float)
+    use city <- decode.field(6, decode.optional(decode.string))
+    use postal_code <- decode.field(7, decode.optional(decode.string))
+    use category <- decode.field(8, decode.string)
+    use distance_km <- decode.field(9, decode.float)
+    use first_image_uuid <- decode.field(10, decode.optional(uuid_decoder()))
+    decode.success(SearchItemsRow(
+      id:,
+      title:,
+      description:,
+      author_name:,
+      author_id:,
+      score:,
+      city:,
+      postal_code:,
+      category:,
+      distance_km:,
+      first_image_uuid:,
+    ))
+  }
+
+  "select
+  items.id,
+  items.title,
+  items.description,
+  profiles.name as author_name,
+  items.author_id,
+  items.score,
+  items.city,
+  items.postal_code,
+  items.category,
+  coalesce(
+    st_distance(location, st_setsrid(st_makepoint($2, $1), 4326)::geography) / 1000,
+    0.0
+  ) as distance_km,
+  first_img.id as first_image_uuid
+from items, profiles
+left join lateral (
+  select id
+  from item_images
+  where item_images.item_id = items.id
+  order by sort_order, created_at
+  limit 1
+) as first_img on true
+where items.author_id = profiles.id
+  and ($3 = '' or items.title ilike '%' || $3 || '%' or items.description ilike '%' || $3 || '%')
+  and ($4 = '' or items.category = any(string_to_array($4, ',')))
+  and ($5 = 0.0 or items.score >= $5)
+  and ($6 = 0.0 or coalesce(st_distance(location, st_setsrid(st_makepoint($2, $1), 4326)::geography) / 1000, 0.0) <= $6)
+order by
+  case $7
+    when 'distance' then coalesce(st_distance(location, st_setsrid(st_makepoint($2, $1), 4326)::geography) / 1000, 0.0)
+    when 'score' then items.score
+    when 'newest' then extract(epoch from items.created_at)
+    else items.score
+  end desc
+"
+  |> pog.query
+  |> pog.parameter(pog.float(arg_1))
+  |> pog.parameter(pog.float(arg_2))
+  |> pog.parameter(pog.text(arg_3))
+  |> pog.parameter(pog.text(arg_4))
+  |> pog.parameter(pog.float(arg_5))
+  |> pog.parameter(pog.float(arg_6))
+  |> pog.parameter(pog.text(arg_7))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
 /// A row you get from running the `update_item` query
 /// defined in `./src/server/sql/update_item.sql`.
 ///
@@ -2223,13 +2350,14 @@ pub fn update_item(
   arg_6: Float,
   id: Int,
   author_id: Int,
+  category: String,
 ) -> Result(pog.Returned(UpdateItemRow), pog.QueryError) {
   let decoder = {
     use id <- decode.field(0, decode.int)
     decode.success(UpdateItemRow(id:))
   }
 
-  "UPDATE items SET title=$1, description=$2, city=$3, postal_code=$4, location=st_setsrid(st_makepoint($5, $6), 4326)::geography WHERE id=$7 AND author_id=$8
+  "UPDATE items SET title=$1, description=$2, city=$3, postal_code=$4, location=st_setsrid(st_makepoint($5, $6), 4326)::geography, category=$9 WHERE id=$7 AND author_id=$8
 returning id
 "
   |> pog.query
@@ -2241,6 +2369,7 @@ returning id
   |> pog.parameter(pog.float(arg_6))
   |> pog.parameter(pog.int(id))
   |> pog.parameter(pog.int(author_id))
+  |> pog.parameter(pog.text(category))
   |> pog.returning(decoder)
   |> pog.execute(db)
 }

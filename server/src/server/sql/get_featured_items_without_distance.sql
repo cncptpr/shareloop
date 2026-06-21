@@ -7,6 +7,7 @@ select
   items.score,
   items.city,
   items.postal_code,
+  items.category,
   first_img.id as first_image_uuid
 from items, profiles
 left join lateral (

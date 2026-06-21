@@ -19,6 +19,7 @@ class CreateItemRequest {
     required this.postalCode,
     required this.lat,
     required this.lng,
+    required this.category,
   });
 
   String title;
@@ -33,6 +34,8 @@ class CreateItemRequest {
 
   double lng;
 
+  String category;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is CreateItemRequest &&
     other.title == title &&
@@ -40,7 +43,8 @@ class CreateItemRequest {
     other.city == city &&
     other.postalCode == postalCode &&
     other.lat == lat &&
-    other.lng == lng;
+    other.lng == lng &&
+    other.category == category;
 
   @override
   int get hashCode =>
@@ -50,10 +54,11 @@ class CreateItemRequest {
     (city.hashCode) +
     (postalCode.hashCode) +
     (lat.hashCode) +
-    (lng.hashCode);
+    (lng.hashCode) +
+    (category.hashCode);
 
   @override
-  String toString() => 'CreateItemRequest[title=$title, description=$description, city=$city, postalCode=$postalCode, lat=$lat, lng=$lng]';
+  String toString() => 'CreateItemRequest[title=$title, description=$description, city=$city, postalCode=$postalCode, lat=$lat, lng=$lng, category=$category]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -63,6 +68,7 @@ class CreateItemRequest {
       json[r'postalCode'] = this.postalCode;
       json[r'lat'] = this.lat;
       json[r'lng'] = this.lng;
+      json[r'category'] = this.category;
     return json;
   }
 
@@ -89,6 +95,8 @@ class CreateItemRequest {
         assert(json[r'lat'] != null, 'Required key "CreateItemRequest[lat]" has a null value in JSON.');
         assert(json.containsKey(r'lng'), 'Required key "CreateItemRequest[lng]" is missing from JSON.');
         assert(json[r'lng'] != null, 'Required key "CreateItemRequest[lng]" has a null value in JSON.');
+        assert(json.containsKey(r'category'), 'Required key "CreateItemRequest[category]" is missing from JSON.');
+        assert(json[r'category'] != null, 'Required key "CreateItemRequest[category]" has a null value in JSON.');
         return true;
       }());
 
@@ -99,6 +107,7 @@ class CreateItemRequest {
         postalCode: mapValueOfType<String>(json, r'postalCode')!,
         lat: mapValueOfType<double>(json, r'lat')!,
         lng: mapValueOfType<double>(json, r'lng')!,
+        category: mapValueOfType<String>(json, r'category')!,
       );
     }
     return null;
@@ -152,6 +161,7 @@ class CreateItemRequest {
     'postalCode',
     'lat',
     'lng',
+    'category',
   };
 }
 

@@ -17,6 +17,7 @@ import server/auth
 import server/featured_items
 import server/notifications
 import server/renting
+import server/search
 import server/sql
 import simplifile
 import youid/uuid
@@ -92,6 +93,17 @@ pub fn get_featured_items(
   response_types.GetFeaturedItemsResponseOk(items)
 }
 
+pub fn search_items(
+  state: State,
+  req: request_types.SearchItemsRequest,
+) -> response_types.SearchItemsResponse {
+  let items = case req.body {
+    None -> []
+    Some(body) -> search.search_items(state.conn, body)
+  }
+  response_types.SearchItemsResponseOk(items)
+}
+
 pub fn get_image(
   state: State,
   _req: request_types.GetImageRequest,
@@ -126,6 +138,7 @@ pub fn create_item(
               body.lat,
               body.city,
               body.postal_code,
+              body.category,
             )
           {
             Ok(returned) ->
@@ -182,7 +195,7 @@ pub fn get_item(
             city: row.city,
             postal_code: row.postal_code,
             image_uuids: image_uuids,
-            category: None,
+            category: row.category,
             created_at: row.created_at,
           ))
         }
@@ -242,7 +255,7 @@ pub fn get_item_edit(
         city: row.city,
         postal_code: row.postal_code,
         image_uuids: image_uuids,
-        category: None,
+        category: row.category,
         lat: row.lat,
         lng: row.lng,
         created_at: row.created_at,
@@ -286,6 +299,7 @@ pub fn update_item(
                           body.lat,
                           req.item_id,
                           user.id,
+                          body.category,
                         )
                       {
                         Error(_) -> response_types.UpdateItemResponseNotFound
@@ -563,7 +577,11 @@ pub fn get_rent_request(
             _ -> []
           }
           response_types.GetRentRequestResponseOk(
-            types.RentRequestDetail(..request, messages: messages, offers: offers),
+            types.RentRequestDetail(
+              ..request,
+              messages: messages,
+              offers: offers,
+            ),
           )
         }
         Error(_) -> response_types.GetRentRequestResponseNotFound
@@ -719,11 +737,7 @@ pub fn mark_rent_request_read(
   case verify_auth(state) {
     Error(_) -> response_types.MarkRentRequestReadResponseUnauthorized
     Ok(user) -> {
-      case renting.mark_rent_request_read(
-        state.conn,
-        req.request_id,
-        user.id,
-      ) {
+      case renting.mark_rent_request_read(state.conn, req.request_id, user.id) {
         Ok(_) -> response_types.MarkRentRequestReadResponseNoContent
         Error(_) -> response_types.MarkRentRequestReadResponseNotFound
       }

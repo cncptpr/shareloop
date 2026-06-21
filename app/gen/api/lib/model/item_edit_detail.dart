@@ -21,7 +21,7 @@ class ItemEditDetail {
     this.city,
     this.postalCode,
     this.imageUuids = const [],
-    this.category,
+    required this.category,
     required this.lat,
     required this.lng,
     required this.createdAt,
@@ -55,7 +55,7 @@ class ItemEditDetail {
 
   List<String> imageUuids;
 
-  String? category;
+  String category;
 
   double lat;
 
@@ -89,7 +89,7 @@ class ItemEditDetail {
     (city == null ? 0 : city!.hashCode) +
     (postalCode == null ? 0 : postalCode!.hashCode) +
     (imageUuids.hashCode) +
-    (category == null ? 0 : category!.hashCode) +
+    (category.hashCode) +
     (lat.hashCode) +
     (lng.hashCode) +
     (createdAt.hashCode);
@@ -115,11 +115,7 @@ class ItemEditDetail {
       json[r'postalCode'] = null;
     }
       json[r'imageUuids'] = this.imageUuids;
-    if (this.category != null) {
       json[r'category'] = this.category;
-    } else {
-      json[r'category'] = null;
-    }
       json[r'lat'] = this.lat;
       json[r'lng'] = this.lng;
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
@@ -149,6 +145,8 @@ class ItemEditDetail {
         assert(json[r'score'] != null, 'Required key "ItemEditDetail[score]" has a null value in JSON.');
         assert(json.containsKey(r'imageUuids'), 'Required key "ItemEditDetail[imageUuids]" is missing from JSON.');
         assert(json[r'imageUuids'] != null, 'Required key "ItemEditDetail[imageUuids]" has a null value in JSON.');
+        assert(json.containsKey(r'category'), 'Required key "ItemEditDetail[category]" is missing from JSON.');
+        assert(json[r'category'] != null, 'Required key "ItemEditDetail[category]" has a null value in JSON.');
         assert(json.containsKey(r'lat'), 'Required key "ItemEditDetail[lat]" is missing from JSON.');
         assert(json[r'lat'] != null, 'Required key "ItemEditDetail[lat]" has a null value in JSON.');
         assert(json.containsKey(r'lng'), 'Required key "ItemEditDetail[lng]" is missing from JSON.');
@@ -169,7 +167,7 @@ class ItemEditDetail {
         imageUuids: json[r'imageUuids'] is Iterable
             ? (json[r'imageUuids'] as Iterable).cast<String>().toList(growable: false)
             : const [],
-        category: mapValueOfType<String>(json, r'category'),
+        category: mapValueOfType<String>(json, r'category')!,
         lat: mapValueOfType<double>(json, r'lat')!,
         lng: mapValueOfType<double>(json, r'lng')!,
         createdAt: mapDateTime(json, r'createdAt', r'')!,
@@ -226,6 +224,7 @@ class ItemEditDetail {
     'author',
     'score',
     'imageUuids',
+    'category',
     'lat',
     'lng',
     'createdAt',

@@ -167,6 +167,7 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
     final textRequest = UpdateItemRequest(
       title: state.title,
       description: state.description,
+      category: state.category,
       city: location.city,
       postalCode: location.postalCode,
       lat: location.lat,

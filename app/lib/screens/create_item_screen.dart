@@ -135,6 +135,7 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
       final request = CreateItemRequest(
         title: formState.title,
         description: formState.description,
+        category: formState.category,
         city: selected.city,
         postalCode: selected.postalCode,
         lat: selected.lat,

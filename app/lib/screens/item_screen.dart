@@ -84,6 +84,13 @@ class _Content extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(item.score.toString()),
                 ]),
+                const SizedBox(height: 8),
+                Text(
+                  item.category,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
                 const SizedBox(height: 16),
                 if (!isOwnItem) ...[
                   const SizedBox(height: 24),

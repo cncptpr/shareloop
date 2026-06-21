@@ -144,7 +144,7 @@ pub fn route(
             status: 200,
             body: TextBody(
               json.to_string(fn(items) {
-                json.array(items, encode.encode_featured_item_json)
+                json.array(items, encode.encode_item_overview_json)
               }(data)),
             ),
             headers: [#("content-type", "application/json")],
@@ -197,6 +197,33 @@ pub fn route(
             ),
             headers: [#("content-type", "application/problem+json")],
           )
+      }
+    }
+    "POST", ["items", "search"] -> {
+      let request =
+        request_types.SearchItemsRequest(body: case body {
+          "" -> None
+          _ -> {
+            case decode.decode_item_search_request(body) {
+              Ok(decoded) -> Some(decoded)
+              _ -> None
+            }
+          }
+        })
+      let response = handlers_generated.search_items(app_state, request)
+      case response {
+        response_types.SearchItemsResponseOk(data) ->
+          ServerResponse(
+            status: 200,
+            body: TextBody(
+              json.to_string(fn(items) {
+                json.array(items, encode.encode_item_overview_json)
+              }(data)),
+            ),
+            headers: [#("content-type", "application/json")],
+          )
+        response_types.SearchItemsResponseInternalServerError ->
+          ServerResponse(status: 500, body: EmptyBody, headers: [])
       }
     }
     "GET", ["items", item_id] -> {

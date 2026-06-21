@@ -47,6 +47,13 @@ pub fn create_item(
   handlers.create_item(state, req)
 }
 
+pub fn search_items(
+  state: handlers.State,
+  req: request_types.SearchItemsRequest,
+) -> response_types.SearchItemsResponse {
+  handlers.search_items(state, req)
+}
+
 pub fn get_item(
   state: handlers.State,
   req: request_types.GetItemRequest,

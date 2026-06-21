@@ -5,7 +5,7 @@ import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/item_screen.dart';
 
 class ItemWidget extends ConsumerWidget {
-  final FeaturedItem item;
+  final ItemOverview item;
 
   const ItemWidget(this.item, {super.key});
 
@@ -38,8 +38,28 @@ class ItemWidget extends ConsumerWidget {
                       ),
               ),
             ),
-            Text(item.title, textScaler: const TextScaler.linear(2)),
-            Text(item.description),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(item.title, textScaler: const TextScaler.linear(2)),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    item.category,
+                    style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(item.description),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

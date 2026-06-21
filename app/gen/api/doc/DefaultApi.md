@@ -26,6 +26,7 @@ Method | HTTP request | Description
 [**logout**](DefaultApi.md#logout) | **POST** /auth/logout | Logout
 [**markRentRequestRead**](DefaultApi.md#markrentrequestread) | **POST** /rent-requests/{requestId}/mark-read | Mark a rent request as read
 [**refresh**](DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
+[**searchItems**](DefaultApi.md#searchitems) | **POST** /items/search | Search items
 [**sendMessage**](DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
 [**updateItem**](DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 [**uploadItemImage**](DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
@@ -367,7 +368,7 @@ void (empty response body)
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **getFeaturedItems**
-> List<FeaturedItem> getFeaturedItems(latLng)
+> List<ItemOverview> getFeaturedItems(latLng)
 
 Get featured items
 
@@ -396,7 +397,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**List<FeaturedItem>**](FeaturedItem.md)
+[**List<ItemOverview>**](ItemOverview.md)
 
 ### Authorization
 
@@ -790,6 +791,49 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**LoginResult**](LoginResult.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **searchItems**
+> List<ItemOverview> searchItems(itemSearchRequest)
+
+Search items
+
+Search items with filters
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+final itemSearchRequest = ItemSearchRequest(); // ItemSearchRequest | 
+
+try {
+    final result = api_instance.searchItems(itemSearchRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->searchItems: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **itemSearchRequest** | [**ItemSearchRequest**](ItemSearchRequest.md)|  | [optional] 
+
+### Return type
+
+[**List<ItemOverview>**](ItemOverview.md)
 
 ### Authorization
 

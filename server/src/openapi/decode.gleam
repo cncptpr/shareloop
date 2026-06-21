@@ -5,7 +5,31 @@ import gleam/json
 import gleam/option
 import openapi/types
 
+pub fn item_search_request_sort_by_decoder() -> decode.Decoder(
+  types.ItemSearchRequestSortBy,
+) {
+  use value <- decode.then(decode.string)
+  case value {
+    "relevance" -> decode.success(types.ItemSearchRequestSortByRelevance)
+    "distance" -> decode.success(types.ItemSearchRequestSortByDistance)
+    "score" -> decode.success(types.ItemSearchRequestSortByScore)
+    "newest" -> decode.success(types.ItemSearchRequestSortByNewest)
+    _ ->
+      decode.failure(
+        types.ItemSearchRequestSortByRelevance,
+        "ItemSearchRequestSortBy: unknown variant " <> value,
+      )
+  }
+}
+
+pub fn decode_item_search_request_sort_by(
+  json_string: String,
+) -> Result(types.ItemSearchRequestSortBy, json.DecodeError) {
+  json.parse(json_string, item_search_request_sort_by_decoder())
+}
+
 pub fn create_item_request_decoder() -> decode.Decoder(types.CreateItemRequest) {
+  use category <- decode.field("category", decode.string)
   use city <- decode.field("city", decode.string)
   use description <- decode.field("description", decode.string)
   use lat <- decode.field("lat", decode.float)
@@ -13,6 +37,7 @@ pub fn create_item_request_decoder() -> decode.Decoder(types.CreateItemRequest) 
   use postal_code <- decode.field("postalCode", decode.string)
   use title <- decode.field("title", decode.string)
   decode.success(types.CreateItemRequest(
+    category: category,
     city: city,
     description: description,
     lat: lat,
@@ -141,68 +166,9 @@ pub fn decode_edit_item_images_request_list(
   json.parse(json_string, edit_item_images_request_decoder_list())
 }
 
-pub fn featured_item_decoder() -> decode.Decoder(types.FeaturedItem) {
-  use author <- decode.field("author", person_decoder())
-  use city <- decode.optional_field(
-    "city",
-    option.None,
-    decode.optional(decode.string),
-  )
-  use description <- decode.field("description", decode.string)
-  use distance <- decode.optional_field(
-    "distance",
-    option.None,
-    decode.optional(distance_decoder()),
-  )
-  use id <- decode.field("id", decode.int)
-  use image_uuid <- decode.optional_field(
-    "imageUuid",
-    option.None,
-    decode.optional(decode.string),
-  )
-  use postal_code <- decode.optional_field(
-    "postalCode",
-    option.None,
-    decode.optional(decode.string),
-  )
-  use score <- decode.field("score", decode.float)
-  use title <- decode.field("title", decode.string)
-  decode.success(types.FeaturedItem(
-    author: author,
-    city: city,
-    description: description,
-    distance: distance,
-    id: id,
-    image_uuid: image_uuid,
-    postal_code: postal_code,
-    score: score,
-    title: title,
-  ))
-}
-
-pub fn decode_featured_item(
-  json_string: String,
-) -> Result(types.FeaturedItem, json.DecodeError) {
-  json.parse(json_string, featured_item_decoder())
-}
-
-pub fn featured_item_decoder_list() -> decode.Decoder(List(types.FeaturedItem)) {
-  decode.list(featured_item_decoder())
-}
-
-pub fn decode_featured_item_list(
-  json_string: String,
-) -> Result(List(types.FeaturedItem), json.DecodeError) {
-  json.parse(json_string, featured_item_decoder_list())
-}
-
 pub fn item_detail_decoder() -> decode.Decoder(types.ItemDetail) {
   use author <- decode.field("author", person_decoder())
-  use category <- decode.optional_field(
-    "category",
-    option.None,
-    decode.optional(decode.string),
-  )
+  use category <- decode.field("category", decode.string)
   use city <- decode.optional_field(
     "city",
     option.None,
@@ -251,11 +217,7 @@ pub fn decode_item_detail_list(
 
 pub fn item_edit_detail_decoder() -> decode.Decoder(types.ItemEditDetail) {
   use author <- decode.field("author", person_decoder())
-  use category <- decode.optional_field(
-    "category",
-    option.None,
-    decode.optional(decode.string),
-  )
+  use category <- decode.field("category", decode.string)
   use city <- decode.optional_field(
     "city",
     option.None,
@@ -306,6 +268,128 @@ pub fn decode_item_edit_detail_list(
   json_string: String,
 ) -> Result(List(types.ItemEditDetail), json.DecodeError) {
   json.parse(json_string, item_edit_detail_decoder_list())
+}
+
+pub fn item_overview_decoder() -> decode.Decoder(types.ItemOverview) {
+  use author <- decode.field("author", person_decoder())
+  use category <- decode.field("category", decode.string)
+  use city <- decode.optional_field(
+    "city",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use description <- decode.field("description", decode.string)
+  use distance <- decode.optional_field(
+    "distance",
+    option.None,
+    decode.optional(distance_decoder()),
+  )
+  use id <- decode.field("id", decode.int)
+  use image_uuid <- decode.optional_field(
+    "imageUuid",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use postal_code <- decode.optional_field(
+    "postalCode",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use score <- decode.field("score", decode.float)
+  use title <- decode.field("title", decode.string)
+  decode.success(types.ItemOverview(
+    author: author,
+    category: category,
+    city: city,
+    description: description,
+    distance: distance,
+    id: id,
+    image_uuid: image_uuid,
+    postal_code: postal_code,
+    score: score,
+    title: title,
+  ))
+}
+
+pub fn decode_item_overview(
+  json_string: String,
+) -> Result(types.ItemOverview, json.DecodeError) {
+  json.parse(json_string, item_overview_decoder())
+}
+
+pub fn item_overview_decoder_list() -> decode.Decoder(List(types.ItemOverview)) {
+  decode.list(item_overview_decoder())
+}
+
+pub fn decode_item_overview_list(
+  json_string: String,
+) -> Result(List(types.ItemOverview), json.DecodeError) {
+  json.parse(json_string, item_overview_decoder_list())
+}
+
+pub fn item_search_request_decoder() -> decode.Decoder(types.ItemSearchRequest) {
+  use categories <- decode.optional_field(
+    "categories",
+    option.None,
+    decode.optional(decode.list(decode.string)),
+  )
+  use lat <- decode.optional_field(
+    "lat",
+    option.None,
+    decode.optional(decode.float),
+  )
+  use lng <- decode.optional_field(
+    "lng",
+    option.None,
+    decode.optional(decode.float),
+  )
+  use max_distance_km <- decode.optional_field(
+    "maxDistanceKm",
+    option.None,
+    decode.optional(decode.float),
+  )
+  use min_score <- decode.optional_field(
+    "minScore",
+    option.None,
+    decode.optional(decode.float),
+  )
+  use query <- decode.optional_field(
+    "query",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use sort_by <- decode.optional_field(
+    "sortBy",
+    option.None,
+    decode.optional(item_search_request_sort_by_decoder()),
+  )
+  decode.success(types.ItemSearchRequest(
+    categories: categories,
+    lat: lat,
+    lng: lng,
+    max_distance_km: max_distance_km,
+    min_score: min_score,
+    query: query,
+    sort_by: sort_by,
+  ))
+}
+
+pub fn decode_item_search_request(
+  json_string: String,
+) -> Result(types.ItemSearchRequest, json.DecodeError) {
+  json.parse(json_string, item_search_request_decoder())
+}
+
+pub fn item_search_request_decoder_list() -> decode.Decoder(
+  List(types.ItemSearchRequest),
+) {
+  decode.list(item_search_request_decoder())
+}
+
+pub fn decode_item_search_request_list(
+  json_string: String,
+) -> Result(List(types.ItemSearchRequest), json.DecodeError) {
+  json.parse(json_string, item_search_request_decoder_list())
 }
 
 pub fn lat_lng_decoder() -> decode.Decoder(types.LatLng) {
@@ -684,6 +768,7 @@ pub fn decode_send_message_request_list(
 }
 
 pub fn update_item_request_decoder() -> decode.Decoder(types.UpdateItemRequest) {
+  use category <- decode.field("category", decode.string)
   use city <- decode.field("city", decode.string)
   use description <- decode.field("description", decode.string)
   use lat <- decode.field("lat", decode.float)
@@ -691,6 +776,7 @@ pub fn update_item_request_decoder() -> decode.Decoder(types.UpdateItemRequest) 
   use postal_code <- decode.field("postalCode", decode.string)
   use title <- decode.field("title", decode.string)
   decode.success(types.UpdateItemRequest(
+    category: category,
     city: city,
     description: description,
     lat: lat,
@@ -804,14 +890,14 @@ pub fn decode_user_list(
 }
 
 pub fn get_featured_items_response_ok_decoder() -> decode.Decoder(
-  List(types.FeaturedItem),
+  List(types.ItemOverview),
 ) {
-  decode.list(featured_item_decoder())
+  decode.list(item_overview_decoder())
 }
 
 pub fn decode_get_featured_items_response_ok(
   json_string: String,
-) -> Result(List(types.FeaturedItem), json.DecodeError) {
+) -> Result(List(types.ItemOverview), json.DecodeError) {
   json.parse(json_string, get_featured_items_response_ok_decoder())
 }
 
@@ -823,6 +909,18 @@ pub fn decode_get_image_response_ok(
   json_string: String,
 ) -> Result(String, json.DecodeError) {
   json.parse(json_string, decode.string)
+}
+
+pub fn search_items_response_ok_decoder() -> decode.Decoder(
+  List(types.ItemOverview),
+) {
+  decode.list(item_overview_decoder())
+}
+
+pub fn decode_search_items_response_ok(
+  json_string: String,
+) -> Result(List(types.ItemOverview), json.DecodeError) {
+  json.parse(json_string, search_items_response_ok_decoder())
 }
 
 pub fn get_rent_requests_response_ok_decoder() -> decode.Decoder(

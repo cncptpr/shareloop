@@ -5,10 +5,40 @@ import gleam/list
 import gleam/option
 import openapi/types
 
+pub fn encode_item_search_request_sort_by_json(
+  value: types.ItemSearchRequestSortBy,
+) -> json.Json {
+  let str = case value {
+    types.ItemSearchRequestSortByRelevance -> "relevance"
+    types.ItemSearchRequestSortByDistance -> "distance"
+    types.ItemSearchRequestSortByScore -> "score"
+    types.ItemSearchRequestSortByNewest -> "newest"
+  }
+  json.string(str)
+}
+
+pub fn encode_item_search_request_sort_by(
+  value: types.ItemSearchRequestSortBy,
+) -> String {
+  encode_item_search_request_sort_by_json(value) |> json.to_string()
+}
+
+pub fn encode_item_search_request_sort_by_to_string(
+  value: types.ItemSearchRequestSortBy,
+) -> String {
+  case value {
+    types.ItemSearchRequestSortByRelevance -> "relevance"
+    types.ItemSearchRequestSortByDistance -> "distance"
+    types.ItemSearchRequestSortByScore -> "score"
+    types.ItemSearchRequestSortByNewest -> "newest"
+  }
+}
+
 pub fn encode_create_item_request_json(
   value: types.CreateItemRequest,
 ) -> json.Json {
   json.object([
+    #("category", json.string(value.category)),
     #("city", json.string(value.city)),
     #("description", json.string(value.description)),
     #("lat", json.float(value.lat)),
@@ -68,40 +98,11 @@ pub fn encode_edit_item_images_request(
   encode_edit_item_images_request_json(value) |> json.to_string()
 }
 
-pub fn encode_featured_item_json(value: types.FeaturedItem) -> json.Json {
-  json.object(
-    list.flatten([
-      [#("author", encode_person_json(value.author))],
-      case value.city {
-        option.None -> []
-        option.Some(x) -> [#("city", json.string(x))]
-      },
-      [#("description", json.string(value.description))],
-      case value.distance {
-        option.None -> []
-        option.Some(x) -> [#("distance", encode_distance_json(x))]
-      },
-      [#("id", json.int(value.id))],
-      [#("imageUuid", json.nullable(value.image_uuid, json.string))],
-      case value.postal_code {
-        option.None -> []
-        option.Some(x) -> [#("postalCode", json.string(x))]
-      },
-      [#("score", json.float(value.score))],
-      [#("title", json.string(value.title))],
-    ]),
-  )
-}
-
-pub fn encode_featured_item(value: types.FeaturedItem) -> String {
-  encode_featured_item_json(value) |> json.to_string()
-}
-
 pub fn encode_item_detail_json(value: types.ItemDetail) -> json.Json {
   json.object(
     list.flatten([
       [#("author", encode_person_json(value.author))],
-      [#("category", json.nullable(value.category, json.string))],
+      [#("category", json.string(value.category))],
       case value.city {
         option.None -> []
         option.Some(x) -> [#("city", json.string(x))]
@@ -128,7 +129,7 @@ pub fn encode_item_edit_detail_json(value: types.ItemEditDetail) -> json.Json {
   json.object(
     list.flatten([
       [#("author", encode_person_json(value.author))],
-      [#("category", json.nullable(value.category, json.string))],
+      [#("category", json.string(value.category))],
       case value.city {
         option.None -> []
         option.Some(x) -> [#("city", json.string(x))]
@@ -151,6 +152,79 @@ pub fn encode_item_edit_detail_json(value: types.ItemEditDetail) -> json.Json {
 
 pub fn encode_item_edit_detail(value: types.ItemEditDetail) -> String {
   encode_item_edit_detail_json(value) |> json.to_string()
+}
+
+pub fn encode_item_overview_json(value: types.ItemOverview) -> json.Json {
+  json.object(
+    list.flatten([
+      [#("author", encode_person_json(value.author))],
+      [#("category", json.string(value.category))],
+      case value.city {
+        option.None -> []
+        option.Some(x) -> [#("city", json.string(x))]
+      },
+      [#("description", json.string(value.description))],
+      case value.distance {
+        option.None -> []
+        option.Some(x) -> [#("distance", encode_distance_json(x))]
+      },
+      [#("id", json.int(value.id))],
+      [#("imageUuid", json.nullable(value.image_uuid, json.string))],
+      case value.postal_code {
+        option.None -> []
+        option.Some(x) -> [#("postalCode", json.string(x))]
+      },
+      [#("score", json.float(value.score))],
+      [#("title", json.string(value.title))],
+    ]),
+  )
+}
+
+pub fn encode_item_overview(value: types.ItemOverview) -> String {
+  encode_item_overview_json(value) |> json.to_string()
+}
+
+pub fn encode_item_search_request_json(
+  value: types.ItemSearchRequest,
+) -> json.Json {
+  json.object(
+    list.flatten([
+      case value.categories {
+        option.None -> []
+        option.Some(x) -> [#("categories", json.array(x, json.string))]
+      },
+      case value.lat {
+        option.None -> []
+        option.Some(x) -> [#("lat", json.float(x))]
+      },
+      case value.lng {
+        option.None -> []
+        option.Some(x) -> [#("lng", json.float(x))]
+      },
+      case value.max_distance_km {
+        option.None -> []
+        option.Some(x) -> [#("maxDistanceKm", json.float(x))]
+      },
+      case value.min_score {
+        option.None -> []
+        option.Some(x) -> [#("minScore", json.float(x))]
+      },
+      case value.query {
+        option.None -> []
+        option.Some(x) -> [#("query", json.string(x))]
+      },
+      case value.sort_by {
+        option.None -> []
+        option.Some(x) -> [
+          #("sortBy", encode_item_search_request_sort_by_json(x)),
+        ]
+      },
+    ]),
+  )
+}
+
+pub fn encode_item_search_request(value: types.ItemSearchRequest) -> String {
+  encode_item_search_request_json(value) |> json.to_string()
 }
 
 pub fn encode_lat_lng_json(value: types.LatLng) -> json.Json {
@@ -322,6 +396,7 @@ pub fn encode_update_item_request_json(
   value: types.UpdateItemRequest,
 ) -> json.Json {
   json.object([
+    #("category", json.string(value.category)),
     #("city", json.string(value.city)),
     #("description", json.string(value.description)),
     #("lat", json.float(value.lat)),

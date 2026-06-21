@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class FeaturedItem {
-  /// Returns a new [FeaturedItem] instance.
-  FeaturedItem({
+class ItemOverview {
+  /// Returns a new [ItemOverview] instance.
+  ItemOverview({
     required this.id,
     required this.title,
     required this.description,
@@ -22,6 +22,7 @@ class FeaturedItem {
     this.postalCode,
     required this.score,
     this.imageUuid,
+    required this.category,
   });
 
   int id;
@@ -60,8 +61,10 @@ class FeaturedItem {
 
   String? imageUuid;
 
+  String category;
+
   @override
-  bool operator ==(Object other) => identical(this, other) || other is FeaturedItem &&
+  bool operator ==(Object other) => identical(this, other) || other is ItemOverview &&
     other.id == id &&
     other.title == title &&
     other.description == description &&
@@ -70,7 +73,8 @@ class FeaturedItem {
     other.city == city &&
     other.postalCode == postalCode &&
     other.score == score &&
-    other.imageUuid == imageUuid;
+    other.imageUuid == imageUuid &&
+    other.category == category;
 
   @override
   int get hashCode =>
@@ -83,10 +87,11 @@ class FeaturedItem {
     (city == null ? 0 : city!.hashCode) +
     (postalCode == null ? 0 : postalCode!.hashCode) +
     (score.hashCode) +
-    (imageUuid == null ? 0 : imageUuid!.hashCode);
+    (imageUuid == null ? 0 : imageUuid!.hashCode) +
+    (category.hashCode);
 
   @override
-  String toString() => 'FeaturedItem[id=$id, title=$title, description=$description, author=$author, distance=$distance, city=$city, postalCode=$postalCode, score=$score, imageUuid=$imageUuid]';
+  String toString() => 'ItemOverview[id=$id, title=$title, description=$description, author=$author, distance=$distance, city=$city, postalCode=$postalCode, score=$score, imageUuid=$imageUuid, category=$category]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -115,13 +120,14 @@ class FeaturedItem {
     } else {
       json[r'imageUuid'] = null;
     }
+      json[r'category'] = this.category;
     return json;
   }
 
-  /// Returns a new [FeaturedItem] instance and imports its values from
+  /// Returns a new [ItemOverview] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static FeaturedItem? fromJson(dynamic value) {
+  static ItemOverview? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
@@ -129,20 +135,22 @@ class FeaturedItem {
       // Note 1: the values aren't checked for validity beyond being non-null.
       // Note 2: this code is stripped in release mode!
       assert(() {
-        assert(json.containsKey(r'id'), 'Required key "FeaturedItem[id]" is missing from JSON.');
-        assert(json[r'id'] != null, 'Required key "FeaturedItem[id]" has a null value in JSON.');
-        assert(json.containsKey(r'title'), 'Required key "FeaturedItem[title]" is missing from JSON.');
-        assert(json[r'title'] != null, 'Required key "FeaturedItem[title]" has a null value in JSON.');
-        assert(json.containsKey(r'description'), 'Required key "FeaturedItem[description]" is missing from JSON.');
-        assert(json[r'description'] != null, 'Required key "FeaturedItem[description]" has a null value in JSON.');
-        assert(json.containsKey(r'author'), 'Required key "FeaturedItem[author]" is missing from JSON.');
-        assert(json[r'author'] != null, 'Required key "FeaturedItem[author]" has a null value in JSON.');
-        assert(json.containsKey(r'score'), 'Required key "FeaturedItem[score]" is missing from JSON.');
-        assert(json[r'score'] != null, 'Required key "FeaturedItem[score]" has a null value in JSON.');
+        assert(json.containsKey(r'id'), 'Required key "ItemOverview[id]" is missing from JSON.');
+        assert(json[r'id'] != null, 'Required key "ItemOverview[id]" has a null value in JSON.');
+        assert(json.containsKey(r'title'), 'Required key "ItemOverview[title]" is missing from JSON.');
+        assert(json[r'title'] != null, 'Required key "ItemOverview[title]" has a null value in JSON.');
+        assert(json.containsKey(r'description'), 'Required key "ItemOverview[description]" is missing from JSON.');
+        assert(json[r'description'] != null, 'Required key "ItemOverview[description]" has a null value in JSON.');
+        assert(json.containsKey(r'author'), 'Required key "ItemOverview[author]" is missing from JSON.');
+        assert(json[r'author'] != null, 'Required key "ItemOverview[author]" has a null value in JSON.');
+        assert(json.containsKey(r'score'), 'Required key "ItemOverview[score]" is missing from JSON.');
+        assert(json[r'score'] != null, 'Required key "ItemOverview[score]" has a null value in JSON.');
+        assert(json.containsKey(r'category'), 'Required key "ItemOverview[category]" is missing from JSON.');
+        assert(json[r'category'] != null, 'Required key "ItemOverview[category]" has a null value in JSON.');
         return true;
       }());
 
-      return FeaturedItem(
+      return ItemOverview(
         id: mapValueOfType<int>(json, r'id')!,
         title: mapValueOfType<String>(json, r'title')!,
         description: mapValueOfType<String>(json, r'description')!,
@@ -152,16 +160,17 @@ class FeaturedItem {
         postalCode: mapValueOfType<String>(json, r'postalCode'),
         score: mapValueOfType<double>(json, r'score')!,
         imageUuid: mapValueOfType<String>(json, r'imageUuid'),
+        category: mapValueOfType<String>(json, r'category')!,
       );
     }
     return null;
   }
 
-  static List<FeaturedItem> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <FeaturedItem>[];
+  static List<ItemOverview> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <ItemOverview>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = FeaturedItem.fromJson(row);
+        final value = ItemOverview.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -170,12 +179,12 @@ class FeaturedItem {
     return result.toList(growable: growable);
   }
 
-  static Map<String, FeaturedItem> mapFromJson(dynamic json) {
-    final map = <String, FeaturedItem>{};
+  static Map<String, ItemOverview> mapFromJson(dynamic json) {
+    final map = <String, ItemOverview>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = FeaturedItem.fromJson(entry.value);
+        final value = ItemOverview.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -184,14 +193,14 @@ class FeaturedItem {
     return map;
   }
 
-  // maps a json object with a list of FeaturedItem-objects as value to a dart map
-  static Map<String, List<FeaturedItem>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<FeaturedItem>>{};
+  // maps a json object with a list of ItemOverview-objects as value to a dart map
+  static Map<String, List<ItemOverview>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<ItemOverview>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = FeaturedItem.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = ItemOverview.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -204,6 +213,7 @@ class FeaturedItem {
     'description',
     'author',
     'score',
+    'category',
   };
 }
 

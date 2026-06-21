@@ -6,6 +6,7 @@ select
   items.score,
   items.city,
   items.postal_code,
+  items.category,
   items.created_at::text as created_at,
   items.author_id,
   st_x(items.location::geometry) as lng,

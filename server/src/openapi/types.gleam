@@ -2,8 +2,16 @@
 
 import gleam/option.{type Option}
 
+pub type ItemSearchRequestSortBy {
+  ItemSearchRequestSortByRelevance
+  ItemSearchRequestSortByDistance
+  ItemSearchRequestSortByScore
+  ItemSearchRequestSortByNewest
+}
+
 pub type CreateItemRequest {
   CreateItemRequest(
+    category: String,
     city: String,
     description: String,
     lat: Float,
@@ -29,24 +37,10 @@ pub type EditItemImagesRequest {
   EditItemImagesRequest(delete: List(String), reorder: List(ReorderEntry))
 }
 
-pub type FeaturedItem {
-  FeaturedItem(
-    author: Person,
-    city: Option(String),
-    description: String,
-    distance: Option(Distance),
-    id: Int,
-    image_uuid: Option(String),
-    postal_code: Option(String),
-    score: Float,
-    title: String,
-  )
-}
-
 pub type ItemDetail {
   ItemDetail(
     author: Person,
-    category: Option(String),
+    category: String,
     city: Option(String),
     created_at: String,
     description: String,
@@ -61,7 +55,7 @@ pub type ItemDetail {
 pub type ItemEditDetail {
   ItemEditDetail(
     author: Person,
-    category: Option(String),
+    category: String,
     city: Option(String),
     created_at: String,
     description: String,
@@ -72,6 +66,33 @@ pub type ItemEditDetail {
     postal_code: Option(String),
     score: Float,
     title: String,
+  )
+}
+
+pub type ItemOverview {
+  ItemOverview(
+    author: Person,
+    category: String,
+    city: Option(String),
+    description: String,
+    distance: Option(Distance),
+    id: Int,
+    image_uuid: Option(String),
+    postal_code: Option(String),
+    score: Float,
+    title: String,
+  )
+}
+
+pub type ItemSearchRequest {
+  ItemSearchRequest(
+    categories: Option(List(String)),
+    lat: Option(Float),
+    lng: Option(Float),
+    max_distance_km: Option(Float),
+    min_score: Option(Float),
+    query: Option(String),
+    sort_by: Option(ItemSearchRequestSortBy),
   )
 }
 
@@ -172,6 +193,7 @@ pub type SendMessageRequest {
 
 pub type UpdateItemRequest {
   UpdateItemRequest(
+    category: String,
     city: String,
     description: String,
     lat: Float,

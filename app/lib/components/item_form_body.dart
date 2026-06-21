@@ -96,7 +96,7 @@ class _ItemFormBodyState extends State<ItemFormBody> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            initialValue: widget.category,
+            initialValue: (widget.category ?? '').isEmpty ? null : widget.category,
             decoration: const InputDecoration(
               labelText: 'Kategorie',
               border: OutlineInputBorder(),
@@ -105,6 +105,9 @@ class _ItemFormBodyState extends State<ItemFormBody> {
                 .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                 .toList(),
             onChanged: widget.onCategoryChanged,
+            validator: (v) {
+              return (v == null || v.isEmpty) ? 'Erforderlich' : null;
+            },
           ),
           const SizedBox(height: 16),
           InkWell(

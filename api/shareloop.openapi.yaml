@@ -27,7 +27,30 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/FeaturedItem"
+                  $ref: "#/components/schemas/ItemOverview"
+        "500":
+          description: Internal server error
+
+  /items/search:
+    post:
+      summary: Search items
+      description: Search items with filters
+      operationId: searchItems
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemSearchRequest"
+      responses:
+        "200":
+          description: A list of matching items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ItemOverview"
         "500":
           description: Internal server error
 
@@ -543,9 +566,9 @@ paths:
 
 components:
   schemas:
-    FeaturedItem:
+    ItemOverview:
       type: object
-      required: [id, title, description, author, score]
+      required: [id, title, description, author, score, category]
       properties:
         id:
           type: integer
@@ -568,6 +591,8 @@ components:
         imageUuid:
           type: string
           nullable: true
+        category:
+          type: string
 
     Person:
       type: object
@@ -648,7 +673,7 @@ components:
 
     CreateItemRequest:
       type: object
-      required: [title, description, city, postalCode, lat, lng]
+      required: [title, description, city, postalCode, lat, lng, category]
       properties:
         title:
           type: string
@@ -664,6 +689,8 @@ components:
         lng:
           type: number
           format: double
+        category:
+          type: string
 
     CreateItemResponse:
       type: object
@@ -674,7 +701,7 @@ components:
 
     ItemDetail:
       type: object
-      required: [id, title, description, author, score, createdAt, imageUuids]
+      required: [id, title, description, author, score, createdAt, imageUuids, category]
       properties:
         id:
           type: integer
@@ -698,14 +725,13 @@ components:
             format: uuid
         category:
           type: string
-          nullable: true
         createdAt:
           type: string
           format: date-time
 
     ItemEditDetail:
       type: object
-      required: [id, title, description, author, score, createdAt, imageUuids, lat, lng]
+      required: [id, title, description, author, score, createdAt, imageUuids, lat, lng, category]
       properties:
         id:
           type: integer
@@ -729,7 +755,6 @@ components:
             format: uuid
         category:
           type: string
-          nullable: true
         lat:
           type: number
           format: double
@@ -764,7 +789,7 @@ components:
 
     UpdateItemRequest:
       type: object
-      required: [title, description, city, postalCode, lat, lng]
+      required: [title, description, city, postalCode, lat, lng, category]
       properties:
         title:
           type: string
@@ -780,6 +805,33 @@ components:
         lng:
           type: number
           format: double
+        category:
+          type: string
+
+    ItemSearchRequest:
+      type: object
+      properties:
+        query:
+          type: string
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        maxDistanceKm:
+          type: number
+          format: double
+        categories:
+          type: array
+          items:
+            type: string
+        minScore:
+          type: number
+          format: double
+        sortBy:
+          type: string
+          enum: [relevance, distance, score, newest]
 
     ReorderEntry:
       type: object

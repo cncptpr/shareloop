@@ -21,7 +21,7 @@ class ItemDetail {
     this.city,
     this.postalCode,
     this.imageUuids = const [],
-    this.category,
+    required this.category,
     required this.createdAt,
   });
 
@@ -53,7 +53,7 @@ class ItemDetail {
 
   List<String> imageUuids;
 
-  String? category;
+  String category;
 
   DateTime createdAt;
 
@@ -81,7 +81,7 @@ class ItemDetail {
     (city == null ? 0 : city!.hashCode) +
     (postalCode == null ? 0 : postalCode!.hashCode) +
     (imageUuids.hashCode) +
-    (category == null ? 0 : category!.hashCode) +
+    (category.hashCode) +
     (createdAt.hashCode);
 
   @override
@@ -105,11 +105,7 @@ class ItemDetail {
       json[r'postalCode'] = null;
     }
       json[r'imageUuids'] = this.imageUuids;
-    if (this.category != null) {
       json[r'category'] = this.category;
-    } else {
-      json[r'category'] = null;
-    }
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
     return json;
   }
@@ -137,6 +133,8 @@ class ItemDetail {
         assert(json[r'score'] != null, 'Required key "ItemDetail[score]" has a null value in JSON.');
         assert(json.containsKey(r'imageUuids'), 'Required key "ItemDetail[imageUuids]" is missing from JSON.');
         assert(json[r'imageUuids'] != null, 'Required key "ItemDetail[imageUuids]" has a null value in JSON.');
+        assert(json.containsKey(r'category'), 'Required key "ItemDetail[category]" is missing from JSON.');
+        assert(json[r'category'] != null, 'Required key "ItemDetail[category]" has a null value in JSON.');
         assert(json.containsKey(r'createdAt'), 'Required key "ItemDetail[createdAt]" is missing from JSON.');
         assert(json[r'createdAt'] != null, 'Required key "ItemDetail[createdAt]" has a null value in JSON.');
         return true;
@@ -153,7 +151,7 @@ class ItemDetail {
         imageUuids: json[r'imageUuids'] is Iterable
             ? (json[r'imageUuids'] as Iterable).cast<String>().toList(growable: false)
             : const [],
-        category: mapValueOfType<String>(json, r'category'),
+        category: mapValueOfType<String>(json, r'category')!,
         createdAt: mapDateTime(json, r'createdAt', r'')!,
       );
     }
@@ -208,6 +206,7 @@ class ItemDetail {
     'author',
     'score',
     'imageUuids',
+    'category',
     'createdAt',
   };
 }

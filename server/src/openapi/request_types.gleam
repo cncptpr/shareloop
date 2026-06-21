@@ -25,6 +25,11 @@ pub type CreateItemRequest {
   CreateItemRequest(body: types.CreateItemRequest)
 }
 
+/// Search items with filters
+pub type SearchItemsRequest {
+  SearchItemsRequest(body: Option(types.ItemSearchRequest))
+}
+
 /// Returns full details for a single item
 pub type GetItemRequest {
   GetItemRequest(item_id: Int)

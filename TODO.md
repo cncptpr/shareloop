@@ -21,6 +21,7 @@ Not all of these TODOs need to be done for the finished project.
 
 ## General
 
+- [ ] Put the migration code in a library, so that the server does not need to compile to run the migrations
 - [ ] Introduce Logging Framework
 - [ ] When pressing the selected button in the nav bar, return to that tabs default route.
 - [ ] Make the UI Text all German

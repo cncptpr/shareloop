@@ -35,7 +35,7 @@ class ServerItemImage implements ItemImage {
 class ItemFormState {
   final String title;
   final String description;
-  final String? category;
+  final String category;
   final List<ItemImage> images;
   final List<UuidValue> deletedServerImages;
   final SelectedLocation? selectedLocation;
@@ -43,7 +43,7 @@ class ItemFormState {
   const ItemFormState({
     this.title = '',
     this.description = '',
-    this.category,
+    this.category = '',
     this.images = const [],
     this.deletedServerImages = const [],
     this.selectedLocation,

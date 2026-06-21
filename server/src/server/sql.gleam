@@ -44,6 +44,51 @@ returning id
   |> pog.execute(db)
 }
 
+/// A row you get from running the `count_unread_messages` query
+/// defined in `./src/server/sql/count_unread_messages.sql`.
+///
+/// > 🐿️ This type definition was generated automatically using v4.7.0 of the
+/// > [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub type CountUnreadMessagesRow {
+  CountUnreadMessagesRow(id: Int, cnt: Int)
+}
+
+/// Runs the `count_unread_messages` query
+/// defined in `./src/server/sql/count_unread_messages.sql`.
+///
+/// > 🐿️ This function was generated automatically using v4.7.0 of
+/// > the [squirrel package](https://github.com/giacomocavalieri/squirrel).
+///
+pub fn count_unread_messages(
+  db: pog.Connection,
+  rr_requester_id: Int,
+) -> Result(pog.Returned(CountUnreadMessagesRow), pog.QueryError) {
+  let decoder = {
+    use id <- decode.field(0, decode.int)
+    use cnt <- decode.field(1, decode.int)
+    decode.success(CountUnreadMessagesRow(id:, cnt:))
+  }
+
+  "SELECT
+  rr.id,
+  COUNT(m.id)::int AS cnt
+FROM rent_requests rr
+LEFT JOIN messages m ON m.rent_request_id = rr.id
+  AND m.author_id != $1
+  AND (
+    CASE WHEN $1 = rr.requester_id THEN rr.requester_read_at ELSE rr.owner_read_at END IS NULL
+    OR m.created_at > CASE WHEN $1 = rr.requester_id THEN rr.requester_read_at ELSE rr.owner_read_at END
+  )
+WHERE rr.requester_id = $1 OR rr.item_id IN (SELECT id FROM items WHERE author_id = $1)
+GROUP BY rr.id
+"
+  |> pog.query
+  |> pog.parameter(pog.int(rr_requester_id))
+  |> pog.returning(decoder)
+  |> pog.execute(db)
+}
+
 /// A row you get from running the `create_item` query
 /// defined in `./src/server/sql/create_item.sql`.
 ///

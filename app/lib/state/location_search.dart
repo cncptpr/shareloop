@@ -131,14 +131,16 @@ class SelectedLocationNotifier extends Notifier<SelectedLocation?> {
   }
 
   Future<void> _loadFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(AppConfig.selectedLocationKey);
-    if (raw != null) {
-      final location = SelectedLocation.selectedFromJson(
-        jsonDecode(raw) as Map<String, dynamic>,
-      );
-      state = location;
-    }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(AppConfig.selectedLocationKey);
+      if (raw != null) {
+        final location = SelectedLocation.selectedFromJson(
+          jsonDecode(raw) as Map<String, dynamic>,
+        );
+        state = location;
+      }
+    } catch (_) {}
   }
 
   Future<void> select(SelectedLocation location) async {

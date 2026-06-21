@@ -67,6 +67,10 @@ pub type ConfirmReturnRequest {
   ConfirmReturnRequest(request_id: Int)
 }
 
+pub type MarkRentRequestReadRequest {
+  MarkRentRequestReadRequest(request_id: Int)
+}
+
 pub type SendMessageRequest {
   SendMessageRequest(request_id: Int, body: types.SendMessageRequest)
 }

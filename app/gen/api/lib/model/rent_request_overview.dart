@@ -10,9 +10,9 @@
 
 part of openapi.api;
 
-class RentRequest {
-  /// Returns a new [RentRequest] instance.
-  RentRequest({
+class RentRequestOverview {
+  /// Returns a new [RentRequestOverview] instance.
+  RentRequestOverview({
     required this.id,
     required this.itemId,
     required this.requester,
@@ -25,9 +25,7 @@ class RentRequest {
     this.returnedAt,
     required this.createdAt,
     required this.updatedAt,
-    this.messages = const [],
-    this.offers = const [],
-    this.lastRead,
+    required this.unreadCount,
   });
 
   int id;
@@ -54,20 +52,10 @@ class RentRequest {
 
   DateTime updatedAt;
 
-  List<Message>? messages;
-
-  List<RentOffer>? offers;
-
-  ///
-  /// Please note: This property should have been non-nullable! Since the specification file
-  /// does not include a default value (using the "default:" property), however, the generated
-  /// source code must fall back to having a nullable type.
-  /// Consider adding a "default:" property in the specification file to hide this note.
-  ///
-  DateTime? lastRead;
+  int unreadCount;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is RentRequest &&
+  bool operator ==(Object other) => identical(this, other) || other is RentRequestOverview &&
     other.id == id &&
     other.itemId == itemId &&
     other.requester == requester &&
@@ -80,9 +68,7 @@ class RentRequest {
     other.returnedAt == returnedAt &&
     other.createdAt == createdAt &&
     other.updatedAt == updatedAt &&
-    _deepEquality.equals(other.messages, messages) &&
-    _deepEquality.equals(other.offers, offers) &&
-    other.lastRead == lastRead;
+    other.unreadCount == unreadCount;
 
   @override
   int get hashCode =>
@@ -99,12 +85,10 @@ class RentRequest {
     (returnedAt == null ? 0 : returnedAt!.hashCode) +
     (createdAt.hashCode) +
     (updatedAt.hashCode) +
-    (messages == null ? 0 : messages!.hashCode) +
-    (offers == null ? 0 : offers!.hashCode) +
-    (lastRead == null ? 0 : lastRead!.hashCode);
+    (unreadCount.hashCode);
 
   @override
-  String toString() => 'RentRequest[id=$id, itemId=$itemId, requester=$requester, itemTitle=$itemTitle, ownerName=$ownerName, ownerId=$ownerId, latestAcceptedOfferId=$latestAcceptedOfferId, latestOpenOfferId=$latestOpenOfferId, borrowConfirmedAt=$borrowConfirmedAt, returnedAt=$returnedAt, createdAt=$createdAt, updatedAt=$updatedAt, messages=$messages, offers=$offers, lastRead=$lastRead]';
+  String toString() => 'RentRequestOverview[id=$id, itemId=$itemId, requester=$requester, itemTitle=$itemTitle, ownerName=$ownerName, ownerId=$ownerId, latestAcceptedOfferId=$latestAcceptedOfferId, latestOpenOfferId=$latestOpenOfferId, borrowConfirmedAt=$borrowConfirmedAt, returnedAt=$returnedAt, createdAt=$createdAt, updatedAt=$updatedAt, unreadCount=$unreadCount]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -136,28 +120,14 @@ class RentRequest {
     }
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
       json[r'updatedAt'] = this.updatedAt.toUtc().toIso8601String();
-    if (this.messages != null) {
-      json[r'messages'] = this.messages;
-    } else {
-      json[r'messages'] = null;
-    }
-    if (this.offers != null) {
-      json[r'offers'] = this.offers;
-    } else {
-      json[r'offers'] = null;
-    }
-    if (this.lastRead != null) {
-      json[r'lastRead'] = this.lastRead!.toUtc().toIso8601String();
-    } else {
-      json[r'lastRead'] = null;
-    }
+      json[r'unreadCount'] = this.unreadCount;
     return json;
   }
 
-  /// Returns a new [RentRequest] instance and imports its values from
+  /// Returns a new [RentRequestOverview] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static RentRequest? fromJson(dynamic value) {
+  static RentRequestOverview? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
@@ -165,26 +135,28 @@ class RentRequest {
       // Note 1: the values aren't checked for validity beyond being non-null.
       // Note 2: this code is stripped in release mode!
       assert(() {
-        assert(json.containsKey(r'id'), 'Required key "RentRequest[id]" is missing from JSON.');
-        assert(json[r'id'] != null, 'Required key "RentRequest[id]" has a null value in JSON.');
-        assert(json.containsKey(r'itemId'), 'Required key "RentRequest[itemId]" is missing from JSON.');
-        assert(json[r'itemId'] != null, 'Required key "RentRequest[itemId]" has a null value in JSON.');
-        assert(json.containsKey(r'requester'), 'Required key "RentRequest[requester]" is missing from JSON.');
-        assert(json[r'requester'] != null, 'Required key "RentRequest[requester]" has a null value in JSON.');
-        assert(json.containsKey(r'itemTitle'), 'Required key "RentRequest[itemTitle]" is missing from JSON.');
-        assert(json[r'itemTitle'] != null, 'Required key "RentRequest[itemTitle]" has a null value in JSON.');
-        assert(json.containsKey(r'ownerName'), 'Required key "RentRequest[ownerName]" is missing from JSON.');
-        assert(json[r'ownerName'] != null, 'Required key "RentRequest[ownerName]" has a null value in JSON.');
-        assert(json.containsKey(r'ownerId'), 'Required key "RentRequest[ownerId]" is missing from JSON.');
-        assert(json[r'ownerId'] != null, 'Required key "RentRequest[ownerId]" has a null value in JSON.');
-        assert(json.containsKey(r'createdAt'), 'Required key "RentRequest[createdAt]" is missing from JSON.');
-        assert(json[r'createdAt'] != null, 'Required key "RentRequest[createdAt]" has a null value in JSON.');
-        assert(json.containsKey(r'updatedAt'), 'Required key "RentRequest[updatedAt]" is missing from JSON.');
-        assert(json[r'updatedAt'] != null, 'Required key "RentRequest[updatedAt]" has a null value in JSON.');
+        assert(json.containsKey(r'id'), 'Required key "RentRequestOverview[id]" is missing from JSON.');
+        assert(json[r'id'] != null, 'Required key "RentRequestOverview[id]" has a null value in JSON.');
+        assert(json.containsKey(r'itemId'), 'Required key "RentRequestOverview[itemId]" is missing from JSON.');
+        assert(json[r'itemId'] != null, 'Required key "RentRequestOverview[itemId]" has a null value in JSON.');
+        assert(json.containsKey(r'requester'), 'Required key "RentRequestOverview[requester]" is missing from JSON.');
+        assert(json[r'requester'] != null, 'Required key "RentRequestOverview[requester]" has a null value in JSON.');
+        assert(json.containsKey(r'itemTitle'), 'Required key "RentRequestOverview[itemTitle]" is missing from JSON.');
+        assert(json[r'itemTitle'] != null, 'Required key "RentRequestOverview[itemTitle]" has a null value in JSON.');
+        assert(json.containsKey(r'ownerName'), 'Required key "RentRequestOverview[ownerName]" is missing from JSON.');
+        assert(json[r'ownerName'] != null, 'Required key "RentRequestOverview[ownerName]" has a null value in JSON.');
+        assert(json.containsKey(r'ownerId'), 'Required key "RentRequestOverview[ownerId]" is missing from JSON.');
+        assert(json[r'ownerId'] != null, 'Required key "RentRequestOverview[ownerId]" has a null value in JSON.');
+        assert(json.containsKey(r'createdAt'), 'Required key "RentRequestOverview[createdAt]" is missing from JSON.');
+        assert(json[r'createdAt'] != null, 'Required key "RentRequestOverview[createdAt]" has a null value in JSON.');
+        assert(json.containsKey(r'updatedAt'), 'Required key "RentRequestOverview[updatedAt]" is missing from JSON.');
+        assert(json[r'updatedAt'] != null, 'Required key "RentRequestOverview[updatedAt]" has a null value in JSON.');
+        assert(json.containsKey(r'unreadCount'), 'Required key "RentRequestOverview[unreadCount]" is missing from JSON.');
+        assert(json[r'unreadCount'] != null, 'Required key "RentRequestOverview[unreadCount]" has a null value in JSON.');
         return true;
       }());
 
-      return RentRequest(
+      return RentRequestOverview(
         id: mapValueOfType<int>(json, r'id')!,
         itemId: mapValueOfType<int>(json, r'itemId')!,
         requester: Person.fromJson(json[r'requester'])!,
@@ -197,19 +169,17 @@ class RentRequest {
         returnedAt: mapDateTime(json, r'returnedAt', r''),
         createdAt: mapDateTime(json, r'createdAt', r'')!,
         updatedAt: mapDateTime(json, r'updatedAt', r'')!,
-        messages: Message.listFromJson(json[r'messages']),
-        offers: RentOffer.listFromJson(json[r'offers']),
-        lastRead: mapDateTime(json, r'lastRead', r''),
+        unreadCount: mapValueOfType<int>(json, r'unreadCount')!,
       );
     }
     return null;
   }
 
-  static List<RentRequest> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <RentRequest>[];
+  static List<RentRequestOverview> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <RentRequestOverview>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = RentRequest.fromJson(row);
+        final value = RentRequestOverview.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -218,12 +188,12 @@ class RentRequest {
     return result.toList(growable: growable);
   }
 
-  static Map<String, RentRequest> mapFromJson(dynamic json) {
-    final map = <String, RentRequest>{};
+  static Map<String, RentRequestOverview> mapFromJson(dynamic json) {
+    final map = <String, RentRequestOverview>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = RentRequest.fromJson(entry.value);
+        final value = RentRequestOverview.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -232,14 +202,14 @@ class RentRequest {
     return map;
   }
 
-  // maps a json object with a list of RentRequest-objects as value to a dart map
-  static Map<String, List<RentRequest>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<RentRequest>>{};
+  // maps a json object with a list of RentRequestOverview-objects as value to a dart map
+  static Map<String, List<RentRequestOverview>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<RentRequestOverview>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = RentRequest.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = RentRequestOverview.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -255,6 +225,7 @@ class RentRequest {
     'ownerId',
     'createdAt',
     'updatedAt',
+    'unreadCount',
   };
 }
 

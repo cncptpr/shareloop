@@ -18,7 +18,8 @@ doc/Message.md
 doc/Person.md
 doc/RefreshRequest.md
 doc/RentOffer.md
-doc/RentRequest.md
+doc/RentRequestDetail.md
+doc/RentRequestOverview.md
 doc/ReorderEntry.md
 doc/SendMessageRequest.md
 doc/UpdateItemRequest.md
@@ -51,7 +52,8 @@ lib/model/message.dart
 lib/model/person.dart
 lib/model/refresh_request.dart
 lib/model/rent_offer.dart
-lib/model/rent_request.dart
+lib/model/rent_request_detail.dart
+lib/model/rent_request_overview.dart
 lib/model/reorder_entry.dart
 lib/model/send_message_request.dart
 lib/model/update_item_request.dart
@@ -59,3 +61,5 @@ lib/model/upload_item_image_request.dart
 lib/model/upload_item_image_response.dart
 lib/model/user.dart
 pubspec.yaml
+test/rent_request_detail_test.dart
+test/rent_request_overview_test.dart

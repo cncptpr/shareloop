@@ -129,7 +129,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RentRequest"
+                $ref: "#/components/schemas/RentRequestDetail"
         "401":
           description: Unauthorized
         "500":
@@ -149,7 +149,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/RentRequest"
+                  $ref: "#/components/schemas/RentRequestOverview"
         "401":
           description: Unauthorized
         "500":
@@ -169,11 +169,33 @@ paths:
             type: integer
       responses:
         "200":
-          description: Rent request details with optional messages and offers
+          description: Rent request details with messages and offers
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RentRequest"
+                $ref: "#/components/schemas/RentRequestDetail"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+
+  /rent-requests/{requestId}/mark-read:
+    post:
+      summary: Mark a rent request as read
+      operationId: markRentRequestRead
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Marked as read
         "401":
           description: Unauthorized
         "404":
@@ -291,7 +313,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RentRequest"
+                $ref: "#/components/schemas/RentRequestDetail"
         "401":
           description: Unauthorized
         "403":
@@ -319,7 +341,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RentRequest"
+                $ref: "#/components/schemas/RentRequestDetail"
         "401":
           description: Unauthorized
         "403":
@@ -783,9 +805,9 @@ components:
             type: string
             format: uuid
 
-    RentRequest:
+    RentRequestDetail:
       type: object
-      required: [id, itemId, requester, itemTitle, ownerName, ownerId, createdAt, updatedAt]
+      required: [id, itemId, requester, itemTitle, ownerName, ownerId, createdAt, updatedAt, messages, offers, lastRead]
       properties:
         id:
           type: integer
@@ -823,15 +845,52 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Message"
-          nullable: true
         offers:
           type: array
           items:
             $ref: "#/components/schemas/RentOffer"
-          nullable: true
         lastRead:
           type: string
           format: date-time
+
+    RentRequestOverview:
+      type: object
+      required: [id, itemId, requester, itemTitle, ownerName, ownerId, createdAt, updatedAt, unreadCount]
+      properties:
+        id:
+          type: integer
+        itemId:
+          type: integer
+        requester:
+          $ref: "#/components/schemas/Person"
+        itemTitle:
+          type: string
+        ownerName:
+          type: string
+        ownerId:
+          type: integer
+        latestAcceptedOfferId:
+          type: integer
+          nullable: true
+        latestOpenOfferId:
+          type: integer
+          nullable: true
+        borrowConfirmedAt:
+          type: string
+          format: date-time
+          nullable: true
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        unreadCount:
+          type: integer
 
     Message:
       type: object

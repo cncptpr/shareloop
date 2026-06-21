@@ -123,6 +123,13 @@ pub fn confirm_return(
   handlers.confirm_return(state, req)
 }
 
+pub fn mark_rent_request_read(
+  state: handlers.State,
+  req: request_types.MarkRentRequestReadRequest,
+) -> response_types.MarkRentRequestReadResponse {
+  handlers.mark_rent_request_read(state, req)
+}
+
 pub fn send_message(
   state: handlers.State,
   req: request_types.SendMessageRequest,

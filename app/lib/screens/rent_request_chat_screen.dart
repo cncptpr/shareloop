@@ -9,7 +9,7 @@ import 'package:shareloop/state/renting.dart';
 class RentRequestChatScreen extends ConsumerStatefulWidget {
   final int? requestId;
   final int? itemId;
-  final RentRequest? rentRequest;
+  final RentRequestDetail? rentRequest;
 
   const RentRequestChatScreen.newRequest({
     required this.itemId,
@@ -19,7 +19,7 @@ class RentRequestChatScreen extends ConsumerStatefulWidget {
 
   const RentRequestChatScreen.existing({
     required this.requestId,
-    required this.rentRequest,
+    this.rentRequest,
     super.key,
   }) : itemId = null;
 
@@ -36,6 +36,7 @@ class _RentRequestChatScreenState
   bool _creatingRequest = false;
   bool _showScrollToBottom = false;
   bool _didInitialScroll = false;
+  bool _didMarkRead = false;
 
   @override
   void initState() {
@@ -312,7 +313,7 @@ class _RentRequestChatScreenState
     ref.invalidate(myRentRequestsProvider);
   }
 
-  RentRequest? _resolveRequest(RentRequest? fromProvider) {
+  RentRequestDetail? _resolveRequest(RentRequestDetail? fromProvider) {
     if (fromProvider != null) return fromProvider;
     if (widget.rentRequest != null && _requestId == widget.requestId) {
       return widget.rentRequest;
@@ -340,7 +341,7 @@ class _RentRequestChatScreenState
 
     final asyncRequest = _requestId != null
         ? ref.watch(rentRequestProvider(_requestId!))
-        : const AsyncData<RentRequest?>(null);
+        : const AsyncData<RentRequestDetail?>(null);
 
     if (_requestId != null && asyncRequest.hasValue && asyncRequest.value == null) {
       Future.microtask(() {
@@ -363,6 +364,16 @@ class _RentRequestChatScreenState
 
     if (!_didInitialScroll && _requestId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _tryScrollToBottom());
+    }
+
+    if (_requestId != null && asyncRequest.hasValue &&
+        asyncRequest.value != null && !_didMarkRead) {
+      _didMarkRead = true;
+      Future.microtask(() {
+        markRentRequestRead(_requestId!).then((_) {
+          ref.invalidate(myRentRequestsProvider);
+        });
+      });
     }
 
     return Scaffold(
@@ -442,7 +453,7 @@ class _RentRequestChatScreenState
     int? userId,
     bool isOwner,
     bool isRequester,
-    RentRequest? request,
+    RentRequestDetail? request,
     bool hasAcceptedOffer,
     bool isBorrowed,
     bool isReturned,
@@ -544,7 +555,7 @@ String _formatDate(BuildContext context, DateTime date) {
   return MaterialLocalizations.of(context).formatShortDate(date.toLocal());
 }
 
-String _statusText(RentRequest req) {
+String _statusText(RentRequestDetail req) {
   if (req.returnedAt != null) return 'Abgeschlossen · Rückgabe bestätigt';
   if (req.borrowConfirmedAt != null) return 'Ausgeliehen · Rückgabe ausstehend';
   if (req.latestAcceptedOfferId != null) return 'Angebot akzeptiert · Ausleihe bestätigen';
@@ -552,7 +563,7 @@ String _statusText(RentRequest req) {
   return 'Ausstehend';
 }
 
-IconData _statusIcon(RentRequest req) {
+IconData _statusIcon(RentRequestDetail req) {
   if (req.returnedAt != null) return Icons.check_circle;
   if (req.borrowConfirmedAt != null) return Icons.swap_horiz;
   if (req.latestAcceptedOfferId != null) return Icons.how_to_vote;
@@ -588,7 +599,7 @@ class _ChatItem {
 }
 
 class _StatusBanner extends StatelessWidget {
-  final RentRequest request;
+  final RentRequestDetail request;
   final bool isOwner;
 
   const _StatusBanner({required this.request, required this.isOwner});

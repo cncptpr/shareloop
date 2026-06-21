@@ -124,22 +124,40 @@ pub type RentOffer {
   )
 }
 
-pub type RentRequest {
-  RentRequest(
+pub type RentRequestDetail {
+  RentRequestDetail(
     borrow_confirmed_at: Option(String),
     created_at: String,
     id: Int,
     item_id: Int,
     item_title: String,
-    last_read: Option(String),
+    last_read: String,
     latest_accepted_offer_id: Option(Int),
     latest_open_offer_id: Option(Int),
-    messages: Option(List(Message)),
-    offers: Option(List(RentOffer)),
+    messages: List(Message),
+    offers: List(RentOffer),
     owner_id: Int,
     owner_name: String,
     requester: Person,
     returned_at: Option(String),
+    updated_at: String,
+  )
+}
+
+pub type RentRequestOverview {
+  RentRequestOverview(
+    borrow_confirmed_at: Option(String),
+    created_at: String,
+    id: Int,
+    item_id: Int,
+    item_title: String,
+    latest_accepted_offer_id: Option(Int),
+    latest_open_offer_id: Option(Int),
+    owner_id: Int,
+    owner_name: String,
+    requester: Person,
+    returned_at: Option(String),
+    unread_count: Int,
     updated_at: String,
   )
 }

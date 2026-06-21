@@ -4,7 +4,8 @@ import 'package:openapi/api.dart';
 import '../app_config.dart';
 import 'auth.dart';
 
-final myRentRequestsProvider = FutureProvider<List<RentRequest>>((ref) async {
+final myRentRequestsProvider =
+    FutureProvider<List<RentRequestOverview>>((ref) async {
   final user = ref.watch(authProvider).value;
   if (user == null) return [];
   final result = await AppConfig.apiClient.getRentRequests();
@@ -12,7 +13,7 @@ final myRentRequestsProvider = FutureProvider<List<RentRequest>>((ref) async {
 });
 
 final rentRequestProvider =
-    FutureProvider.autoDispose.family<RentRequest?, int>(
+    FutureProvider.autoDispose.family<RentRequestDetail?, int>(
   (ref, requestId) async {
     try {
       return await AppConfig.apiClient.getRentRequest(requestId);
@@ -22,21 +23,23 @@ final rentRequestProvider =
   },
 );
 
-final messagesProvider = FutureProvider.autoDispose.family<List<Message>, int>(
+final messagesProvider =
+    FutureProvider.autoDispose.family<List<Message>, int>(
   (ref, requestId) async {
     final request = ref.watch(rentRequestProvider(requestId)).value;
     return request?.messages ?? [];
   },
 );
 
-final offersProvider = FutureProvider.autoDispose.family<List<RentOffer>, int>(
+final offersProvider =
+    FutureProvider.autoDispose.family<List<RentOffer>, int>(
   (ref, requestId) async {
     final request = ref.watch(rentRequestProvider(requestId)).value;
     return request?.offers ?? [];
   },
 );
 
-Future<RentRequest?> createRentRequest(int itemId) async {
+Future<RentRequestDetail?> createRentRequest(int itemId) async {
   try {
     return await AppConfig.apiClient.createRentRequest(itemId);
   } catch (_) {
@@ -56,7 +59,7 @@ Future<Message?> sendMessage(int requestId, String content) async {
 }
 
 Future<RentOffer?> createOffer(
-    int requestId, DateTime startDate, DateTime endDate,) async {
+    int requestId, DateTime startDate, DateTime endDate) async {
   try {
     return await AppConfig.apiClient.createOffer(
       requestId,
@@ -75,7 +78,7 @@ Future<RentOffer?> acceptOffer(int offerId) async {
   }
 }
 
-Future<RentRequest?> confirmBorrow(int requestId) async {
+Future<RentRequestDetail?> confirmBorrow(int requestId) async {
   try {
     return await AppConfig.apiClient.confirmBorrow(requestId);
   } catch (_) {
@@ -83,10 +86,16 @@ Future<RentRequest?> confirmBorrow(int requestId) async {
   }
 }
 
-Future<RentRequest?> confirmReturn(int requestId) async {
+Future<RentRequestDetail?> confirmReturn(int requestId) async {
   try {
     return await AppConfig.apiClient.confirmReturn(requestId);
   } catch (_) {
     return null;
   }
+}
+
+Future<void> markRentRequestRead(int requestId) async {
+  try {
+    await AppConfig.apiClient.markRentRequestRead(requestId);
+  } catch (_) {}
 }

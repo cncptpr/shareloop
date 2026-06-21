@@ -82,7 +82,7 @@ pub type EditItemImagesResponse {
 }
 
 pub type CreateRentRequestResponse {
-  CreateRentRequestResponseCreated(types.RentRequest)
+  CreateRentRequestResponseCreated(types.RentRequestDetail)
   CreateRentRequestResponseUnauthorized
   CreateRentRequestResponseInternalServerError
 }
@@ -96,20 +96,20 @@ pub type AcceptOfferResponse {
 }
 
 pub type GetRentRequestsResponse {
-  GetRentRequestsResponseOk(List(types.RentRequest))
+  GetRentRequestsResponseOk(List(types.RentRequestOverview))
   GetRentRequestsResponseUnauthorized
   GetRentRequestsResponseInternalServerError
 }
 
 pub type GetRentRequestResponse {
-  GetRentRequestResponseOk(types.RentRequest)
+  GetRentRequestResponseOk(types.RentRequestDetail)
   GetRentRequestResponseUnauthorized
   GetRentRequestResponseNotFound
   GetRentRequestResponseInternalServerError
 }
 
 pub type ConfirmBorrowResponse {
-  ConfirmBorrowResponseOk(types.RentRequest)
+  ConfirmBorrowResponseOk(types.RentRequestDetail)
   ConfirmBorrowResponseUnauthorized
   ConfirmBorrowResponseForbidden
   ConfirmBorrowResponseNotFound
@@ -117,11 +117,18 @@ pub type ConfirmBorrowResponse {
 }
 
 pub type ConfirmReturnResponse {
-  ConfirmReturnResponseOk(types.RentRequest)
+  ConfirmReturnResponseOk(types.RentRequestDetail)
   ConfirmReturnResponseUnauthorized
   ConfirmReturnResponseForbidden
   ConfirmReturnResponseNotFound
   ConfirmReturnResponseInternalServerError
+}
+
+pub type MarkRentRequestReadResponse {
+  MarkRentRequestReadResponseNoContent
+  MarkRentRequestReadResponseUnauthorized
+  MarkRentRequestReadResponseNotFound
+  MarkRentRequestReadResponseInternalServerError
 }
 
 pub type SendMessageResponse {

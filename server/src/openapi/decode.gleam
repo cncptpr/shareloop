@@ -500,7 +500,7 @@ pub fn decode_rent_offer_list(
   json.parse(json_string, rent_offer_decoder_list())
 }
 
-pub fn rent_request_decoder() -> decode.Decoder(types.RentRequest) {
+pub fn rent_request_detail_decoder() -> decode.Decoder(types.RentRequestDetail) {
   use borrow_confirmed_at <- decode.optional_field(
     "borrowConfirmedAt",
     option.None,
@@ -510,11 +510,7 @@ pub fn rent_request_decoder() -> decode.Decoder(types.RentRequest) {
   use id <- decode.field("id", decode.int)
   use item_id <- decode.field("itemId", decode.int)
   use item_title <- decode.field("itemTitle", decode.string)
-  use last_read <- decode.optional_field(
-    "lastRead",
-    option.None,
-    decode.optional(decode.string),
-  )
+  use last_read <- decode.field("lastRead", decode.string)
   use latest_accepted_offer_id <- decode.optional_field(
     "latestAcceptedOfferId",
     option.None,
@@ -525,16 +521,8 @@ pub fn rent_request_decoder() -> decode.Decoder(types.RentRequest) {
     option.None,
     decode.optional(decode.int),
   )
-  use messages <- decode.optional_field(
-    "messages",
-    option.None,
-    decode.optional(decode.list(message_decoder())),
-  )
-  use offers <- decode.optional_field(
-    "offers",
-    option.None,
-    decode.optional(decode.list(rent_offer_decoder())),
-  )
+  use messages <- decode.field("messages", decode.list(message_decoder()))
+  use offers <- decode.field("offers", decode.list(rent_offer_decoder()))
   use owner_id <- decode.field("ownerId", decode.int)
   use owner_name <- decode.field("ownerName", decode.string)
   use requester <- decode.field("requester", person_decoder())
@@ -544,7 +532,7 @@ pub fn rent_request_decoder() -> decode.Decoder(types.RentRequest) {
     decode.optional(decode.string),
   )
   use updated_at <- decode.field("updatedAt", decode.string)
-  decode.success(types.RentRequest(
+  decode.success(types.RentRequestDetail(
     borrow_confirmed_at: borrow_confirmed_at,
     created_at: created_at,
     id: id,
@@ -563,20 +551,89 @@ pub fn rent_request_decoder() -> decode.Decoder(types.RentRequest) {
   ))
 }
 
-pub fn decode_rent_request(
+pub fn decode_rent_request_detail(
   json_string: String,
-) -> Result(types.RentRequest, json.DecodeError) {
-  json.parse(json_string, rent_request_decoder())
+) -> Result(types.RentRequestDetail, json.DecodeError) {
+  json.parse(json_string, rent_request_detail_decoder())
 }
 
-pub fn rent_request_decoder_list() -> decode.Decoder(List(types.RentRequest)) {
-  decode.list(rent_request_decoder())
+pub fn rent_request_detail_decoder_list() -> decode.Decoder(
+  List(types.RentRequestDetail),
+) {
+  decode.list(rent_request_detail_decoder())
 }
 
-pub fn decode_rent_request_list(
+pub fn decode_rent_request_detail_list(
   json_string: String,
-) -> Result(List(types.RentRequest), json.DecodeError) {
-  json.parse(json_string, rent_request_decoder_list())
+) -> Result(List(types.RentRequestDetail), json.DecodeError) {
+  json.parse(json_string, rent_request_detail_decoder_list())
+}
+
+pub fn rent_request_overview_decoder() -> decode.Decoder(
+  types.RentRequestOverview,
+) {
+  use borrow_confirmed_at <- decode.optional_field(
+    "borrowConfirmedAt",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use created_at <- decode.field("createdAt", decode.string)
+  use id <- decode.field("id", decode.int)
+  use item_id <- decode.field("itemId", decode.int)
+  use item_title <- decode.field("itemTitle", decode.string)
+  use latest_accepted_offer_id <- decode.optional_field(
+    "latestAcceptedOfferId",
+    option.None,
+    decode.optional(decode.int),
+  )
+  use latest_open_offer_id <- decode.optional_field(
+    "latestOpenOfferId",
+    option.None,
+    decode.optional(decode.int),
+  )
+  use owner_id <- decode.field("ownerId", decode.int)
+  use owner_name <- decode.field("ownerName", decode.string)
+  use requester <- decode.field("requester", person_decoder())
+  use returned_at <- decode.optional_field(
+    "returnedAt",
+    option.None,
+    decode.optional(decode.string),
+  )
+  use unread_count <- decode.field("unreadCount", decode.int)
+  use updated_at <- decode.field("updatedAt", decode.string)
+  decode.success(types.RentRequestOverview(
+    borrow_confirmed_at: borrow_confirmed_at,
+    created_at: created_at,
+    id: id,
+    item_id: item_id,
+    item_title: item_title,
+    latest_accepted_offer_id: latest_accepted_offer_id,
+    latest_open_offer_id: latest_open_offer_id,
+    owner_id: owner_id,
+    owner_name: owner_name,
+    requester: requester,
+    returned_at: returned_at,
+    unread_count: unread_count,
+    updated_at: updated_at,
+  ))
+}
+
+pub fn decode_rent_request_overview(
+  json_string: String,
+) -> Result(types.RentRequestOverview, json.DecodeError) {
+  json.parse(json_string, rent_request_overview_decoder())
+}
+
+pub fn rent_request_overview_decoder_list() -> decode.Decoder(
+  List(types.RentRequestOverview),
+) {
+  decode.list(rent_request_overview_decoder())
+}
+
+pub fn decode_rent_request_overview_list(
+  json_string: String,
+) -> Result(List(types.RentRequestOverview), json.DecodeError) {
+  json.parse(json_string, rent_request_overview_decoder_list())
 }
 
 pub fn reorder_entry_decoder() -> decode.Decoder(types.ReorderEntry) {
@@ -769,13 +826,13 @@ pub fn decode_get_image_response_ok(
 }
 
 pub fn get_rent_requests_response_ok_decoder() -> decode.Decoder(
-  List(types.RentRequest),
+  List(types.RentRequestOverview),
 ) {
-  decode.list(rent_request_decoder())
+  decode.list(rent_request_overview_decoder())
 }
 
 pub fn decode_get_rent_requests_response_ok(
   json_string: String,
-) -> Result(List(types.RentRequest), json.DecodeError) {
+) -> Result(List(types.RentRequestOverview), json.DecodeError) {
   json.parse(json_string, get_rent_requests_response_ok_decoder())
 }

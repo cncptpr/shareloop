@@ -24,6 +24,7 @@ Method | HTTP request | Description
 [**getRentRequests**](DefaultApi.md#getrentrequests) | **GET** /rent-requests | List rent requests for current user
 [**login**](DefaultApi.md#login) | **POST** /auth/login | Login
 [**logout**](DefaultApi.md#logout) | **POST** /auth/logout | Logout
+[**markRentRequestRead**](DefaultApi.md#markrentrequestread) | **POST** /rent-requests/{requestId}/mark-read | Mark a rent request as read
 [**refresh**](DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
 [**sendMessage**](DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
 [**updateItem**](DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
@@ -79,7 +80,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **confirmBorrow**
-> RentRequest confirmBorrow(requestId)
+> RentRequestDetail confirmBorrow(requestId)
 
 Confirm that borrowing happened
 
@@ -112,7 +113,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**RentRequest**](RentRequest.md)
+[**RentRequestDetail**](RentRequestDetail.md)
 
 ### Authorization
 
@@ -126,7 +127,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **confirmReturn**
-> RentRequest confirmReturn(requestId)
+> RentRequestDetail confirmReturn(requestId)
 
 Confirm item was returned
 
@@ -159,7 +160,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**RentRequest**](RentRequest.md)
+[**RentRequestDetail**](RentRequestDetail.md)
 
 ### Authorization
 
@@ -271,7 +272,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **createRentRequest**
-> RentRequest createRentRequest(itemId)
+> RentRequestDetail createRentRequest(itemId)
 
 Create or get existing open rent request
 
@@ -304,7 +305,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**RentRequest**](RentRequest.md)
+[**RentRequestDetail**](RentRequestDetail.md)
 
 ### Authorization
 
@@ -542,7 +543,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **getRentRequest**
-> RentRequest getRentRequest(requestId)
+> RentRequestDetail getRentRequest(requestId)
 
 Get a single rent request with messages and offers
 
@@ -575,7 +576,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**RentRequest**](RentRequest.md)
+[**RentRequestDetail**](RentRequestDetail.md)
 
 ### Authorization
 
@@ -589,7 +590,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **getRentRequests**
-> List<RentRequest> getRentRequests()
+> List<RentRequestOverview> getRentRequests()
 
 List rent requests for current user
 
@@ -618,7 +619,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**List<RentRequest>**](RentRequest.md)
+[**List<RentRequestOverview>**](RentRequestOverview.md)
 
 ### Authorization
 
@@ -698,6 +699,52 @@ try {
 
 ### Parameters
 This endpoint does not need any parameter.
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **markRentRequestRead**
+> markRentRequestRead(requestId)
+
+Mark a rent request as read
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final requestId = 56; // int | 
+
+try {
+    api_instance.markRentRequestRead(requestId);
+} catch (e) {
+    print('Exception when calling DefaultApi->markRentRequestRead: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **requestId** | **int**|  | 
 
 ### Return type
 

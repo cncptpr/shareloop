@@ -555,15 +555,15 @@ pub fn get_rent_request(
             renting.get_offers(state.conn, req.request_id, user.id)
 
           let messages = case messages_result {
-            Ok(msgs) -> Some(msgs)
-            _ -> Some([])
+            Ok(msgs) -> msgs
+            _ -> []
           }
           let offers = case offers_result {
-            Ok(ofs) -> Some(ofs)
-            _ -> Some([])
+            Ok(ofs) -> ofs
+            _ -> []
           }
           response_types.GetRentRequestResponseOk(
-            types.RentRequest(..request, messages: messages, offers: offers),
+            types.RentRequestDetail(..request, messages: messages, offers: offers),
           )
         }
         Error(_) -> response_types.GetRentRequestResponseNotFound
@@ -677,7 +677,7 @@ pub fn confirm_borrow(
               req.request_id,
               user.id,
               "borrow.confirmed",
-              openapi_encode.encode_rent_request_json(request),
+              openapi_encode.encode_rent_request_detail_json(request),
             )
           response_types.ConfirmBorrowResponseOk(request)
         }
@@ -702,11 +702,30 @@ pub fn confirm_return(
               req.request_id,
               user.id,
               "return.confirmed",
-              openapi_encode.encode_rent_request_json(request),
+              openapi_encode.encode_rent_request_detail_json(request),
             )
           response_types.ConfirmReturnResponseOk(request)
         }
         Error(_) -> response_types.ConfirmReturnResponseForbidden
+      }
+    }
+  }
+}
+
+pub fn mark_rent_request_read(
+  state: State,
+  req: request_types.MarkRentRequestReadRequest,
+) -> response_types.MarkRentRequestReadResponse {
+  case verify_auth(state) {
+    Error(_) -> response_types.MarkRentRequestReadResponseUnauthorized
+    Ok(user) -> {
+      case renting.mark_rent_request_read(
+        state.conn,
+        req.request_id,
+        user.id,
+      ) {
+        Ok(_) -> response_types.MarkRentRequestReadResponseNoContent
+        Error(_) -> response_types.MarkRentRequestReadResponseNotFound
       }
     }
   }

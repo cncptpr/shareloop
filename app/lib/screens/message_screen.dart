@@ -92,7 +92,7 @@ class _MessageScreenState extends ConsumerState<MessageScreen> {
     );
   }
 
-  Widget _requestTile(RentRequest req, int userId) {
+  Widget _requestTile(RentRequestOverview req, int userId) {
     final otherName =
         req.requester.id == userId ? req.ownerName : req.requester.name;
     final subtitle = _statusText(req);
@@ -103,14 +103,35 @@ class _MessageScreenState extends ConsumerState<MessageScreen> {
       ),
       title: Text(req.itemTitle),
       subtitle: Text('$otherName · $subtitle'),
-      trailing: const Icon(Icons.chevron_right),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (req.unreadCount > 0)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '${req.unreadCount}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          const SizedBox(width: 4),
+          const Icon(Icons.chevron_right),
+        ],
+      ),
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => RentRequestChatScreen.existing(
               requestId: req.id,
-              rentRequest: req,
             ),
           ),
         );
@@ -141,7 +162,7 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-String _statusText(RentRequest req) {
+String _statusText(RentRequestOverview req) {
   if (req.returnedAt != null) return 'Rückgabe bestätigt · Abgeschlossen';
   if (req.borrowConfirmedAt != null) return 'Ausgeliehen';
   if (req.latestAcceptedOfferId != null) return 'Angebot akzeptiert';

@@ -426,7 +426,7 @@ pub fn route(
               ServerResponse(
                 status: 201,
                 body: TextBody(
-                  json.to_string(encode.encode_rent_request_json(data)),
+                  json.to_string(encode.encode_rent_request_detail_json(data)),
                 ),
                 headers: [#("content-type", "application/json")],
               )
@@ -489,7 +489,7 @@ pub fn route(
             status: 200,
             body: TextBody(
               json.to_string(fn(items) {
-                json.array(items, encode.encode_rent_request_json)
+                json.array(items, encode.encode_rent_request_overview_json)
               }(data)),
             ),
             headers: [#("content-type", "application/json")],
@@ -511,7 +511,7 @@ pub fn route(
               ServerResponse(
                 status: 200,
                 body: TextBody(
-                  json.to_string(encode.encode_rent_request_json(data)),
+                  json.to_string(encode.encode_rent_request_detail_json(data)),
                 ),
                 headers: [#("content-type", "application/json")],
               )
@@ -544,7 +544,7 @@ pub fn route(
               ServerResponse(
                 status: 200,
                 body: TextBody(
-                  json.to_string(encode.encode_rent_request_json(data)),
+                  json.to_string(encode.encode_rent_request_detail_json(data)),
                 ),
                 headers: [#("content-type", "application/json")],
               )
@@ -579,7 +579,7 @@ pub fn route(
               ServerResponse(
                 status: 200,
                 body: TextBody(
-                  json.to_string(encode.encode_rent_request_json(data)),
+                  json.to_string(encode.encode_rent_request_detail_json(data)),
                 ),
                 headers: [#("content-type", "application/json")],
               )
@@ -590,6 +590,36 @@ pub fn route(
             response_types.ConfirmReturnResponseNotFound ->
               ServerResponse(status: 404, body: EmptyBody, headers: [])
             response_types.ConfirmReturnResponseInternalServerError ->
+              ServerResponse(status: 500, body: EmptyBody, headers: [])
+          }
+        }
+        Error(_) ->
+          ServerResponse(
+            status: 400,
+            body: TextBody(
+              "{\"type\":\"about:blank\",\"title\":\"invalid path parameter\"}",
+            ),
+            headers: [#("content-type", "application/problem+json")],
+          )
+      }
+    }
+    "POST", ["rent-requests", request_id, "mark-read"] -> {
+      case int.parse(request_id) {
+        Ok(request_id_parsed) -> {
+          let request =
+            request_types.MarkRentRequestReadRequest(
+              request_id: request_id_parsed,
+            )
+          let response =
+            handlers_generated.mark_rent_request_read(app_state, request)
+          case response {
+            response_types.MarkRentRequestReadResponseNoContent ->
+              ServerResponse(status: 204, body: EmptyBody, headers: [])
+            response_types.MarkRentRequestReadResponseUnauthorized ->
+              ServerResponse(status: 401, body: EmptyBody, headers: [])
+            response_types.MarkRentRequestReadResponseNotFound ->
+              ServerResponse(status: 404, body: EmptyBody, headers: [])
+            response_types.MarkRentRequestReadResponseInternalServerError ->
               ServerResponse(status: 500, body: EmptyBody, headers: [])
           }
         }

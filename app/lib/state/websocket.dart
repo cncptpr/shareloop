@@ -86,8 +86,6 @@ class WebSocketService {
       if (type == null || requestId == null) return;
 
       print('[ws] Received update: $type for request $requestId');
-      _ref.invalidate(messagesProvider(requestId));
-      _ref.invalidate(offersProvider(requestId));
       _ref.invalidate(rentRequestProvider(requestId));
       _ref.invalidate(myRentRequestsProvider);
     } catch (_) {

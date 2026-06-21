@@ -23,22 +23,6 @@ final rentRequestProvider =
   },
 );
 
-final messagesProvider =
-    FutureProvider.autoDispose.family<List<Message>, int>(
-  (ref, requestId) async {
-    final request = ref.watch(rentRequestProvider(requestId)).value;
-    return request?.messages ?? [];
-  },
-);
-
-final offersProvider =
-    FutureProvider.autoDispose.family<List<RentOffer>, int>(
-  (ref, requestId) async {
-    final request = ref.watch(rentRequestProvider(requestId)).value;
-    return request?.offers ?? [];
-  },
-);
-
 Future<RentRequestDetail?> createRentRequest(int itemId) async {
   try {
     return await AppConfig.apiClient.createRentRequest(itemId);

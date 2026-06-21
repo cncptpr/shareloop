@@ -36,7 +36,7 @@ class _RentRequestChatScreenState
   bool _creatingRequest = false;
   bool _showScrollToBottom = false;
   bool _didInitialScroll = false;
-  bool _didMarkRead = false;
+  int _lastMessageCount = 0;
 
   @override
   void initState() {
@@ -109,7 +109,7 @@ class _RentRequestChatScreenState
 
     _messageController.clear();
     await sendMessage(_requestId!, text);
-    ref.invalidate(messagesProvider(_requestId!));
+    ref.invalidate(rentRequestProvider(_requestId!));
     _scrollToBottom();
   }
 
@@ -118,6 +118,7 @@ class _RentRequestChatScreenState
       await _ensureRequestCreated();
     }
     if (_requestId == null) return;
+    if (!mounted) return;
 
     final dates = await showDateRangePicker(
       context: context,
@@ -126,7 +127,6 @@ class _RentRequestChatScreenState
     );
     if (dates == null) return;
     await createOffer(_requestId!, dates.start, dates.end);
-    ref.invalidate(offersProvider(_requestId!));
     ref.invalidate(rentRequestProvider(_requestId!));
     ref.invalidate(myRentRequestsProvider);
     _scrollToBottom();
@@ -134,7 +134,9 @@ class _RentRequestChatScreenState
 
   Future<void> _acceptOffer(int offerId) async {
     if (_requestId == null) return;
-    final offers = ref.read(offersProvider(_requestId!)).value ?? [];
+    final request =
+        ref.read(rentRequestProvider(_requestId!)).value ?? widget.rentRequest;
+    final offers = request?.offers ?? [];
     final offer = offers.firstWhere((o) => o.id == offerId);
 
     final confirmed = await showDialog<bool>(
@@ -168,7 +170,6 @@ class _RentRequestChatScreenState
     if (confirmed != true) return;
 
     await acceptOffer(offerId);
-    ref.invalidate(offersProvider(_requestId!));
     ref.invalidate(rentRequestProvider(_requestId!));
     ref.invalidate(myRentRequestsProvider);
   }
@@ -177,12 +178,12 @@ class _RentRequestChatScreenState
     if (_requestId == null) return;
     final request =
         ref.read(rentRequestProvider(_requestId!)).value ?? widget.rentRequest;
-    final offers = ref.read(offersProvider(_requestId!)).value ?? [];
+    final offers = request?.offers ?? [];
     final acceptedOffer = request?.latestAcceptedOfferId != null
         ? offers.cast<RentOffer?>().firstWhere(
               (o) => o?.id == request?.latestAcceptedOfferId,
               orElse: () => null,
-            )
+          )
         : null;
 
     final now = DateTime.now();
@@ -247,12 +248,12 @@ class _RentRequestChatScreenState
     if (_requestId == null) return;
     final request =
         ref.read(rentRequestProvider(_requestId!)).value ?? widget.rentRequest;
-    final offers = ref.read(offersProvider(_requestId!)).value ?? [];
+    final offers = request?.offers ?? [];
     final acceptedOffer = request?.latestAcceptedOfferId != null
         ? offers.cast<RentOffer?>().firstWhere(
               (o) => o?.id == request?.latestAcceptedOfferId,
               orElse: () => null,
-            )
+          )
         : null;
 
     final now = DateTime.now();
@@ -323,12 +324,6 @@ class _RentRequestChatScreenState
 
   @override
   Widget build(BuildContext context) {
-    final asyncMessages = _requestId != null
-        ? ref.watch(messagesProvider(_requestId!))
-        : const AsyncData<List<Message>>([]);
-    final asyncOffers = _requestId != null
-        ? ref.watch(offersProvider(_requestId!))
-        : const AsyncData<List<RentOffer>>([]);
     final asyncUser = ref.watch(authProvider);
 
     ref.listen(authProvider, (prev, next) {
@@ -344,8 +339,9 @@ class _RentRequestChatScreenState
         : const AsyncData<RentRequestDetail?>(null);
 
     if (_requestId != null && asyncRequest.hasValue && asyncRequest.value == null) {
+      final navigator = Navigator.of(context);
       Future.microtask(() {
-        if (mounted) Navigator.of(context).pop();
+        if (mounted) navigator.pop();
       });
     }
 
@@ -353,8 +349,8 @@ class _RentRequestChatScreenState
     final userId = asyncUser.value?.id;
     final isOwner = userId != null && request?.ownerId == userId;
     final isRequester = userId != null && request?.requester.id == userId;
-    final messages = asyncMessages.value ?? [];
-    final offers = asyncOffers.value ?? [];
+    final messages = asyncRequest.value?.messages ?? [];
+    final offers = asyncRequest.value?.offers ?? [];
 
     final hasAcceptedOffer = request?.latestAcceptedOfferId != null;
     final isBorrowed = request?.borrowConfirmedAt != null;
@@ -367,8 +363,9 @@ class _RentRequestChatScreenState
     }
 
     if (_requestId != null && asyncRequest.hasValue &&
-        asyncRequest.value != null && !_didMarkRead) {
-      _didMarkRead = true;
+        asyncRequest.value != null &&
+        messages.length > _lastMessageCount) {
+      _lastMessageCount = messages.length;
       Future.microtask(() {
         markRentRequestRead(_requestId!).then((_) {
           ref.invalidate(myRentRequestsProvider);

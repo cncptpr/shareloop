@@ -119,6 +119,14 @@ fn seed_rent_data(
     sql.update_rent_request_latest_open(conn, oa.id, req_a.id)
     |> result.map_error(fn(_) { "A: update_latest_open" }),
   )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_a.id, carl.id)
+    |> result.map_error(fn(_) { "A: mark_read carl" }),
+  )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_a.id, timon.id)
+    |> result.map_error(fn(_) { "A: mark_read timon" }),
+  )
 
   // ──────────────────────────────────────────────
   // B: Dev → Auto (Carl) — CLOSED (returned), 1 offer
@@ -182,6 +190,14 @@ fn seed_rent_data(
   use _ <- result.try(
     sql.create_message(conn, req_b.id, dev_user.id, "Alles gut zurückgegeben, danke!")
     |> result.map_error(fn(_) { "B: msg 6" }),
+  )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_b.id, dev_user.id)
+    |> result.map_error(fn(_) { "B: mark_read dev" }),
+  )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_b.id, carl.id)
+    |> result.map_error(fn(_) { "B: mark_read carl" }),
   )
 
   // ──────────────────────────────────────────────
@@ -266,6 +282,10 @@ fn seed_rent_data(
     sql.create_message(conn, req_c.id, timon.id, "Gerne, bis Freitag!")
     |> result.map_error(fn(_) { "C: msg 11" }),
   )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_c.id, timon.id)
+    |> result.map_error(fn(_) { "C: mark_read timon" }),
+  )
 
   // ──────────────────────────────────────────────
   // D: Dev → Fahrrad (Carl) — OPEN, ~6 msgs, no offer
@@ -300,6 +320,14 @@ fn seed_rent_data(
   use _ <- result.try(
     sql.create_message(conn, req_d.id, carl.id, "Passt, bis Samstag!")
     |> result.map_error(fn(_) { "D: msg 6" }),
+  )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_d.id, dev_user.id)
+    |> result.map_error(fn(_) { "D: mark_read dev" }),
+  )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_d.id, carl.id)
+    |> result.map_error(fn(_) { "D: mark_read carl" }),
   )
 
   // ──────────────────────────────────────────────
@@ -382,6 +410,10 @@ fn seed_rent_data(
     sql.create_message(conn, req_e.id, dev_user.id, "Gerne, viel Erfolg mit dem Projekt!")
     |> result.map_error(fn(_) { "E: msg 11" }),
   )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_e.id, carl.id)
+    |> result.map_error(fn(_) { "E: mark_read carl" }),
+  )
 
   // ──────────────────────────────────────────────
   // F: Timon → Inserat 1 (Dev) — OPEN, ~6 msgs, no offer yet
@@ -412,6 +444,14 @@ fn seed_rent_data(
   use _ <- result.try(
     sql.create_message(conn, req_f.id, timon.id, "Super, danke!")
     |> result.map_error(fn(_) { "F: msg 5" }),
+  )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_f.id, dev_user.id)
+    |> result.map_error(fn(_) { "F: mark_read dev" }),
+  )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_f.id, timon.id)
+    |> result.map_error(fn(_) { "F: mark_read timon" }),
   )
 
   // ──────────────────────────────────────────────
@@ -488,6 +528,14 @@ fn seed_rent_data(
   use _ <- result.try(
     sql.create_message(conn, req_g.id, dev_user.id, "Alles gut erhalten, danke!")
     |> result.map_error(fn(_) { "G: msg 9" }),
+  )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_g.id, dev_user.id)
+    |> result.map_error(fn(_) { "G: mark_read dev" }),
+  )
+  use _ <- result.try(
+    sql.mark_rent_request_read(conn, req_g.id, carl.id)
+    |> result.map_error(fn(_) { "G: mark_read carl" }),
   )
 
   Ok(Nil)

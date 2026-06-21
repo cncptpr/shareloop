@@ -7,6 +7,9 @@ Not all of these TODOs need to be done for the finished project.
 
 ## Big Features
 > Must do-s
+- [ ] Theming
+- [ ] Availability Calendar
+- [ ] Feedback & Rating
 - [ ] Registration
 - [ ] Propper profile screen
 - [ ] View a list of your own items

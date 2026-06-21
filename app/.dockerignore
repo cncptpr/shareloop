@@ -1,0 +1,4 @@
+.dart_tool/
+build/
+*.bak
+gen/api/.openapi-generator/

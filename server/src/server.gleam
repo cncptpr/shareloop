@@ -17,7 +17,7 @@ import mist
 import openapi/handlers
 import openapi/router
 import server/auth
-import server/consts
+import server/config
 import server/db
 import server/migration
 import server/notifications
@@ -32,7 +32,7 @@ pub fn main() {
   let assert Ok(_) = migration.run_all()
   io.println("Migrations applied")
 
-  let assert Ok(_) = simplifile.create_directory_all(consts.image_upload_dir)
+  let assert Ok(_) = simplifile.create_directory_all(config.image_upload_dir())
   io.println("Uploads directory ensured")
 
   let registry = notifications.start_registry()
@@ -229,7 +229,7 @@ fn handle_image_get(
             Error(_) -> respond_error(404)
             Ok(row) -> {
               let ext = mime_to_ext(row.mime_type)
-              let filepath = "uploads/" <> raw_image_id <> "." <> ext
+              let filepath = config.image_upload_dir() <> "/" <> raw_image_id <> "." <> ext
 
               case mist.send_file(filepath, offset: 0, limit: None) {
                 Error(_) -> respond_error(500)
@@ -264,7 +264,7 @@ fn route_via_oaspec(
 ) -> response.Response(mist.ResponseData) {
   let bearer_token = extract_bearer_token(req.headers)
 
-  let body_str = case mist.read_body(req, consts.max_upload_limit()) {
+  let body_str = case mist.read_body(req, config.max_upload_limit()) {
     Error(_) -> ""
     Ok(r) -> bit_array.to_string(r.body) |> result.unwrap("")
   }

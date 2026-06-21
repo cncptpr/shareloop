@@ -6,7 +6,7 @@ import gleam/string
 import gleam/time/timestamp.{type Timestamp}
 import pog
 import server/auth
-import server/consts
+import server/config
 import server/db
 import server/migration
 import server/sql
@@ -970,7 +970,7 @@ fn seed_image(
 
   let image_uuid = uuid.v4()
   let uuid_string = uuid.to_string(image_uuid)
-  let dest_path = "uploads/" <> uuid_string <> "." <> ext
+  let dest_path = config.image_upload_dir() <> "/" <> uuid_string <> "." <> ext
 
   use _ <- result.try(
     simplifile.write_bits(dest_path, bytes)
@@ -1061,7 +1061,7 @@ fn clear_all(conn: pog.Connection) -> Result(Nil, String) {
   })
   use _ <- try_map(sql.delete_all_users(conn), fn(_) { "Failed to clear users" })
   let images =
-    consts.image_upload_dir
+    config.image_upload_dir()
     |> simplifile.read_directory
     |> result.unwrap([])
   use _ <- try_map(simplifile.delete_all(images), fn(_) {

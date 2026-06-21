@@ -14,6 +14,7 @@ import openapi/response_types
 import openapi/types
 import pog
 import server/auth
+import server/config
 import server/featured_items
 import server/notifications
 import server/renting
@@ -339,7 +340,7 @@ pub fn upload_item_image(
           let #(ext, mime) = detect_ext_and_mime(body.filename)
           let image_uuid = uuid.v4()
           let uuid_string = uuid.to_string(image_uuid)
-          let filepath = "uploads/" <> uuid_string <> "." <> ext
+          let filepath = config.image_upload_dir() <> "/" <> uuid_string <> "." <> ext
 
           case verify_item_owner(state.conn, req.item_id, user.id) {
             Error(_) -> response_types.UploadItemImageResponseForbidden
@@ -467,7 +468,7 @@ fn delete_image_file(
         [] -> Nil
         [row, ..] -> {
           let ext = detect_ext(row.original_name)
-          let filepath = "uploads/" <> uuid_string <> "." <> ext
+          let filepath = config.image_upload_dir() <> "/" <> uuid_string <> "." <> ext
           let _ = simplifile.delete_file(filepath)
           Nil
         }

@@ -2,6 +2,7 @@ FROM instrumentisto/flutter:3.41.6 AS build
 
 WORKDIR /app
 COPY --chown=1000:1000 . .
+RUN chown 1000:1000 /app
 
 USER 1000
 RUN flutter pub get && flutter build web --release

@@ -1,21 +1,21 @@
-import gleam/dynamic/decode
-import gleam/int
-import gleam/json
-import openapi/handlers
-import openapi/router
 import gleam/bit_array
 import gleam/bytes_tree
 import gleam/dict
+import gleam/dynamic/decode
 import gleam/erlang/process
 import gleam/http
 import gleam/http/request
 import gleam/http/response
+import gleam/int
 import gleam/io
+import gleam/json
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/string
 import mist
+import openapi/handlers
+import openapi/router
 import server/auth
 import server/consts
 import server/db
@@ -32,7 +32,7 @@ pub fn main() {
   let assert Ok(_) = migration.run_all()
   io.println("Migrations applied")
 
-  let assert Ok(_) = simplifile.create_directory_all("uploads")
+  let assert Ok(_) = simplifile.create_directory_all(consts.image_upload_dir)
   io.println("Uploads directory ensured")
 
   let registry = notifications.start_registry()
@@ -76,11 +76,12 @@ fn handle_websocket(
     req,
     on_init: fn(_ws_conn) {
       let subject = process.new_subject()
-      let state = notifications.WsState(
-        authenticated: False,
-        user_id: None,
-        notify_subject: Some(subject),
-      )
+      let state =
+        notifications.WsState(
+          authenticated: False,
+          user_id: None,
+          notify_subject: Some(subject),
+        )
       let _ = process.send_after(subject, 5000, notifications.AuthTimeout)
       let selector = process.new_selector() |> process.select(for: subject)
       #(state, Some(selector))
@@ -97,10 +98,7 @@ fn handle_websocket(
     on_close: fn(state) {
       case state.user_id, state.notify_subject {
         Some(uid), Some(subj) ->
-          process.send(
-            registry,
-            notifications.Unregister(uid, subj),
-          )
+          process.send(registry, notifications.Unregister(uid, subj))
         _, _ -> Nil
       }
     },
@@ -124,32 +122,43 @@ fn handle_ws_text(
       case result {
         Error(_) -> {
           let _ = io.println("[ws] Invalid auth message")
-          let _ = mist.send_text_frame(ws_conn, "{\"type\":\"auth\",\"status\":\"error\"}")
+          let _ =
+            mist.send_text_frame(
+              ws_conn,
+              "{\"type\":\"auth\",\"status\":\"error\"}",
+            )
           mist.stop_abnormal("Auth failed")
         }
         Ok(token) -> {
           case auth.verify_token(conn, token) {
             Error(_) -> {
               let _ = io.println("[ws] Invalid token")
-              let _ = mist.send_text_frame(ws_conn, "{\"type\":\"auth\",\"status\":\"error\"}")
+              let _ =
+                mist.send_text_frame(
+                  ws_conn,
+                  "{\"type\":\"auth\",\"status\":\"error\"}",
+                )
               mist.stop_abnormal("Auth failed")
             }
             Ok(user) -> {
-              let auth_state = notifications.WsState(
-                ..state,
-                authenticated: True,
-                user_id: Some(user.id),
-              )
+              let auth_state =
+                notifications.WsState(
+                  ..state,
+                  authenticated: True,
+                  user_id: Some(user.id),
+                )
               case auth_state.notify_subject {
                 Some(subj) ->
-                  process.send(
-                    registry,
-                    notifications.Register(user.id, subj),
-                  )
+                  process.send(registry, notifications.Register(user.id, subj))
                 None -> Nil
               }
-              let _ = io.println("[ws] Authenticated user " <> int.to_string(user.id))
-              let _ = mist.send_text_frame(ws_conn, "{\"type\":\"auth\",\"status\":\"ok\"}")
+              let _ =
+                io.println("[ws] Authenticated user " <> int.to_string(user.id))
+              let _ =
+                mist.send_text_frame(
+                  ws_conn,
+                  "{\"type\":\"auth\",\"status\":\"ok\"}",
+                )
               mist.continue(auth_state)
             }
           }
@@ -181,7 +190,11 @@ fn handle_ws_custom(
       case state.authenticated {
         False -> {
           let _ = io.println("[ws] Auth timeout, closing")
-          let _ = mist.send_text_frame(ws_conn, "{\"type\":\"auth\",\"status\":\"timeout\"}")
+          let _ =
+            mist.send_text_frame(
+              ws_conn,
+              "{\"type\":\"auth\",\"status\":\"timeout\"}",
+            )
           mist.stop_abnormal("Auth timeout")
         }
         True -> mist.continue(state)
@@ -267,19 +280,21 @@ fn route_via_oaspec(
           case auth.verify_token(conn, token) {
             Error(_) -> respond_error(401)
             Ok(_user) -> {
-              let app_state = handlers.State(
-                conn: conn,
-                bearer_token: Some(token),
-                registry: registry,
-              )
-              let serv_resp = router.route(
-                app_state,
-                method,
-                segments,
-                dict.from_list([]),
-                headers_dict,
-                body_str,
-              )
+              let app_state =
+                handlers.State(
+                  conn: conn,
+                  bearer_token: Some(token),
+                  registry: registry,
+                )
+              let serv_resp =
+                router.route(
+                  app_state,
+                  method,
+                  segments,
+                  dict.from_list([]),
+                  headers_dict,
+                  body_str,
+                )
               to_mist_response(serv_resp)
             }
           }
@@ -287,19 +302,21 @@ fn route_via_oaspec(
       }
     }
     False -> {
-      let app_state = handlers.State(
-        conn: conn,
-        bearer_token: bearer_token,
-        registry: registry,
-      )
-      let serv_resp = router.route(
-        app_state,
-        method,
-        segments,
-        dict.from_list([]),
-        headers_dict,
-        body_str,
-      )
+      let app_state =
+        handlers.State(
+          conn: conn,
+          bearer_token: bearer_token,
+          registry: registry,
+        )
+      let serv_resp =
+        router.route(
+          app_state,
+          method,
+          segments,
+          dict.from_list([]),
+          headers_dict,
+          body_str,
+        )
       to_mist_response(serv_resp)
     }
   }
@@ -323,9 +340,7 @@ fn route_is_protected(method: String, segments: List(String)) -> Bool {
   }
 }
 
-fn extract_bearer_token(
-  headers: List(#(String, String)),
-) -> Option(String) {
+fn extract_bearer_token(headers: List(#(String, String))) -> Option(String) {
   let auth_value = do_find_auth_header(headers)
 
   case auth_value {
@@ -340,9 +355,7 @@ fn extract_bearer_token(
   }
 }
 
-fn do_find_auth_header(
-  headers: List(#(String, String)),
-) -> Option(String) {
+fn do_find_auth_header(headers: List(#(String, String))) -> Option(String) {
   case headers {
     [] -> None
     [first, ..rest] -> {
@@ -361,8 +374,12 @@ fn decode_auth_message(text: String) -> Result(String, Nil) {
     json.parse(text, using: decode.dict(decode.string, decode.string))
     |> result.map_error(fn(_) { Nil }),
   )
-  use raw_type <- result.try(dict.get(obj, "type") |> result.map_error(fn(_) { Nil }))
-  use raw_token <- result.try(dict.get(obj, "token") |> result.map_error(fn(_) { Nil }))
+  use raw_type <- result.try(
+    dict.get(obj, "type") |> result.map_error(fn(_) { Nil }),
+  )
+  use raw_token <- result.try(
+    dict.get(obj, "token") |> result.map_error(fn(_) { Nil }),
+  )
   case raw_type {
     "auth" -> Ok(raw_token)
     _ -> Error(Nil)
@@ -374,9 +391,10 @@ fn to_mist_response(
 ) -> response.Response(mist.ResponseData) {
   let resp = response.new(serv_resp.status)
 
-  let resp = list.fold(serv_resp.headers, resp, fn(r, header) {
-    response.prepend_header(r, header.0, header.1)
-  })
+  let resp =
+    list.fold(serv_resp.headers, resp, fn(r, header) {
+      response.prepend_header(r, header.0, header.1)
+    })
 
   case serv_resp.body {
     router.TextBody(text) ->

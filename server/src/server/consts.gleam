@@ -1,3 +1,5 @@
+pub const image_upload_dir = "uploads"
+
 pub const mega_byte = 1_048_576
 
 pub fn max_body_limit() {

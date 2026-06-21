@@ -1,27 +1,15 @@
 import cigogne
 import cigogne/config
-import gleam/json
+import gleam/io
 import gleam/result
-import mist
 
 pub type MigrationError {
   ConfigError(config.ConfigError)
   CigogneError(cigogne.CigogneError)
 }
 
-pub fn try(result, error, callback) {
+fn try_(result, error, callback) {
   result.try(result |> result.map_error(error), callback)
-}
-
-pub fn try_unwrap(
-  result: Result(a, e),
-  lazy_or: fn() -> b,
-  callback: fn(a) -> b,
-) -> b {
-  case result {
-    Ok(a) -> callback(a)
-    Error(_) -> lazy_or()
-  }
 }
 
 pub fn message(e: MigrationError) -> String {
@@ -34,8 +22,13 @@ pub fn message(e: MigrationError) -> String {
   }
 }
 
-pub type ParseError {
-  MistReadError(mist.ReadError)
-  NotAStringError(Nil)
-  JsonParseError(json.DecodeError)
+pub fn main() {
+  let assert Ok(_) = run_all()
+  io.println("Migrations applied")
+}
+
+pub fn run_all() -> Result(Nil, MigrationError) {
+  use cfg <- try_(config.get("db"), ConfigError)
+  use engine <- try_(cigogne.create_engine(cfg), CigogneError)
+  cigogne.apply_all(engine) |> result.map_error(CigogneError)
 }

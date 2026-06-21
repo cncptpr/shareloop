@@ -11,7 +11,6 @@ Not all of these TODOs need to be done for the finished project.
 - [ ] Propper profile screen
 - [ ] View a list of your own items
 - [ ] "Delete" items
-- [ ] Search & Filters
 
 ## Users & Authentification
 
@@ -21,7 +20,6 @@ Not all of these TODOs need to be done for the finished project.
 
 ## General
 
-- [ ] Put the migration code in a library, so that the server does not need to compile to run the migrations
 - [ ] Introduce Logging Framework
 - [ ] When pressing the selected button in the nav bar, return to that tabs default route.
 - [ ] Make the UI Text all German
@@ -35,17 +33,9 @@ Not all of these TODOs need to be done for the finished project.
 
 - [ ] Store the reverse lookup (City + optional Postalcode) in the database for each item (Take either lat/lng or city, and make a lookup for the other one on the server)
 
-## Search & Filter
-
-- [ ] Implement Text Search
-- [ ] Implement Filters
-  - [ ] Distance
-  - [ ] Min Rating
-
 ## Items
 
 - [ ] Add all missing fields
-  - Kategorie
   - Gebüren
 
 ## Notifications

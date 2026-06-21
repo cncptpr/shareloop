@@ -101,8 +101,8 @@ Implemented in `server/src/server/auth/session.gleam`.
 - `server/src/server/auth.gleam` — core auth logic
 - `server/src/server/auth/*` — password and token helpers and http handlers for auth
 - `server/src/auth_ffi.erl` — Erlang FFI for PBKDF2
-- `server/priv/migrations/20260516000001-create_users.sql` — users table migration
-- `server/priv/migrations/20260516000002-create_sessions.sql` — sessions table migration
+- `server/db/priv/migrations/20260516000001-create_users.sql` — users table migration
+- `server/db/priv/migrations/20260516000002-create_sessions.sql` — sessions table migration
 - `server/test/server/cli.gleam` — dev CLI for auth operations
 
 ### App (Flutter/Dart)

@@ -28,10 +28,10 @@ Write a SQL statment into `src/server/sql/<name>.sql` file, and run
 `$ mise run server:sql:gen`. A function `<name>` should now be avaiable in the
 server/sql module.
 
-The schema is defined as migrations in `priv/migrations/<time>-<name>.sql`.
-Follow the patter of the exisiting migrations. Migrations will be applied
-when re-generating the SQL code, running *Seeding*, starting the server or
-with `$ mise run server:db:migrate`.
+Migrations logic lifes in it's own library in `./server/db`.
+The schema is defined as migrations in `./server/db/priv/migrations/<time>-<name>.sql`. Follow the pattern of the existing migrations.
+Migrations will be applied when re-generating the SQL code, running *Seeding*,
+starting the server or with `$ mise run server:db:migrate`.
 
 To populate the Database with example data run `$ mise run server:db:seed`.
 Remember to add new example data when expanding the schema.

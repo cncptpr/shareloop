@@ -9,7 +9,6 @@ import gleam/time/calendar
 import gleam/time/timestamp
 import server/auth
 import server/db
-import server/error
 import server/migration
 import simplifile
 
@@ -21,7 +20,7 @@ fn read_line(prompt: String) -> String
 pub fn main() {
   let args = argv.load().arguments
   let assert Ok(conn) = db.start_pool()
-  let assert Ok(_) = migration.run_all() |> result.map_error(error.message)
+  let assert Ok(_) = migration.run_all() |> result.map_error(migration.message)
 
   case args {
     ["help"] | ["-h"] -> cmd_help()

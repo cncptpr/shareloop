@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../app_config.dart';
+import '../services/notification_service.dart';
 import 'auth.dart';
 import 'renting.dart';
 
@@ -18,6 +19,8 @@ class WebSocketService {
   StreamSubscription? _subscription;
   Timer? _reconnectTimer;
   bool _disposed = false;
+
+  int? currentChatRequestId;
 
   WebSocketService(this._ref) {
     _setupAuthListener();
@@ -88,6 +91,11 @@ class WebSocketService {
       print('[ws] Received update: $type for request $requestId');
       _ref.invalidate(rentRequestProvider(requestId));
       _ref.invalidate(myRentRequestsProvider);
+
+      final currentChatId = currentChatRequestId;
+      if (requestId != currentChatId) {
+        _showNotification(type);
+      }
     } catch (_) {
       // Ignore malformed messages
     }
@@ -110,5 +118,21 @@ class WebSocketService {
   void dispose() {
     _disposed = true;
     _disconnect();
+  }
+
+  String _notificationBody(String type) {
+    if (type.startsWith('message')) return 'Neue Nachricht';
+    if (type.startsWith('offer.created')) return 'Neues Angebot';
+    if (type.startsWith('offer.accepted')) return 'Angebot akzeptiert';
+    if (type.startsWith('borrow')) return 'Ausleihe bestätigt';
+    if (type.startsWith('return')) return 'Rückgabe bestätigt';
+    return 'Neues Ereignis in einer Anfrage';
+  }
+
+  void _showNotification(String type) {
+    NotificationService().showMessageNotification(
+      title: 'Neue Aktivität',
+      body: _notificationBody(type),
+    );
   }
 }

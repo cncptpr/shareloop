@@ -6,9 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/router.dart';
+import 'package:shareloop/services/notification_service.dart';
 import 'package:shareloop/state/websocket.dart';
 
-void main() => runApp(const ProviderScope(child: MyApp()));
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationService().init();
+  runApp(const ProviderScope(child: MyApp()));
+}
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});

@@ -22,7 +22,7 @@ class NotificationService {
       linux: linuxSettings,
       macOS: macOsSettings,
     );
-    await _plugin.initialize(settings);
+    await _plugin.initialize(settings: settings);
     _initialized = true;
   }
 
@@ -46,10 +46,10 @@ class NotificationService {
       macOS: DarwinNotificationDetails(),
     );
     await _plugin.show(
-      DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title,
-      body,
-      details,
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title: title,
+      body: body,
+      notificationDetails: details,
     );
   }
 }

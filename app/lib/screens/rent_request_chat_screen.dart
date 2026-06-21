@@ -5,6 +5,7 @@ import 'package:openapi/api.dart';
 import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/state/auth.dart';
 import 'package:shareloop/state/renting.dart';
+import 'package:shareloop/state/websocket.dart';
 
 class RentRequestChatScreen extends ConsumerStatefulWidget {
   final int? requestId;
@@ -46,7 +47,16 @@ class _RentRequestChatScreenState
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_requestId != null && mounted) {
+      ref.read(webSocketProvider).currentChatRequestId = _requestId;
+    }
+  }
+
+  @override
   void dispose() {
+    ref.read(webSocketProvider).currentChatRequestId = null;
     _messageController.dispose();
     _scrollController.removeListener(_onScrollChanged);
     _scrollController.dispose();
@@ -90,6 +100,7 @@ class _RentRequestChatScreenState
       final request = await createRentRequest(widget.itemId!);
       if (request != null && mounted) {
         setState(() => _requestId = request.id);
+        ref.read(webSocketProvider).currentChatRequestId = request.id;
         ref.invalidate(rentRequestProvider(request.id));
         ref.invalidate(myRentRequestsProvider);
       }

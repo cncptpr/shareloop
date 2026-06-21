@@ -48,7 +48,8 @@ Not all of these TODOs need to be done for the finished project.
   - Gebüren
 
 ## Notifications
-Add more Information, like what chat/about what item and a preview of the messages, etc.
+- Add more Information, like what chat/about what item and a preview of the messages, etc.
+- Have websocket running in a background task -> notifications also work when app not open
 
 ## Message
 - [ ] Message Previews (of the last message)

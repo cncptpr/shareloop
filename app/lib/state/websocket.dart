@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../app_config.dart';
@@ -38,7 +39,7 @@ class WebSocketService {
   }
 
   String get _wsBaseUrl {
-    final restBase = AppConfig.apiBaseUrl;
+    const restBase = AppConfig.apiBaseUrl;
     final wsBase = restBase
         .replaceFirst('http://', 'ws://')
         .replaceFirst('https://', 'wss://')
@@ -66,10 +67,10 @@ class WebSocketService {
   void _sendAuth() {
     final token = AppConfig.bearerAuth.accessToken as String?;
     if (token != null && token.isNotEmpty) {
-      print('[ws] Sending auth');
+      debugPrint('[ws] Sending auth');
       _channel?.sink.add(jsonEncode({'type': 'auth', 'token': token}));
     } else {
-      print('[ws] No token, disconnecting');
+      debugPrint('[ws] No token, disconnecting');
       _disconnect();
     }
   }
@@ -81,14 +82,14 @@ class WebSocketService {
 
       // Ignore auth responses
       if (type == 'auth') {
-        print('[ws] Received auth response: ${msg['status']}');
+        debugPrint('[ws] Received auth response: ${msg['status']}');
         return;
       }
 
       final requestId = msg['rent_request_id'] as int?;
       if (type == null || requestId == null) return;
 
-      print('[ws] Received update: $type for request $requestId');
+      debugPrint('[ws] Received update: $type for request $requestId');
       _ref.invalidate(rentRequestProvider(requestId));
       _ref.invalidate(myRentRequestsProvider);
 

@@ -1,48 +1,49 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
-// TODO: introduce logging to replace print()
+// TODO: introduce logging to replace debugPrint()
 // TODO: rename this file to something 'gps' or 'geolocator'
 final currentPositionProvider = FutureProvider<Position?>((ref) async {
   if (Platform.isLinux || Platform.isWindows) {
-    print("[WARN] Geolocator does not support Linux and Windows");
+    debugPrint("[WARN] Geolocator does not support Linux and Windows");
     return null;
   }
 
   try {
     return await _getPosition();
   } catch (err) {
-    print("[Error] An error occured while getting locations:\n$err");
+    debugPrint("[Error] An error occured while getting locations:\n$err");
     return null;
   }
 });
 
 Future<Position?> _getPosition() async {
-  print("[DEBUG] Setting up Geolocator...");
+  debugPrint("[DEBUG] Setting up Geolocator...");
   bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
-    print("[WARN] Location service is disabled");
+    debugPrint("[WARN] Location service is disabled");
     return null;
   }
 
   LocationPermission permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.denied) {
-    print("[INFO] Location permission denied, requesting permission.");
+    debugPrint("[INFO] Location permission denied, requesting permission.");
     permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
-      print("[WARN] Location permission was not granted.");
+      debugPrint("[WARN] Location permission was not granted.");
       return null;
     }
   }
   if (permission == LocationPermission.deniedForever) {
-    print("[WARN] Location permission denied forever.");
+    debugPrint("[WARN] Location permission denied forever.");
     return null;
   }
 
-  print("[DEBUG] Setup successfull, retrieving current position");
+  debugPrint("[DEBUG] Setup successfull, retrieving current position");
 
   return await Geolocator.getCurrentPosition(
     locationSettings: const LocationSettings(

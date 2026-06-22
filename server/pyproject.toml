@@ -1,0 +1,56 @@
+[project]
+name = "shareloop-server"
+version = "1.0.0"
+description = "Backend for the Shareloop application"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "sqlalchemy[asyncio]>=2.0",
+    "asyncpg>=0.29",
+    "alembic>=1.13",
+    "pydantic[email]>=2.0",
+    "pydantic-settings>=2.0",
+    "geoalchemy2>=0.14",
+    "typer>=0.9",
+    "datamodel-code-generator>=0.25",
+    "mypy>=2.0",
+    "ruff>=0.5",
+    "psycopg2-binary>=2.9",
+    "types-psycopg2",
+]
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_ignores = true
+ignore_missing_imports = true
+strict_optional = true
+
+[[tool.mypy.overrides]]
+module = [
+    "src.db.models",
+    "src.dependencies",
+    "src.services.*",
+    "src.handlers.*",
+    "src.models.*",
+    "src.notifications.*",
+]
+ignore_errors = true
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B"]
+ignore = [
+    "E501",
+    "UP006",
+    "UP007",
+    "B008",
+]
+per-file-ignores = { "src/models/openapi.py" = ["F821", "N815"] }
+

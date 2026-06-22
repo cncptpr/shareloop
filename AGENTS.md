@@ -12,20 +12,12 @@
 
 | Generated file(s) | Source | Codegen command |
 |---|---|---|
-| `server/src/server/sql.gleam` | `server/src/server/sql/*.sql` | `mise run server:sql:gen` (runs squirrel) |
-| `server/src/openapi/*.gleam` (except `handlers.gleam`) | `api/shareloop.openapi.yaml` | `mise run server:api:gen` (runs oaspec) |
+| `server/src/models/openapi.py` | `api/shareloop.openapi.yaml` | `mise run server:api:gen` (runs datamodel-codegen) |
 | `app/gen/api/**/*` | `api/shareloop.openapi.yaml` | `mise run app:api:gen` (runs openapi-generator) |
-
-### Workflow for SQL changes
-
-1. Edit the `.sql` file in `server/src/server/sql/`
-2. Run `mise run server:db:migrate` to apply the DB migration
-3. Run `mise run server:sql:gen` to regenerate `sql.gleam`
-4. Run `gleam check` to verify compilation
 
 ### Workflow for API changes
 
 1. Edit `api/shareloop.openapi.yaml`
-2. Run `mise run server:api:gen` to regenerate the Gleam API bindings
+2. Run `mise run server:api:gen` to regenerate the Pydantic models
 3. Run `mise run app:api:gen` to regenerate the Flutter API client
-4. Run `gleam check` and `flutter analyze` to verify compilation
+4. Run `mise run server:check` (ruff + mypy) and `flutter analyze` to verify compilation

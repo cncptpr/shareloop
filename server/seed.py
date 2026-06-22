@@ -2,27 +2,18 @@
 import os
 import sys
 import uuid as uuid_mod
-import hashlib
-import base64
 from datetime import datetime
 
 import psycopg2
 
+from src.auth.password import hash_password
 
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
-    "postgres://shareloop:shareloop@localhost:5432/shareloop",
-)
+    "postgresql+asyncpg://shareloop:shareloop@localhost:5432/shareloop",
+).replace("postgresql+asyncpg://", "postgresql://", 1)
 UPLOADS_DIR = os.environ.get("UPLOADS_DIR", "./uploads")
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-
-def hash_password(plaintext: str) -> str:
-    salt = os.urandom(16)
-    dk = hashlib.pbkdf2_hmac("sha256", plaintext.encode(), salt, 600_000, dklen=32)
-    salt_b64 = base64.urlsafe_b64encode(salt).rstrip(b"=").decode()
-    hash_b64 = base64.urlsafe_b64encode(dk).rstrip(b"=").decode()
-    return f"$pbkdf2-sha256$600000${salt_b64}${hash_b64}"
 
 
 def make_ts(s: str) -> datetime:

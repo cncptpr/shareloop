@@ -1,36 +1,44 @@
 [tasks."server:dev"]
 description = "Run the server in dev mode"
-run = "gleam run"
+run = "uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 4000"
 dir = "server"
 
 [tasks."server:api:gen"]
-description = "Generate Gleam types, routes, and middleware from the OpenAPI spec"
-run = "gleam run -m oaspec -- generate"
+description = "Generate Pydantic models from the OpenAPI spec"
+run = "uv run datamodel-codegen --input ../api/shareloop.openapi.yaml --output src/models/openapi.py --field-constraints --snake-case-field --base-class src.models.base.ApiBaseModel"
 dir = "server"
 sources = ["../api/*.openapi.yaml"]
-outputs = ["./src/openapi/*.gleam"]
-
-[tasks."server:sql:gen"]
-description = "Generate Gleam SQL bindings from .sql queries with squirrel"
-run = "gleam run -m squirrel"
-dir = "server"
-sources = ["src/**/sql/*.sql"]
-outputs = ["src/**/sql.gleam"]
-depends = ["server:db:migrate"]
+outputs = ["./src/models/openapi.py"]
 
 [tasks."server:db:up"]
 description = "Start the db with docker compose (external requirement)"
 run = "docker compose up -d db"
 
 [tasks."server:db:migrate"]
-description = "Run database migrations"
-run = "gleam run -m server/migration"
+description = "Run database migrations via Alembic"
+run = "uv run alembic upgrade head"
 dir = "server"
 
 [tasks."server:db:seed"]
 description = "Run the database seed script"
-run = "gleam run -m server/seed"
+run = "uv run python -m seed"
 dir = "server"
+
+[tasks."server:lint"]
+description = "Run ruff linter"
+run = "uv run ruff check src/ seed.py"
+dir = "server"
+
+[tasks."server:typecheck"]
+description = "Run mypy type checker"
+run = "uv run mypy src/ seed.py"
+dir = "server"
+
+[tasks."server:check"]
+description = "Run lint and typecheck"
+run = "uv run ruff check src/ seed.py && uv run mypy src/ seed.py"
+dir = "server"
+depends = ["server:lint", "server:typecheck"]
 
 [tasks."app:dev"]
 description = "Run the app in dev mode"
@@ -51,12 +59,10 @@ sources = ["../api/*.openapi.yaml"]
 outputs = ["./gen/api/**/*"]
 
 [env]
-DATABASE_URL = "postgres://shareloop:shareloop@localhost:5432/shareloop"
+DATABASE_URL = "postgresql+asyncpg://shareloop:shareloop@localhost:5432/shareloop"
 
 [tools]
-erlang = "latest"
-flutter = { version = "3.41.9", platforms = { linux-arm64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_arm64_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' }, linux-x64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' } }, url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version }}-stable.zip", version_expr = 'fromJSON(body).releases | filter({ #.channel == "stable" }) | map({ #.version }) | sortVersions()', version_list_url = "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json" }
-gleam = "1.16.0"
+python = "3.12"
+uv = "latest"
+flutter = { version = "3.41.9", platforms = { linux-arm64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_arm64_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' }, linux-x64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' } }, url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version }}-stable.zip", version_expr = 'fromJSON(body).releases | filter({ #.channel == "stable" }) | match({ #.version >= "3.22" }) | map({ #.version }) | sortVersions()', version_list_url = "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json" }
 node = "latest"
-rebar = "latest"
-

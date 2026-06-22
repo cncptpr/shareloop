@@ -21,7 +21,7 @@ services:
     ports:
       - "4000:4000"
     environment:
-      DATABASE_URL: postgres://shareloop:shareloop@db:5432/shareloop
+      DATABASE_URL: postgresql+asyncpg://shareloop:shareloop@db:5432/shareloop
       UPLOADS_DIR: /uploads
     depends_on:
       db:

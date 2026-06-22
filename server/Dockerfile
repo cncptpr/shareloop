@@ -1,24 +1,20 @@
-FROM ghcr.io/gleam-lang/gleam:v1.16.0-erlang-alpine AS build
+FROM python:3.13-slim AS build
 
 WORKDIR /build
 
-COPY gleam.toml manifest.toml ./
-COPY db/gleam.toml ./db/
-RUN gleam deps download
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src/ ./src/
-COPY db/src/ ./db/src/
-COPY db/priv/ ./db/priv/
+COPY . .
 
-RUN gleam export erlang-shipment
+FROM python:3.13-slim
 
-FROM erlang:29-alpine
-
-RUN addgroup -S app && adduser -S app -G app -u 1000
+RUN groupadd -r app && useradd -r -g app -u 1000 app
 
 WORKDIR /app
 
-COPY --from=build --chown=app:app /build/build/erlang-shipment /app/
+COPY --from=build /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
+COPY --from=build /build /app
 
 ENV UPLOADS_DIR=/uploads
 
@@ -28,4 +24,4 @@ EXPOSE 4000
 
 USER app
 
-CMD ["/app/entrypoint.sh", "run"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "4000"]

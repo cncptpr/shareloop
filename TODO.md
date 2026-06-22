@@ -39,6 +39,7 @@ Not all of these TODOs need to be done for the finished project.
 
 ## Location
 
+- [ ] Where did the GPS selector go?
 - [ ] Store the reverse lookup (City + optional Postalcode) in the database for each item (Take either lat/lng or city, and make a lookup for the other one on the server)
 
 ## Items

@@ -128,7 +128,7 @@ fn handle_ws_text(
               ws_conn,
               "{\"type\":\"auth\",\"status\":\"error\"}",
             )
-          mist.stop_abnormal("Auth failed")
+          mist.stop()
         }
         Ok(token) -> {
           case auth.verify_token(conn, token) {
@@ -139,7 +139,7 @@ fn handle_ws_text(
                   ws_conn,
                   "{\"type\":\"auth\",\"status\":\"error\"}",
                 )
-              mist.stop_abnormal("Auth failed")
+              mist.stop()
             }
             Ok(user) -> {
               let auth_state =
@@ -196,7 +196,7 @@ fn handle_ws_custom(
               ws_conn,
               "{\"type\":\"auth\",\"status\":\"timeout\"}",
             )
-          mist.stop_abnormal("Auth timeout")
+          mist.stop()
         }
         True -> mist.continue(state)
       }

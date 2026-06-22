@@ -80,9 +80,11 @@ class WebSocketService {
       final msg = jsonDecode(raw as String) as Map<String, dynamic>;
       final type = msg['type'] as String?;
 
-      // Ignore auth responses
       if (type == 'auth') {
         debugPrint('[ws] Received auth response: ${msg['status']}');
+        if (msg['status'] == 'error' || msg['status'] == 'timeout') {
+          _disconnect();
+        }
         return;
       }
 

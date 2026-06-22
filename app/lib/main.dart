@@ -3,34 +3,29 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shareloop/app_config.dart';
 import 'package:shareloop/router.dart';
-import 'package:shareloop/theme/app_theme.txt';
+import 'package:shareloop/services/notification_service.dart';
+import 'package:shareloop/state/websocket.dart';
 
-/// This sample app shows an app with two screens.
-///
-/// The first route '/' is mapped to [HomeScreen], and the second route
-/// '/details' is mapped to [DetailsScreen].
-///
-/// The buttons use context.go() to navigate to each destination. On mobile
-/// devices, each destination is deep-linkable and on the web, can be navigated
-/// to using the address bar.
-void main() => runApp(const MyApp());
-
-/// The main app.
-class MyApp extends StatelessWidget {
-  /// Constructs a [MyApp]
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Shareloop',
-      routerConfig: router,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
-    );
-  }
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationService().init();
+  runApp(const ProviderScope(child: MyApp()));
 }
 
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
 
+  static String get _title {
+    const ns = AppConfig.storageNamespace;
+    return ns.isEmpty ? 'shareloop' : 'shareloop [$ns]';
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(webSocketProvider);
+    return MaterialApp.router(title: _title, routerConfig: router);
+  }
+}

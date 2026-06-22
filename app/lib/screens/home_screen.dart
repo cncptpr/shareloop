@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shareloop/theme/app_theme.txt' as theme;
+import 'package:shareloop/theme/app_theme.dart' as theme;
 
 final routes = ['/search', '/messages', '/profile'];
 
@@ -50,11 +50,11 @@ class _MyHomePageState extends State<Homescreen> {
         // TRY THIS: Try changing the color here to a specific color (to
         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
         // change color while the other colors stay the same.
-        backgroundColor: theme.AppTheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
-        foregroundColor: theme.AppTheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -89,8 +89,8 @@ class _MyHomePageState extends State<Homescreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        foregroundColor: theme.AppTheme.background,
-        backgroundColor: theme.AppTheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),

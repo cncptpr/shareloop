@@ -1,5 +1,6 @@
 import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shareloop/state/location_search.dart';
@@ -228,7 +229,7 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
   }
 
   Widget _gpsTile() {
-    final canUseGps = !Platform.isLinux && !Platform.isWindows;
+    final canUseGps = kIsWeb || (!Platform.isLinux && !Platform.isWindows);
     if (!canUseGps) {
       return const _SuggestionTile(
         leading: Icon(Icons.my_location),

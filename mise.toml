@@ -18,6 +18,10 @@ sources = ["src/**/sql/*.sql"]
 outputs = ["src/**/sql.gleam"]
 depends = ["server:db:migrate"]
 
+[tasks."server:db:up"]
+description = "Start the db with docker compose (external requirement)"
+run = "docker compose up -d db"
+
 [tasks."server:db:migrate"]
 description = "Run database migrations"
 run = "gleam run -m server/migration"
@@ -50,7 +54,9 @@ outputs = ["./gen/api/**/*"]
 DATABASE_URL = "postgres://shareloop:shareloop@localhost:5432/shareloop"
 
 [tools]
+erlang = "latest"
 flutter = { version = "3.41.9", platforms = { linux-arm64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_arm64_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' }, linux-x64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' } }, url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version }}-stable.zip", version_expr = 'fromJSON(body).releases | filter({ #.channel == "stable" }) | map({ #.version }) | sortVersions()', version_list_url = "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json" }
 gleam = "1.16.0"
 node = "latest"
+rebar = "latest"
 

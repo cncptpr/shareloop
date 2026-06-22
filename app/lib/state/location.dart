@@ -8,7 +8,7 @@ import 'package:geolocator/geolocator.dart';
 // TODO: introduce logging to replace debugPrint()
 // TODO: rename this file to something 'gps' or 'geolocator'
 final currentPositionProvider = FutureProvider<Position?>((ref) async {
-  if (Platform.isLinux || Platform.isWindows) {
+  if (!kIsWeb && (Platform.isLinux || Platform.isWindows)) {
     debugPrint("[WARN] Geolocator does not support Linux and Windows");
     return null;
   }

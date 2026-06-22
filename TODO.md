@@ -7,13 +7,13 @@ Not all of these TODOs need to be done for the finished project.
 
 ## Big Features
 > Must do-s
-- [ ] Theming
+- [ ] Theming (Lisa)
 - [ ] Availability Calendar
-- [ ] Feedback & Rating
+- [ ] Feedback & Rating (Lisa)
 - [ ] Registration
-- [ ] Propper profile screen
+- [ ] Propper profile screen (Luca)
 - [ ] View a list of your own items
-- [ ] "Delete" items
+- [ ] "Delete" items (Luca)
 
 ## Users & Authentification
 

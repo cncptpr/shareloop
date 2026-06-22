@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:desktop_drop/desktop_drop.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shareloop/app_config.dart';
@@ -48,7 +49,10 @@ class _ItemFormBodyState extends State<ItemFormBody> {
   bool _dropHovering = false;
 
   Future<void> _pickImage(ImageSource source) async {
-    final file = await _picker.pickImage(source: source, maxWidth: 1024);
+    final file = await _picker.pickImage(
+      source: source,
+      maxWidth: kIsWeb ? null : 1024,
+    );
     if (file != null) {
       widget.onAddImage(file);
     }
@@ -302,12 +306,19 @@ class _ItemFormImageTile extends StatelessWidget {
       );
     } else {
       final local = image as LocalItemImage;
-      imageWidget = Image.file(
-        File(local.file.path),
-        height: 120,
-        width: 120,
-        fit: BoxFit.cover,
-      );
+      imageWidget = kIsWeb
+          ? Image.network(
+              local.file.path,
+              height: 120,
+              width: 120,
+              fit: BoxFit.cover,
+            )
+          : Image.file(
+              File(local.file.path),
+              height: 120,
+              width: 120,
+              fit: BoxFit.cover,
+            );
     }
 
     return Stack(

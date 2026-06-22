@@ -39,6 +39,7 @@ http {
         index index.html;
 
         location /api/ {
+            client_max_body_size 10M;
             proxy_pass http://server:4000;
             proxy_set_header Host $host;
         }

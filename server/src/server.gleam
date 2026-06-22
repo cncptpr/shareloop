@@ -32,6 +32,7 @@ pub fn main() {
   let assert Ok(_) = migration.run_all()
   io.println("Migrations applied")
 
+  io.println("Creating " <> config.image_upload_dir() <> ":")
   let assert Ok(_) = simplifile.create_directory_all(config.image_upload_dir())
   io.println("Uploads directory ensured")
 
@@ -229,7 +230,8 @@ fn handle_image_get(
             Error(_) -> respond_error(404)
             Ok(row) -> {
               let ext = mime_to_ext(row.mime_type)
-              let filepath = config.image_upload_dir() <> "/" <> raw_image_id <> "." <> ext
+              let filepath =
+                config.image_upload_dir() <> "/" <> raw_image_id <> "." <> ext
 
               case mist.send_file(filepath, offset: 0, limit: None) {
                 Error(_) -> respond_error(500)

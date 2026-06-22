@@ -28,6 +28,11 @@ Not all of these TODOs need to be done for the finished project.
 - [ ] Make the UI Text all German
 - [ ] Consider adding Timeouts to network requests
 
+## Missing Error Messages
+
+- [ ] Size limit exeded
+- [ ] Photo in image picker selected, on a system without that capability
+
 ## Styling
 
 - [ ] Apply Styling from [Mock](https://stitch.withgoogle.com/projects/15469593552389345105)

@@ -1,2 +1,56 @@
+[tasks."server:dev"]
+description = "Run the server in dev mode"
+run = "gleam run"
+dir = "server"
+
+[tasks."server:api:gen"]
+description = "Generate Gleam types, routes, and middleware from the OpenAPI spec"
+run = "gleam run -m oaspec -- generate"
+dir = "server"
+sources = ["../api/*.openapi.yaml"]
+outputs = ["./src/openapi/*.gleam"]
+
+[tasks."server:sql:gen"]
+description = "Generate Gleam SQL bindings from .sql queries with squirrel"
+run = "gleam run -m squirrel"
+dir = "server"
+sources = ["src/**/sql/*.sql"]
+outputs = ["src/**/sql.gleam"]
+depends = ["server:db:migrate"]
+
+[tasks."server:db:migrate"]
+description = "Run database migrations"
+run = "gleam run -m server/migration"
+dir = "server"
+
+[tasks."server:db:seed"]
+description = "Run the database seed script"
+run = "gleam run -m server/seed"
+dir = "server"
+
+[tasks."app:dev"]
+description = "Run the app in dev mode"
+run = "flutter run"
+dir = "app"
+
+[tasks."app:dev2"]
+description = "Run the app in dev mode (second user, isolated storage)"
+run = "flutter run --dart-define=STORAGE_NAMESPACE=dev2_"
+dir = "app"
+
+[tasks."app:api:gen"]
+description = "Generate the Flutter API client from the OpenAPI spec"
+run = "openapi-generator-cli generate -i ../api/shareloop.openapi.yaml -g dart -o ./gen/api"
+dir = "app"
+tools = { java = "corretto-21", "npm:@openapitools/openapi-generator-cli" = "2.32.0" }
+sources = ["../api/*.openapi.yaml"]
+outputs = ["./gen/api/**/*"]
+
+[env]
+DATABASE_URL = "postgres://shareloop:shareloop@localhost:5432/shareloop"
+
 [tools]
-flutter = { version = "latest", platforms = { linux-arm64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_arm64_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' }, linux-x64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' } }, url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/{{ os() }}/flutter_{{ os() }}{{ arch(x64="", arm64="_arm64") }}_{{ version | replace(from="-stable", to="") }}-stable.zip', version_expr = 'fromJSON(body).releases | filter({ #.channel == "stable" }) | map({ #.version }) | sortVersions()', version_list_url = "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json" }
+flutter = { version = "3.41.9", platforms = { linux-arm64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_arm64_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' }, linux-x64 = { url = 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version | replace(from="-stable", to="") }}-stable.tar.xz' } }, url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_{{ version }}-stable.zip", version_expr = 'fromJSON(body).releases | filter({ #.channel == "stable" }) | map({ #.version }) | sortVersions()', version_list_url = "https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json" }
+gleam = "1.16.0"
+node = "latest"
+

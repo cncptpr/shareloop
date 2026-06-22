@@ -1,0 +1,5 @@
+input: ../api/shareloop.openapi.yaml
+package: openapi
+mode: server
+output:
+  dir: ./src

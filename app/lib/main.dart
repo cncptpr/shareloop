@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shareloop/router.dart';
-import 'package:shareloop/theme/app_theme.dart';
+import 'package:shareloop/theme/app_theme.txt';
 
 /// This sample app shows an app with two screens.
 ///

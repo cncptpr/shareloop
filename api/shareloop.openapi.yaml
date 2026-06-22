@@ -1,0 +1,1012 @@
+openapi: "3.0.3"
+info:
+  title: Shareloop API
+  version: "1.0.0"
+  description: API for the Shareloop application
+
+servers:
+  - url: /api
+
+paths:
+  /featured-items:
+    post:
+      summary: Get featured items
+      description: Returns a list of featured items
+      operationId: getFeaturedItems
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LatLng"
+      responses:
+        "200":
+          description: A list of featured items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ItemOverview"
+        "500":
+          description: Internal server error
+
+  /items/search:
+    post:
+      summary: Search items
+      description: Search items with filters
+      operationId: searchItems
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemSearchRequest"
+      responses:
+        "200":
+          description: A list of matching items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ItemOverview"
+        "500":
+          description: Internal server error
+
+  /items:
+    post:
+      summary: Create a new item
+      description: Creates a new item listing
+      operationId: createItem
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateItemRequest"
+      responses:
+        "201":
+          description: Item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateItemResponse"
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+
+  /items/{itemId}:
+    get:
+      summary: Get item details
+      description: Returns full details for a single item
+      operationId: getItem
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Item details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemDetail"
+        "404":
+          description: Item not found
+        "500":
+          description: Internal server error
+    put:
+      summary: Update an item
+      operationId: updateItem
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateItemRequest"
+      responses:
+        "200":
+          description: Item updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateItemResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not the owner
+        "404":
+          description: Item not found
+        "500":
+          description: Internal server error
+
+  /items/{itemId}/rent-requests:
+    post:
+      summary: Create or get existing open rent request
+      operationId: createRentRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: Rent request created or existing one returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRequestDetail"
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+
+  /rent-requests:
+    get:
+      summary: List rent requests for current user
+      operationId: getRentRequests
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of rent requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RentRequestOverview"
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+
+  /rent-requests/{requestId}:
+    get:
+      summary: Get a single rent request with messages and offers
+      operationId: getRentRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Rent request details with messages and offers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRequestDetail"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+
+  /rent-requests/{requestId}/mark-read:
+    post:
+      summary: Mark a rent request as read
+      operationId: markRentRequestRead
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Marked as read
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+
+  /rent-requests/{requestId}/messages:
+    post:
+      summary: Send a message in a rent request chat
+      operationId: sendMessage
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendMessageRequest"
+      responses:
+        "201":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+
+  /rent-requests/{requestId}/offers:
+    post:
+      summary: Make or counter an offer
+      operationId: createOffer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOfferRequest"
+      responses:
+        "201":
+          description: Offer created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentOffer"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+
+  /offers/{offerId}/accept:
+    post:
+      summary: Accept an offer
+      operationId: acceptOffer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Offer accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentOffer"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not authorized
+        "404":
+          description: Offer not found
+        "500":
+          description: Internal server error
+
+  /rent-requests/{requestId}/confirm-borrow:
+    post:
+      summary: Confirm that borrowing happened
+      operationId: confirmBorrow
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Borrow confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRequestDetail"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not the owner
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+
+  /rent-requests/{requestId}/confirm-return:
+    post:
+      summary: Confirm item was returned
+      operationId: confirmReturn
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Return confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRequestDetail"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not the owner
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+
+  /items/{itemId}/edit:
+    get:
+      summary: Get item edit details (owner only)
+      description: Returns full item details including location for the item owner
+      operationId: getItemEdit
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Item edit details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemEditDetail"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not the owner
+        "404":
+          description: Item not found
+        "500":
+          description: Internal server error
+
+  /items/{itemId}/images:
+    post:
+      summary: Upload an image for an item
+      operationId: uploadItemImage
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadItemImageRequest"
+      responses:
+        "201":
+          description: Image uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadItemImageResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not the owner
+        "404":
+          description: Item not found
+        "500":
+          description: Internal server error
+    put:
+      summary: Edit item images (reorder / delete)
+      operationId: editItemImages
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EditItemImagesRequest"
+      responses:
+        "204":
+          description: Images updated
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not the owner
+        "404":
+          description: Item not found
+        "500":
+          description: Internal server error
+
+  /images/{imageId}:
+    get:
+      summary: Get raw image data
+      operationId: getImage
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Raw image bytes
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: Image not found
+        "500":
+          description: Internal server error
+
+  /auth/login:
+    post:
+      summary: Login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResult"
+        "401":
+          description: Invalid credentials
+        "500":
+          description: Internal server error
+
+  /auth/refresh:
+    post:
+      summary: Refresh tokens
+      operationId: refresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshRequest"
+      responses:
+        "200":
+          description: Tokens refreshed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResult"
+        "401":
+          description: Invalid or expired refresh token
+        "500":
+          description: Internal server error
+
+  /auth/verify:
+    post:
+      summary: Verify access token
+      operationId: verify
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Token is valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Invalid or expired token
+        "500":
+          description: Internal server error
+
+  /auth/logout:
+    post:
+      summary: Logout
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Logged out
+        "401":
+          description: Invalid token
+        "500":
+          description: Internal server error
+
+components:
+  schemas:
+    ItemOverview:
+      type: object
+      required: [id, title, description, author, score, category]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        author:
+          $ref: "#/components/schemas/Person"
+        distance:
+          $ref: "#/components/schemas/Distance"
+          nullable: true
+        city:
+          type: string
+        postalCode:
+          type: string
+        score:
+          type: number
+          format: double
+        imageUuid:
+          type: string
+          nullable: true
+        category:
+          type: string
+
+    Person:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    Distance:
+      type: object
+      required: [km]
+      properties:
+        km:
+          type: number
+          format: double
+
+    LatLng:
+      type: object
+      required: [lat, lng]
+      properties:
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+
+    User:
+      type: object
+      required: [id, email, lastOnlineAt, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        lastOnlineAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    LoginResult:
+      type: object
+      required: [user, accessToken, refreshToken, accessExpiresAt, refreshExpiresAt]
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        accessExpiresAt:
+          type: string
+          format: date-time
+        refreshExpiresAt:
+          type: string
+          format: date-time
+
+    CreateItemRequest:
+      type: object
+      required: [title, description, city, postalCode, lat, lng, category]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        category:
+          type: string
+
+    CreateItemResponse:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: integer
+
+    ItemDetail:
+      type: object
+      required: [id, title, description, author, score, createdAt, imageUuids, category]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        author:
+          $ref: "#/components/schemas/Person"
+        score:
+          type: number
+          format: double
+        city:
+          type: string
+        postalCode:
+          type: string
+        imageUuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        category:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ItemEditDetail:
+      type: object
+      required: [id, title, description, author, score, createdAt, imageUuids, lat, lng, category]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        author:
+          $ref: "#/components/schemas/Person"
+        score:
+          type: number
+          format: double
+        city:
+          type: string
+        postalCode:
+          type: string
+        imageUuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        category:
+          type: string
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        createdAt:
+          type: string
+          format: date-time
+
+    UploadItemImageRequest:
+      type: object
+      required: [data, filename, sortOrder]
+      properties:
+        data:
+          type: string
+          description: Base64-encoded image data
+        filename:
+          type: string
+          description: Original filename for extension detection
+        sortOrder:
+          type: integer
+          description: Position of this image in the item's image list
+
+    UploadItemImageResponse:
+      type: object
+      required: [uuid]
+      properties:
+        uuid:
+          type: string
+          format: uuid
+
+    UpdateItemRequest:
+      type: object
+      required: [title, description, city, postalCode, lat, lng, category]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        category:
+          type: string
+
+    ItemSearchRequest:
+      type: object
+      properties:
+        query:
+          type: string
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        maxDistanceKm:
+          type: number
+          format: double
+        categories:
+          type: array
+          items:
+            type: string
+        minScore:
+          type: number
+          format: double
+        sortBy:
+          type: string
+          enum: [relevance, distance, score, newest]
+
+    ReorderEntry:
+      type: object
+      required: [uuid, sortOrder]
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        sortOrder:
+          type: integer
+
+    EditItemImagesRequest:
+      type: object
+      required: [reorder, delete]
+      properties:
+        reorder:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReorderEntry"
+        delete:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    RentRequestDetail:
+      type: object
+      required: [id, itemId, requester, itemTitle, ownerName, ownerId, createdAt, updatedAt, messages, offers, lastRead]
+      properties:
+        id:
+          type: integer
+        itemId:
+          type: integer
+        requester:
+          $ref: "#/components/schemas/Person"
+        itemTitle:
+          type: string
+        ownerName:
+          type: string
+        ownerId:
+          type: integer
+        latestAcceptedOfferId:
+          type: integer
+          nullable: true
+        latestOpenOfferId:
+          type: integer
+          nullable: true
+        borrowConfirmedAt:
+          type: string
+          format: date-time
+          nullable: true
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+        offers:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentOffer"
+        lastRead:
+          type: string
+          format: date-time
+
+    RentRequestOverview:
+      type: object
+      required: [id, itemId, requester, itemTitle, ownerName, ownerId, createdAt, updatedAt, unreadCount]
+      properties:
+        id:
+          type: integer
+        itemId:
+          type: integer
+        requester:
+          $ref: "#/components/schemas/Person"
+        itemTitle:
+          type: string
+        ownerName:
+          type: string
+        ownerId:
+          type: integer
+        latestAcceptedOfferId:
+          type: integer
+          nullable: true
+        latestOpenOfferId:
+          type: integer
+          nullable: true
+        borrowConfirmedAt:
+          type: string
+          format: date-time
+          nullable: true
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        unreadCount:
+          type: integer
+
+    Message:
+      type: object
+      required: [id, rentRequestId, authorId, content, createdAt]
+      properties:
+        id:
+          type: integer
+        rentRequestId:
+          type: integer
+        authorId:
+          type: integer
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    SendMessageRequest:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+
+    RentOffer:
+      type: object
+      required: [id, rentRequestId, senderId, startDate, endDate, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        rentRequestId:
+          type: integer
+        senderId:
+          type: integer
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        acceptedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateOfferRequest:
+      type: object
+      required: [startDate, endDate]
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token

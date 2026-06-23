@@ -14,6 +14,8 @@ Not all of these TODOs need to be done for the finished project.
 - [ ] Propper profile screen (Luca)
 - [ ] View a list of your own items
 - [ ] "Delete" items (Luca)
+- [ ] Make seeding easier
+- [ ] Document Quickstart
 
 ## Users & Authentification
 

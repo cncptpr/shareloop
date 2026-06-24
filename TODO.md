@@ -14,7 +14,6 @@ Not all of these TODOs need to be done for the finished project.
 - [ ] Propper profile screen (Luca)
 - [ ] View a list of your own items
 - [ ] "Delete" items (Luca)
-- [ ] Make seeding easier
 - [ ] Document Quickstart
 
 ## Users & Authentification
@@ -25,6 +24,7 @@ Not all of these TODOs need to be done for the finished project.
 
 ## General
 
+- [ ] Do not offer the distance file if no location is selected (also ignore on server)
 - [ ] Introduce Logging Framework
 - [ ] When pressing the selected button in the nav bar, return to that tabs default route.
 - [ ] Make the UI Text all German

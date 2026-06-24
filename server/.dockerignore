@@ -1,3 +1,4 @@
 db/build/
 build/
+seeding/
 *.bak

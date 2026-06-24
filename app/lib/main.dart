@@ -7,7 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/router.dart';
 import 'package:shareloop/services/notification_service.dart';
+import 'package:shareloop/state/seeding.dart';
 import 'package:shareloop/state/websocket.dart';
+
+final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,17 +18,34 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
+
+  @override
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkSeedOnStartup(ref);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.watch(webSocketProvider);
+    return MaterialApp.router(
+      scaffoldMessengerKey: scaffoldMessengerKey,
+      title: _title,
+      routerConfig: router,
+    );
+  }
 
   static String get _title {
     const ns = AppConfig.storageNamespace;
     return ns.isEmpty ? 'shareloop' : 'shareloop [$ns]';
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(webSocketProvider);
-    return MaterialApp.router(title: _title, routerConfig: router);
   }
 }

@@ -22,8 +22,9 @@ class RetryApiClient extends ApiClient {
     Object? body,
     Map<String, String> headerParams,
     Map<String, String> formParams,
-    String? contentType,
-  ) async {
+    String? contentType, {
+    Future<void>? abortTrigger,
+  }) async {
     debugPrint('[http] $method $path');
     final response = await super.invokeAPI(
       path,
@@ -33,6 +34,7 @@ class RetryApiClient extends ApiClient {
       headerParams,
       formParams,
       contentType,
+      abortTrigger: abortTrigger,
     );
     debugPrint('[http] response $method $path -> ${response.statusCode}');
 
@@ -51,9 +53,12 @@ class RetryApiClient extends ApiClient {
           headerParams,
           formParams,
           contentType,
+          abortTrigger: abortTrigger,
         );
       } catch (e) {
-        debugPrint('[http] refresh failed: $e, returning original 401 response');
+        debugPrint(
+          '[http] refresh failed: $e, returning original 401 response',
+        );
         return response;
       }
     }

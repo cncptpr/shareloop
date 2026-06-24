@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import os
 from datetime import UTC
 
@@ -8,9 +9,14 @@ from sqlalchemy import select, text
 
 from src.config import settings
 from src.database import async_session_factory, engine
-from src.db.models import Base, User
+from src.db.models import Base, SeedMeta, User
 from src.handlers import auth, images, items, renting
+from src.handlers.seeding import router as seeding_router
 from src.notifications.registry import registry
+from src.seeding.reader import load_and_validate
+from src.seeding.state import set_seeding_available
+
+logger = logging.getLogger("shareloop")
 
 app = FastAPI(title="Shareloop API", version="1.0.0")
 
@@ -18,6 +24,7 @@ app.include_router(auth.router)
 app.include_router(items.router)
 app.include_router(renting.router)
 app.include_router(images.router)
+app.include_router(seeding_router)
 
 
 @app.on_event("startup")
@@ -26,6 +33,25 @@ async def startup():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     await apply_migrations()
+    await init_seeding()
+
+
+async def init_seeding():
+    seed_data = load_and_validate(settings.seeding_dir)
+    if seed_data is None:
+        set_seeding_available(False)
+        logger.warning("Seeding data.yaml nicht gefunden oder ungültig – Seeding deaktiviert")
+        return
+
+    set_seeding_available(True)
+    logger.info("Seeding data.yaml gefunden und gültig – Seeding aktiviert")
+
+    async with async_session_factory() as db:
+        result = await db.execute(select(SeedMeta).where(SeedMeta.id == 1))
+        if result.scalar_one_or_none() is None:
+            db.add(SeedMeta(id=1))
+            await db.commit()
+            logger.info("SeedMeta Zeile angelegt")
 
 
 async def apply_migrations():

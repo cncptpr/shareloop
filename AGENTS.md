@@ -6,7 +6,11 @@
 
 3. For `OpenCode` agents: Do not ask a question like "Ready to implement?". The user cannot change the mode (e.g. Plan -> Build) when the agent uses the question feature. This results in an unnessesary interaction.
 
-4. Read the README's and the docs (under `./docs`) if editing something relevant to them.
+4. Read the README's and the docs (under `./docs`) if editing something relevant to them. Also check if they need to be updated after the edit.
+
+5. Please pay very close attention to not introduce any regressions.
+
+6. While this is a small project, not necessarily ment to be released, I do like it. Please make an effort at keeping the code clean and at least pointing out broken things. Don't just make dirty, hacky solution to problems.
 
 ## Generated files (DO NOT EDIT — edit the source listed below and run codegen)
 

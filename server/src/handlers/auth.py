@@ -21,15 +21,9 @@ def _user_to_api(user: User) -> dict:
     return {
         "id": user.id,
         "email": user.email,
-        "lastOnlineAt": _dt_str(user.last_online_at),
-        "createdAt": _dt_str(user.created_at),
+        "lastOnlineAt": user.last_online_at,
+        "createdAt": user.created_at,
     }
-
-
-def _dt_str(dt) -> str:
-    if isinstance(dt, str):
-        return dt
-    return dt.isoformat().replace("+00:00", "Z")
 
 
 @router.post("/api/auth/login")

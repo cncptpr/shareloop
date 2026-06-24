@@ -15,9 +15,11 @@ Method | HTTP request | Description
 [**createItem**](DefaultApi.md#createitem) | **POST** /items | Create a new item
 [**createOffer**](DefaultApi.md#createoffer) | **POST** /rent-requests/{requestId}/offers | Make or counter an offer
 [**createRentRequest**](DefaultApi.md#createrentrequest) | **POST** /items/{itemId}/rent-requests | Create or get existing open rent request
+[**declineSeed**](DefaultApi.md#declineseed) | **POST** /seed/decline | Decline seeding prompt
 [**editItemImages**](DefaultApi.md#edititemimages) | **PUT** /items/{itemId}/images | Edit item images (reorder / delete)
 [**getFeaturedItems**](DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 [**getImage**](DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
+[**getInfo**](DefaultApi.md#getinfo) | **GET** /info | Get server info
 [**getItem**](DefaultApi.md#getitem) | **GET** /items/{itemId} | Get item details
 [**getItemEdit**](DefaultApi.md#getitemedit) | **GET** /items/{itemId}/edit | Get item edit details (owner only)
 [**getRentRequest**](DefaultApi.md#getrentrequest) | **GET** /rent-requests/{requestId} | Get a single rent request with messages and offers
@@ -27,6 +29,7 @@ Method | HTTP request | Description
 [**markRentRequestRead**](DefaultApi.md#markrentrequestread) | **POST** /rent-requests/{requestId}/mark-read | Mark a rent request as read
 [**refresh**](DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
 [**searchItems**](DefaultApi.md#searchitems) | **POST** /items/search | Search items
+[**seedDatabase**](DefaultApi.md#seeddatabase) | **POST** /seed | Seed the database with demo data
 [**sendMessage**](DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
 [**updateItem**](DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 [**uploadItemImage**](DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
@@ -319,6 +322,45 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **declineSeed**
+> SeedDatabase200Response declineSeed()
+
+Decline seeding prompt
+
+Records that the user declined the seeding prompt. Sets the seeding timestamp without performing the actual seeding. Returns 400 if seeding is disabled. 
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+try {
+    final result = api_instance.declineSeed();
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->declineSeed: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**SeedDatabase200Response**](SeedDatabase200Response.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **editItemImages**
 > editItemImages(itemId, editItemImagesRequest)
 
@@ -439,6 +481,45 @@ Name | Type | Description  | Notes
 ### Return type
 
 **String**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getInfo**
+> ServerInfo getInfo()
+
+Get server info
+
+Returns server version, API version, and seeding status
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+try {
+    final result = api_instance.getInfo();
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getInfo: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**ServerInfo**](ServerInfo.md)
 
 ### Authorization
 
@@ -842,6 +923,45 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **seedDatabase**
+> SeedDatabase200Response seedDatabase()
+
+Seed the database with demo data
+
+Triggers database seeding with demo data from the configured seeding directory. This will DELETE all existing data. Returns 400 if seeding is disabled (no valid seeding data found). **This is a development feature.** 
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+try {
+    final result = api_instance.seedDatabase();
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->seedDatabase: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**SeedDatabase200Response**](SeedDatabase200Response.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

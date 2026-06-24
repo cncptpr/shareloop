@@ -172,6 +172,13 @@ class Message(Base):
     rent_request: Mapped["RentRequest"] = relationship(back_populates="messages")
 
 
+class SeedMeta(Base):
+    __tablename__ = "seed_meta"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    seeded_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
 class RentOffer(Base):
     __tablename__ = "rent_offers"
 

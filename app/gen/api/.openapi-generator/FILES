@@ -22,7 +22,9 @@ doc/RentOffer.md
 doc/RentRequestDetail.md
 doc/RentRequestOverview.md
 doc/ReorderEntry.md
+doc/SeedDatabase200Response.md
 doc/SendMessageRequest.md
+doc/ServerInfo.md
 doc/UpdateItemRequest.md
 doc/UploadItemImageRequest.md
 doc/UploadItemImageResponse.md
@@ -57,7 +59,9 @@ lib/model/rent_offer.dart
 lib/model/rent_request_detail.dart
 lib/model/rent_request_overview.dart
 lib/model/reorder_entry.dart
+lib/model/seed_database200_response.dart
 lib/model/send_message_request.dart
+lib/model/server_info.dart
 lib/model/update_item_request.dart
 lib/model/upload_item_image_request.dart
 lib/model/upload_item_image_response.dart

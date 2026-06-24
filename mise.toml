@@ -5,7 +5,7 @@ dir = "server"
 
 [tasks."server:api:gen"]
 description = "Generate Pydantic models from the OpenAPI spec"
-run = "uv run datamodel-codegen --input ../api/shareloop.openapi.yaml --output src/models/openapi.py --field-constraints --snake-case-field --base-class src.models.base.ApiBaseModel"
+run = "uv run datamodel-codegen --input ../api/shareloop.openapi.yaml --output src/models/openapi.py --field-constraints --snake-case-field --base-class src.models.base.ApiBaseModel --output-datetime-class datetime"
 dir = "server"
 sources = ["../api/*.openapi.yaml"]
 outputs = ["./src/models/openapi.py"]
@@ -19,24 +19,20 @@ description = "Run database migrations via Alembic"
 run = "uv run alembic upgrade head"
 dir = "server"
 
-[tasks."server:db:seed"]
-description = "Run the database seed script"
-run = "uv run python -m seed"
-dir = "server"
 
 [tasks."server:lint"]
 description = "Run ruff linter"
-run = "uv run ruff check src/ seed.py"
+run = "uv run ruff check src/"
 dir = "server"
 
 [tasks."server:typecheck"]
 description = "Run mypy type checker"
-run = "uv run mypy src/ seed.py"
+run = "uv run mypy src/"
 dir = "server"
 
 [tasks."server:check"]
 description = "Run lint and typecheck"
-run = "uv run ruff check src/ seed.py && uv run mypy src/ seed.py"
+run = "uv run ruff check src/ && uv run mypy src/"
 dir = "server"
 depends = ["server:lint", "server:typecheck"]
 

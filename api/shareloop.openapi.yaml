@@ -550,6 +550,66 @@ paths:
         "500":
           description: Internal server error
 
+  /info:
+    get:
+      summary: Get server info
+      description: Returns server version, API version, and seeding status
+      operationId: getInfo
+      responses:
+        "200":
+          description: Server info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerInfo"
+        "500":
+          description: Internal server error
+
+  /seed:
+    post:
+      summary: Seed the database with demo data
+      description: |
+        Triggers database seeding with demo data from the configured seeding
+        directory. This will DELETE all existing data. Returns 400 if seeding
+        is disabled (no valid seeding data found). **This is a development
+        feature.**
+      operationId: seedDatabase
+      responses:
+        "200":
+          description: Seeding completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: Seeding is disabled
+        "500":
+          description: Seeding failed
+
+  /seed/decline:
+    post:
+      summary: Decline seeding prompt
+      description: |
+        Records that the user declined the seeding prompt. Sets the seeding
+        timestamp without performing the actual seeding. Returns 400 if
+        seeding is disabled.
+      operationId: declineSeed
+      responses:
+        "200":
+          description: Decline recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: Seeding is disabled
+
   /auth/logout:
     post:
       summary: Logout
@@ -566,6 +626,25 @@ paths:
 
 components:
   schemas:
+    ServerInfo:
+      type: object
+      required: [serverVersion, apiVersion]
+      properties:
+        serverVersion:
+          type: string
+          description: Server version (bumped manually)
+        apiVersion:
+          type: string
+          description: API version
+        seeding:
+          type: string
+          nullable: true
+          enum: [prompt, enabled]
+          description: |
+            Seeding status. `null` = disabled (no seed data configured),
+            `"prompt"` = seed data available but never seeded,
+            `"enabled"` = seeding already performed, available for re-seed.
+
     ItemOverview:
       type: object
       required: [id, title, description, author, score, category]

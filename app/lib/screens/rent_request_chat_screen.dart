@@ -161,7 +161,7 @@ class _RentRequestChatScreenState
             const Text('Möchtest du dieses Angebot akzeptieren?'),
             const SizedBox(height: 12),
             Text(
-              '${offer.startDate.toLocal().toString().substring(0, 10)} – ${offer.endDate.toLocal().toString().substring(0, 10)}',
+              '${_formatDateSimple(offer.startDate)} – ${_formatDateSimple(offer.endDate)}',
               style: Theme.of(context).textTheme.titleSmall,
             ),
           ],
@@ -226,7 +226,7 @@ class _RentRequestChatScreenState
                     Expanded(
                       child: Text(
                         'Der vereinbarte Ausleihzeitraum beginnt erst am '
-                        '${acceptedOffer.startDate.toLocal().toString().substring(0, 10)}.',
+                        '${_formatDateSimple(acceptedOffer.startDate)}.',
                         style: TextStyle(color: Colors.orange[900], fontSize: 13),
                       ),
                     ),
@@ -296,7 +296,7 @@ class _RentRequestChatScreenState
                     Expanded(
                       child: Text(
                         'Der vereinbarte Ausleihzeitraum endet erst am '
-                        '${acceptedOffer.endDate.toLocal().toString().substring(0, 10)}.',
+                        '${_formatDateSimple(acceptedOffer.endDate)}.',
                         style: TextStyle(color: Colors.orange[900], fontSize: 13),
                       ),
                     ),
@@ -559,8 +559,25 @@ class _RentRequestChatScreenState
   }
 }
 
-String _formatDate(BuildContext context, DateTime date) {
-  return MaterialLocalizations.of(context).formatShortDate(date.toLocal());
+String _formatDateSimple(DateTime dt) {
+  final d = dt.toLocal();
+  return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
+}
+
+String _formatMessageTime(DateTime dt) {
+  final local = dt.toLocal();
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final yesterday = today.subtract(const Duration(days: 1));
+  final msgDate = DateTime(local.year, local.month, local.day);
+  final time = '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+  if (msgDate == today) return time;
+  if (msgDate == yesterday) return 'Gestern $time';
+  const wd = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+  if (msgDate.isAfter(today.subtract(const Duration(days: 7)))) {
+    return '${wd[local.weekday - 1]} $time';
+  }
+  return '${local.day.toString().padLeft(2, '0')}.${local.month.toString().padLeft(2, '0')}. $time';
 }
 
 String _statusText(RentRequestDetail req) {
@@ -649,8 +666,8 @@ class _OfferBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final startStr = _formatDate(context, offer.startDate);
-    final endStr = _formatDate(context, offer.endDate);
+    final startStr = _formatDateSimple(offer.startDate);
+    final endStr = _formatDateSimple(offer.endDate);
 
     return Align(
       alignment: isMyOffer ? Alignment.centerRight : Alignment.centerLeft,
@@ -802,8 +819,7 @@ class _SystemNoteBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = _formatDate(context, createdAt);
-    final timeStr = createdAt.toLocal().toString().substring(11, 16);
+    final ts = _formatMessageTime(createdAt);
     return Center(
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
@@ -827,7 +843,7 @@ class _SystemNoteBubble extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              '$dateStr $timeStr',
+              ts,
               style: TextStyle(fontSize: 11, color: Colors.grey[500]),
             ),
           ],
@@ -872,7 +888,7 @@ class _MessageBubble extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              message.createdAt.toLocal().toString().substring(11, 16),
+              _formatMessageTime(message.createdAt),
               style: TextStyle(fontSize: 11, color: Colors.grey[600]),
             ),
           ],

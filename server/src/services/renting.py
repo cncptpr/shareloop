@@ -120,24 +120,6 @@ def _offer_from_row(offer: RentOffer) -> ApiRentOffer:
 async def create_rent_request(
     db: AsyncSession, user_id: int, item_id: int
 ) -> RentRequestDetail | None:
-    stmt = (
-        select(RentRequest)
-        .where(
-            RentRequest.item_id == item_id,
-            RentRequest.requester_id == user_id,
-            RentRequest.returned_at.is_(None),
-        )
-        .order_by(RentRequest.created_at.desc())
-        .limit(1)
-    )
-    result = await db.execute(stmt)
-    existing = result.scalar_one_or_none()
-    if existing is not None:
-        data = await _get_request_detail_row(db, existing.id)
-        if data is None:
-            return None
-        return _detail_from_row(*data, user_id)
-
     rr = RentRequest(item_id=item_id, requester_id=user_id)
     db.add(rr)
     await db.commit()

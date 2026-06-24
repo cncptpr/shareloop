@@ -18,7 +18,10 @@ enum Routes {
   go(BuildContext ctx) => ctx.go(route);
 }
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final GoRouter router = GoRouter(
+  navigatorKey: rootNavigatorKey,
   routes: <RouteBase>[
     StatefulShellRoute.indexedStack(
       builder: (ctx, state, navShell) => Scaffold(

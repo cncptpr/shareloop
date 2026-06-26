@@ -957,43 +957,48 @@ wheels = [
 [[package]]
 name = "shareloop-server"
 version = "1.0.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
-    { name = "datamodel-code-generator" },
     { name = "fastapi" },
     { name = "geoalchemy2" },
-    { name = "mypy" },
     { name = "psycopg2-binary" },
     { name = "pydantic", extra = ["email"] },
     { name = "pydantic-settings" },
     { name = "pyyaml" },
-    { name = "ruff" },
     { name = "sqlalchemy", extra = ["asyncio"] },
     { name = "typer" },
-    { name = "types-psycopg2" },
     { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "datamodel-code-generator" },
+    { name = "mypy" },
+    { name = "ruff" },
+    { name = "types-psycopg2" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = ">=1.13" },
     { name = "asyncpg", specifier = ">=0.29" },
-    { name = "datamodel-code-generator", specifier = ">=0.25" },
+    { name = "datamodel-code-generator", marker = "extra == 'dev'", specifier = ">=0.25" },
     { name = "fastapi", specifier = ">=0.110" },
     { name = "geoalchemy2", specifier = ">=0.14" },
-    { name = "mypy", specifier = ">=2.0" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=2.0" },
     { name = "psycopg2-binary", specifier = ">=2.9" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.0" },
     { name = "pyyaml", specifier = ">=6.0" },
-    { name = "ruff", specifier = ">=0.5" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.5" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0" },
     { name = "typer", specifier = ">=0.9" },
-    { name = "types-psycopg2" },
+    { name = "types-psycopg2", marker = "extra == 'dev'" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.27" },
 ]
+provides-extras = ["dev"]
 
 [[package]]
 name = "shellingham"

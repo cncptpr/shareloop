@@ -2,10 +2,8 @@ FROM python:3.13-slim AS build
 
 WORKDIR /build
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
+RUN pip install --no-cache-dir .
 
 FROM python:3.13-slim
 
@@ -14,6 +12,7 @@ RUN groupadd -r app && useradd -r -g app -u 1000 app
 WORKDIR /app
 
 COPY --from=build /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
+COPY --from=build /usr/local/bin /usr/local/bin
 COPY --from=build /build /app
 
 ENV UPLOADS_DIR=/uploads

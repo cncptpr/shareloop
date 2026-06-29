@@ -88,6 +88,8 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**searchItems**](doc//DefaultApi.md#searchitems) | **POST** /items/search | Search items
 *DefaultApi* | [**seedDatabase**](doc//DefaultApi.md#seeddatabase) | **POST** /seed | Seed the database with demo data
 *DefaultApi* | [**sendMessage**](doc//DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
+*DefaultApi* | [**submitItemRating**](doc//DefaultApi.md#submititemrating) | **POST** /rent-requests/{requestId}/item-rating | Rate the borrowed item after return
+*DefaultApi* | [**submitUserRating**](doc//DefaultApi.md#submituserrating) | **POST** /rent-requests/{requestId}/user-rating | Rate the other participant after return
 *DefaultApi* | [**updateItem**](doc//DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 *DefaultApi* | [**uploadItemImage**](doc//DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
 *DefaultApi* | [**verify**](doc//DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
@@ -103,6 +105,7 @@ Class | Method | HTTP request | Description
  - [ItemDetail](doc//ItemDetail.md)
  - [ItemEditDetail](doc//ItemEditDetail.md)
  - [ItemOverview](doc//ItemOverview.md)
+ - [ItemRating](doc//ItemRating.md)
  - [ItemSearchRequest](doc//ItemSearchRequest.md)
  - [LatLng](doc//LatLng.md)
  - [LoginRequest](doc//LoginRequest.md)
@@ -118,10 +121,13 @@ Class | Method | HTTP request | Description
  - [SeedDatabase200Response](doc//SeedDatabase200Response.md)
  - [SendMessageRequest](doc//SendMessageRequest.md)
  - [ServerInfo](doc//ServerInfo.md)
+ - [SubmitItemRatingRequest](doc//SubmitItemRatingRequest.md)
+ - [SubmitUserRatingRequest](doc//SubmitUserRatingRequest.md)
  - [UpdateItemRequest](doc//UpdateItemRequest.md)
  - [UploadItemImageRequest](doc//UploadItemImageRequest.md)
  - [UploadItemImageResponse](doc//UploadItemImageResponse.md)
  - [User](doc//User.md)
+ - [UserRating](doc//UserRating.md)
 
 
 ## Documentation For Authorization

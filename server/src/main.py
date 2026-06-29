@@ -32,6 +32,7 @@ async def startup():
     os.makedirs(settings.uploads_dir, exist_ok=True)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await apply_compat_migrations(conn)
     await apply_migrations()
     await init_seeding()
 
@@ -52,6 +53,45 @@ async def init_seeding():
             db.add(SeedMeta(id=1))
             await db.commit()
             logger.info("SeedMeta Zeile angelegt")
+
+
+async def apply_compat_migrations(conn):
+    await conn.execute(
+        text(
+            """
+            DO $$
+            BEGIN
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_name = 'item_ratings'
+                      AND column_name = 'description_accuracy'
+                ) THEN
+                    ALTER TABLE item_ratings
+                        ADD COLUMN IF NOT EXISTS cleanliness INTEGER;
+                    UPDATE item_ratings
+                    SET cleanliness = ROUND(
+                        (description_accuracy + functionality) / 2.0
+                    )::INTEGER
+                    WHERE cleanliness IS NULL;
+                    ALTER TABLE item_ratings
+                        ALTER COLUMN cleanliness SET NOT NULL;
+                    ALTER TABLE item_ratings
+                        DROP COLUMN description_accuracy,
+                        DROP COLUMN functionality;
+                    ALTER TABLE item_ratings
+                        ADD CONSTRAINT ck_item_rating_cleanliness
+                        CHECK (cleanliness BETWEEN 1 AND 5);
+                END IF;
+            END $$
+            """
+        )
+    )
+    await conn.execute(
+        text(
+            "ALTER TABLE item_ratings ALTER COLUMN overall TYPE DOUBLE PRECISION "
+            "USING overall::double precision"
+        )
+    )
 
 
 async def apply_migrations():

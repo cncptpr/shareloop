@@ -26,6 +26,9 @@ Method | HTTP request | Description
 [**getItemEdit**](DefaultApi.md#getitemedit) | **GET** /items/{itemId}/edit | Get item edit details (owner only)
 [**getRentRequest**](DefaultApi.md#getrentrequest) | **GET** /rent-requests/{requestId} | Get a single rent request with messages and offers
 [**getRentRequests**](DefaultApi.md#getrentrequests) | **GET** /rent-requests | List rent requests for current user
+[**getUserItems**](DefaultApi.md#getuseritems) | **GET** /users/{userId}/items | Get user's items
+[**getUserProfile**](DefaultApi.md#getuserprofile) | **GET** /users/{userId}/profile | Get user profile
+[**getUserRatings**](DefaultApi.md#getuserratings) | **GET** /users/{userId}/ratings | Get user ratings
 [**login**](DefaultApi.md#login) | **POST** /auth/login | Login
 [**logout**](DefaultApi.md#logout) | **POST** /auth/logout | Logout
 [**markRentRequestRead**](DefaultApi.md#markrentrequestread) | **POST** /rent-requests/{requestId}/mark-read | Mark a rent request as read
@@ -800,6 +803,135 @@ This endpoint does not need any parameter.
 ### Authorization
 
 [bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getUserItems**
+> List<ItemOverview> getUserItems(userId)
+
+Get user's items
+
+Returns all items belonging to the specified user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    final result = api_instance.getUserItems(userId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getUserItems: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+[**List<ItemOverview>**](ItemOverview.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getUserProfile**
+> UserProfile getUserProfile(userId)
+
+Get user profile
+
+Returns public profile information for a user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    final result = api_instance.getUserProfile(userId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getUserProfile: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+[**UserProfile**](UserProfile.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getUserRatings**
+> List<UserRatingDetail> getUserRatings(userId)
+
+Get user ratings
+
+Returns all user ratings received by the specified user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    final result = api_instance.getUserRatings(userId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getUserRatings: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+[**List<UserRatingDetail>**](UserRatingDetail.md)
+
+### Authorization
+
+No authorization required
 
 ### HTTP request headers
 

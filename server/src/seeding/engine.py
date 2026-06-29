@@ -14,12 +14,14 @@ from src.config import settings
 from src.db.models import (
     Item,
     ItemImage,
+    ItemRating,
     Message,
     Profile,
     RentOffer,
     RentRequest,
     Session,
     User,
+    UserRating,
 )
 from src.seeding.reader import load_and_validate
 
@@ -70,6 +72,8 @@ async def run_seed(db: AsyncSession) -> None:
 
     resolved: dict[str, int] = {}
 
+    await db.execute(delete(ItemRating))
+    await db.execute(delete(UserRating))
     await db.execute(delete(Message))
     await db.execute(delete(RentOffer))
     await db.execute(delete(RentRequest))
@@ -216,6 +220,39 @@ async def run_seed(db: AsyncSession) -> None:
             rt = _parse_ts(req_data.get("returned_at", "now"))
             rr.returned_at = rt
             event_times.append(rt)
+
+        for ur_data in req_data.get("user_ratings", []):
+            reviewer_id = _resolve(ur_data["reviewer"], resolved)
+            ur = UserRating(
+                rent_request_id=rr.id,
+                reviewer_id=reviewer_id,
+                reviewee_id=requester_id if reviewer_id == owner_id else owner_id,
+                friendliness=ur_data["friendliness"],
+                punctuality=ur_data["punctuality"],
+                reliability=ur_data["reliability"],
+                communication=ur_data.get("communication"),
+                careful_handling=ur_data.get("carefulHandling"),
+                comment=ur_data.get("comment"),
+                created_at=_parse_ts(ur_data.get("created_at", "now")),
+            )
+            db.add(ur)
+
+        for ir_data in req_data.get("item_ratings", []):
+            reviewer_id = _resolve(ir_data["reviewer"], resolved)
+            condition = ir_data["condition"]
+            cleanliness = ir_data["cleanliness"]
+            overall = round((condition + cleanliness) / 2.0, 1)
+            ir = ItemRating(
+                rent_request_id=rr.id,
+                item_id=item_id,
+                reviewer_id=reviewer_id,
+                condition=condition,
+                cleanliness=cleanliness,
+                overall=overall,
+                comment=ir_data.get("comment"),
+                created_at=_parse_ts(ir_data.get("created_at", "now")),
+            )
+            db.add(ir)
 
         read_at = _parse_ts(req_data.get("read_at", "now"))
         event_times.append(read_at)

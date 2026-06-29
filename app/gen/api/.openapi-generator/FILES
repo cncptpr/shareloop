@@ -34,7 +34,9 @@ doc/UpdateItemRequest.md
 doc/UploadItemImageRequest.md
 doc/UploadItemImageResponse.md
 doc/User.md
+doc/UserProfile.md
 doc/UserRating.md
+doc/UserRatingDetail.md
 git_push.sh
 lib/api.dart
 lib/api/default_api.dart
@@ -77,5 +79,7 @@ lib/model/update_item_request.dart
 lib/model/upload_item_image_request.dart
 lib/model/upload_item_image_response.dart
 lib/model/user.dart
+lib/model/user_profile.dart
 lib/model/user_rating.dart
+lib/model/user_rating_detail.dart
 pubspec.yaml

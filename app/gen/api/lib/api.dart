@@ -61,7 +61,9 @@ part 'model/update_item_request.dart';
 part 'model/upload_item_image_request.dart';
 part 'model/upload_item_image_response.dart';
 part 'model/user.dart';
+part 'model/user_profile.dart';
 part 'model/user_rating.dart';
+part 'model/user_rating_detail.dart';
 
 
 /// An [ApiClient] instance that uses the default values obtained from

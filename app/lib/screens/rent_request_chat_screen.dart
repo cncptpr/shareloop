@@ -221,15 +221,20 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.warning_amber,
-                        color: Colors.orange[700], size: 20),
+                    Icon(
+                      Icons.warning_amber,
+                      color: Colors.orange[700],
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Der vereinbarte Ausleihzeitraum beginnt erst am '
                         '${_formatDateSimple(acceptedOffer.startDate)}.',
-                        style:
-                            TextStyle(color: Colors.orange[900], fontSize: 13),
+                        style: TextStyle(
+                          color: Colors.orange[900],
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
@@ -293,8 +298,11 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.warning_amber,
-                        color: Colors.orange[700], size: 20),
+                    Icon(
+                      Icons.warning_amber,
+                      color: Colors.orange[700],
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -402,8 +410,11 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                 child: const Text('Abbrechen'),
               ),
               FilledButton.icon(
-                onPressed:
-                    userRatingComplete ? () => Navigator.pop(ctx, true) : null,
+                onPressed: userRatingComplete
+                    ? () {
+                        if (ctx.mounted) Navigator.pop(ctx, true);
+                      }
+                    : null,
                 icon: const Icon(Icons.star, size: 18),
                 label: const Text('Bewertung senden'),
               ),
@@ -413,6 +424,10 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
       ),
     );
     if (submitted != true) {
+      userCommentController.dispose();
+      return;
+    }
+    if (!context.mounted) {
       userCommentController.dispose();
       return;
     }
@@ -496,8 +511,11 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                 child: const Text('Abbrechen'),
               ),
               FilledButton.icon(
-                onPressed:
-                    ratingComplete ? () => Navigator.pop(ctx, true) : null,
+                onPressed: ratingComplete
+                    ? () {
+                        if (ctx.mounted) Navigator.pop(ctx, true);
+                      }
+                    : null,
                 icon: const Icon(Icons.star, size: 18),
                 label: const Text('Bewertung senden'),
               ),
@@ -507,6 +525,10 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
       ),
     );
     if (submitted != true) {
+      commentController.dispose();
+      return;
+    }
+    if (!context.mounted) {
       commentController.dispose();
       return;
     }

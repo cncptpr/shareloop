@@ -69,8 +69,10 @@ class _Content extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item.title,
-                    style: Theme.of(context).textTheme.headlineMedium),
+                Text(
+                  item.title,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
                 const SizedBox(height: 8),
                 Text(item.description),
                 const SizedBox(height: 16),
@@ -395,8 +397,12 @@ class _FullscreenGalleryState extends State<_FullscreenGallery> {
                       child: CircularProgressIndicator(color: Colors.white));
                 },
                 errorBuilder: (_, __, ___) => const Center(
-                    child: Icon(Icons.broken_image,
-                        color: Colors.white54, size: 64)),
+                  child: Icon(
+                    Icons.broken_image,
+                    color: Colors.white54,
+                    size: 64,
+                  ),
+                ),
               ),
             ),
           );
@@ -416,8 +422,9 @@ class _ProfileCard extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
-            child: Text(
-                author.name.isNotEmpty ? author.name[0].toUpperCase() : '?')),
+          child:
+              Text(author.name.isNotEmpty ? author.name[0].toUpperCase() : '?'),
+        ),
         title: Text(author.name),
       ),
     );

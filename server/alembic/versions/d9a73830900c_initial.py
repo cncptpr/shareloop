@@ -67,7 +67,6 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['author_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('idx_items_location', 'items', ['location'], unique=False, postgresql_using='gist')
     op.create_table('item_images',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('item_id', sa.Integer(), nullable=False),
@@ -182,7 +181,6 @@ def downgrade() -> None:
     op.drop_table('rent_offers')
     op.drop_table('rent_requests')
     op.drop_table('item_images')
-    op.drop_index('idx_items_location', table_name='items', postgresql_using='gist')
     op.drop_table('items')
     op.drop_table('sessions')
     op.drop_table('profiles')

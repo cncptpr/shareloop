@@ -21,6 +21,8 @@ target_metadata = Base.metadata
 def include_object(obj, name, type_, reflected, compare_to):
     if type_ == "table" and name == "spatial_ref_sys":
         return False
+    if type_ == "index" and name == "idx_items_location":
+        return False
     return True
 
 

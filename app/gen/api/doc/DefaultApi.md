@@ -28,6 +28,7 @@ Method | HTTP request | Description
 [**logout**](DefaultApi.md#logout) | **POST** /auth/logout | Logout
 [**markRentRequestRead**](DefaultApi.md#markrentrequestread) | **POST** /rent-requests/{requestId}/mark-read | Mark a rent request as read
 [**refresh**](DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
+[**register**](DefaultApi.md#register) | **POST** /auth/register | Register a new user
 [**searchItems**](DefaultApi.md#searchitems) | **POST** /items/search | Search items
 [**seedDatabase**](DefaultApi.md#seeddatabase) | **POST** /seed | Seed the database with demo data
 [**sendMessage**](DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
@@ -868,6 +869,47 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **refreshRequest** | [**RefreshRequest**](RefreshRequest.md)|  | 
+
+### Return type
+
+[**LoginResult**](LoginResult.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **register**
+> LoginResult register(registerRequest)
+
+Register a new user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+final registerRequest = RegisterRequest(); // RegisterRequest | 
+
+try {
+    final result = api_instance.register(registerRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->register: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **registerRequest** | [**RegisterRequest**](RegisterRequest.md)|  | 
 
 ### Return type
 

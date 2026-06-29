@@ -488,6 +488,30 @@ paths:
         "500":
           description: Internal server error
 
+  /auth/register:
+    post:
+      summary: Register a new user
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: Registration successful, auto-logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResult"
+        "409":
+          description: Email already exists
+        "422":
+          description: Validation error
+        "500":
+          description: Internal server error
+
   /auth/login:
     post:
       summary: Login
@@ -700,6 +724,20 @@ components:
         lng:
           type: number
           format: double
+
+    RegisterRequest:
+      type: object
+      required: [email, password, name]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+        name:
+          type: string
+          minLength: 1
 
     LoginRequest:
       type: object

@@ -84,6 +84,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**logout**](doc//DefaultApi.md#logout) | **POST** /auth/logout | Logout
 *DefaultApi* | [**markRentRequestRead**](doc//DefaultApi.md#markrentrequestread) | **POST** /rent-requests/{requestId}/mark-read | Mark a rent request as read
 *DefaultApi* | [**refresh**](doc//DefaultApi.md#refresh) | **POST** /auth/refresh | Refresh tokens
+*DefaultApi* | [**register**](doc//DefaultApi.md#register) | **POST** /auth/register | Register a new user
 *DefaultApi* | [**searchItems**](doc//DefaultApi.md#searchitems) | **POST** /items/search | Search items
 *DefaultApi* | [**seedDatabase**](doc//DefaultApi.md#seeddatabase) | **POST** /seed | Seed the database with demo data
 *DefaultApi* | [**sendMessage**](doc//DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
@@ -109,6 +110,7 @@ Class | Method | HTTP request | Description
  - [Message](doc//Message.md)
  - [Person](doc//Person.md)
  - [RefreshRequest](doc//RefreshRequest.md)
+ - [RegisterRequest](doc//RegisterRequest.md)
  - [RentOffer](doc//RentOffer.md)
  - [RentRequestDetail](doc//RentRequestDetail.md)
  - [RentRequestOverview](doc//RentRequestOverview.md)

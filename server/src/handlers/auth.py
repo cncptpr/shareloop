@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth.password import verify_password
+from src.auth.password import hash_password, verify_password
 from src.auth.tokens import generate_token_pair, hash_token
 from src.database import get_db
-from src.db.models import Session, User
+from src.db.models import Profile, Session, User
 from src.dependencies import get_current_user, get_current_user_with_token
-from src.models.openapi import LoginRequest, LoginResult, RefreshRequest
+from src.models.openapi import LoginRequest, LoginResult, RefreshRequest, RegisterRequest
 
 router = APIRouter(tags=["auth"])
 
@@ -24,6 +24,53 @@ def _user_to_api(user: User) -> dict:
         "lastOnlineAt": user.last_online_at,
         "createdAt": user.created_at,
     }
+
+
+@router.post("/api/auth/register", status_code=status.HTTP_201_CREATED)
+async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.email == body.email))
+    if result.scalar_one_or_none() is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already registered",
+        )
+
+    user = User(
+        email=body.email,
+        password_hash=hash_password(body.password),
+    )
+    db.add(user)
+    await db.flush()
+
+    profile = Profile(
+        id=user.id,
+        name=body.name,
+    )
+    db.add(profile)
+    await db.flush()
+
+    (access_token, access_hash), (refresh_token, refresh_hash) = generate_token_pair()
+    now = datetime.now(UTC)
+    access_expiry = now + ACCESS_TOKEN_LIFETIME
+    refresh_expiry = now + REFRESH_TOKEN_LIFETIME
+
+    session = Session(
+        user_id=user.id,
+        token_hash=access_hash,
+        expires_at=access_expiry,
+        refresh_token_hash=refresh_hash,
+        refresh_expires_at=refresh_expiry,
+    )
+    db.add(session)
+    await db.commit()
+
+    return LoginResult(
+        user=_user_to_api(user),
+        access_token=access_token,
+        refresh_token=refresh_token,
+        access_expires_at=access_expiry,
+        refresh_expires_at=refresh_expiry,
+    )
 
 
 @router.post("/api/auth/login")

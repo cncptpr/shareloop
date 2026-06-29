@@ -5,6 +5,7 @@ import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/edit_item_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
+import 'package:shareloop/screens/profile_screen.dart';
 import 'package:shareloop/screens/rent_request_chat_screen.dart';
 import 'package:shareloop/state/auth.dart' show authProvider;
 import 'package:shareloop/state/item_detail.dart';
@@ -426,6 +427,15 @@ class _ProfileCard extends StatelessWidget {
               Text(author.name.isNotEmpty ? author.name[0].toUpperCase() : '?'),
         ),
         title: Text(author.name),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ProfileScreen(userId: author.id),
+            ),
+          );
+        },
       ),
     );
   }

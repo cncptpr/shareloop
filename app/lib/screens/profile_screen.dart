@@ -1,33 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:openapi/api.dart' show ServerInfo, User;
+import 'package:openapi/api.dart' show ItemOverview, ServerInfo, UserProfile, UserRatingDetail;
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/state/auth.dart';
+import 'package:shareloop/state/profile.dart';
 import 'package:shareloop/state/seeding.dart';
 
 class ProfileScreen extends ConsumerWidget {
-  const ProfileScreen({super.key});
+  final int? userId;
+
+  const ProfileScreen({super.key, this.userId});
 
   @override
-  Widget build(BuildContext ctx, WidgetRef ref) {
-    final user = ref.watch(authProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUser = ref.watch(authProvider);
     final serverInfo = ref.watch(serverInfoProvider);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: user.when(
-            loading: () => const CircularProgressIndicator(),
-            error: (_, __) => const Text("Auth failed"),
-            data: (u) {
-              if (u == null) return _notLoggedIn(ctx, ref, serverInfo);
-              return _loggedIn(ctx, ref, u, serverInfo);
-            },
-          ),
-        ),
+
+    return currentUser.when(
+      loading: () => const Scaffold(
+        appBar: _ProfileAppBar(),
+        body: Center(child: CircularProgressIndicator()),
       ),
+      error: (_, __) => const Scaffold(
+        appBar: _ProfileAppBar(),
+        body: Center(child: Text('Auth failed')),
+      ),
+      data: (user) {
+        if (user == null && userId == null) {
+          return Scaffold(
+            appBar: const _ProfileAppBar(),
+            body: _notLoggedIn(context, ref, serverInfo),
+          );
+        }
+        final targetUserId = userId ?? user!.id;
+        final isOwnProfile = user != null && targetUserId == user.id;
+        return _ProfileContent(
+          userId: targetUserId,
+          isOwnProfile: isOwnProfile,
+        );
+      },
     );
   }
 
@@ -38,58 +50,351 @@ class ProfileScreen extends ConsumerWidget {
   ) {
     final seedingAvailable =
         serverInfo.whenOrNull(data: (d) => d)?.seeding != null;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Text('Not logged in'),
-        const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: () => LoginScreen.push(ctx),
-          child: const Text('Log in'),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Not logged in'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => LoginScreen.push(ctx),
+              child: const Text('Log in'),
+            ),
+            if (seedingAvailable) ...[
+              const SizedBox(height: 24),
+              _SeedButton(ctx),
+            ],
+          ],
         ),
-        if (seedingAvailable) ...[
-          const SizedBox(height: 24),
-          _seedButton(ctx),
+      ),
+    );
+  }
+}
+
+class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _ProfileAppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(title: const Text('Profile'));
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _ProfileContent extends ConsumerWidget {
+  final int userId;
+  final bool isOwnProfile;
+
+  const _ProfileContent({
+    required this.userId,
+    required this.isOwnProfile,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncProfile = ref.watch(userProfileProvider(userId));
+    final asyncItems = ref.watch(userItemsProvider(userId));
+    final asyncRatings = ref.watch(userRatingsProvider(userId));
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profile'),
+        actions: [
+          if (isOwnProfile)
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () async {
+                await logout();
+                ref.invalidate(authProvider);
+              },
+            ),
         ],
-      ],
+      ),
+      body: asyncProfile.when(
+        data: (profile) {
+          final items = asyncItems.value ?? [];
+          final ratings = asyncRatings.value ?? [];
+          return _buildBody(context, ref, profile, items, ratings);
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('$e')),
+      ),
     );
   }
 
-  Widget _loggedIn(
-    BuildContext ctx,
+  Widget _buildBody(
+    BuildContext context,
     WidgetRef ref,
-    User u,
-    AsyncValue<ServerInfo?> serverInfo,
+    UserProfile profile,
+    List<ItemOverview> items,
+    List<UserRatingDetail> ratings,
   ) {
-    final seedingAvailable =
-        serverInfo.whenOrNull(data: (d) => d)?.seeding != null;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Text(AppConfig.apiBaseUrl),
-        const SizedBox(height: 16),
-        Text('ID: ${u.id}'),
-        Text('Email: ${u.email}'),
-        Text('Created: ${u.createdAt}'),
-        const SizedBox(height: 24),
-        if (seedingAvailable) ...[
-          _seedButton(ctx),
+    final months = _monthsSince(profile.createdAt);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(child: _ProfileHeader(name: profile.name)),
           const SizedBox(height: 16),
+          _StatsRow(profile: profile, months: months),
+          const SizedBox(height: 16),
+          if (!isOwnProfile) ... [
+            _FollowButton(),
+            const SizedBox(height: 16),
+          ],
+          if (profile.bio != null && profile.bio!.isNotEmpty) ... [
+            _BioSection(bio: profile.bio!),
+            const SizedBox(height: 16),
+          ],
+          _SectionTitle(title: 'Inserate (${items.length})'),
+          const SizedBox(height: 8),
+          ...items.map((item) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: _ItemCard(item: item),
+          )),
+          if (items.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: Text('Keine Inserate'),
+            ),
+          _SectionTitle(title: 'Bewertungen (${ratings.length})'),
+          const SizedBox(height: 8),
+          ...ratings.map((r) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: _RatingCard(rating: r),
+          )),
+          if (ratings.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: Text('Keine Bewertungen'),
+            ),
+          if (isOwnProfile) ... [
+            const SizedBox(height: 16),
+            Center(child: _SeedButton(context)),
+          ],
         ],
-        ElevatedButton(
-          onPressed: () async {
-            await logout();
-            ref.invalidate(authProvider);
-          },
-          child: const Text('Logout'),
+      ),
+    );
+  }
+
+  int _monthsSince(DateTime date) {
+    final now = DateTime.now();
+    return (now.year - date.year) * 12 + (now.month - date.month);
+  }
+}
+
+class _ProfileHeader extends StatelessWidget {
+  final String name;
+
+  const _ProfileHeader({required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 48,
+          child: Text(
+            name.isNotEmpty ? name[0].toUpperCase() : '?',
+            style: const TextStyle(fontSize: 36),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          name,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
       ],
     );
   }
+}
 
-  Widget _seedButton(BuildContext ctx) {
+class _StatsRow extends StatelessWidget {
+  final UserProfile profile;
+  final int months;
+
+  const _StatsRow({required this.profile, required this.months});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: _StatBox(
+          label: 'Bewertung',
+          value: profile.rating != null
+              ? '${profile.rating!.toStringAsFixed(1)} / 5'
+              : '\u2013',
+        )),
+        const SizedBox(width: 8),
+        Expanded(child: _StatBox(
+          label: 'Shares',
+          value: '${profile.shareCount ?? 0}',
+        )),
+        const SizedBox(width: 8),
+        Expanded(child: _StatBox(
+          label: 'Mitglied',
+          value: '$months Monate',
+        )),
+      ],
+    );
+  }
+}
+
+class _StatBox extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _StatBox({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FollowButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton(
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Follow kommt bald')),
+          );
+        },
+        child: const Text('Folgen'),
+      ),
+    );
+  }
+}
+
+class _BioSection extends StatelessWidget {
+  final String bio;
+
+  const _BioSection({required this.bio});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Text(
+        bio,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String title;
+
+  const _SectionTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: Theme.of(context).textTheme.titleMedium,
+    );
+  }
+}
+
+class _ItemCard extends StatelessWidget {
+  final ItemOverview item;
+
+  const _ItemCard({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: item.imageUuid != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Image.network(
+                  '${AppConfig.apiBaseUrl}/images/${item.imageUuid}',
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.image),
+                ),
+              )
+            : const Icon(Icons.image),
+        title: Text(item.title),
+        subtitle: Text('${item.score.toStringAsFixed(1)} \u2605'),
+      ),
+    );
+  }
+}
+
+class _RatingCard extends StatelessWidget {
+  final UserRatingDetail rating;
+
+  const _RatingCard({required this.rating});
+
+  @override
+  Widget build(BuildContext context) {
+    final overall =
+        (rating.friendliness + rating.punctuality + rating.reliability) / 3.0;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  rating.reviewer.name,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                Text('${overall.toStringAsFixed(1)} / 5'),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (rating.comment != null && rating.comment!.isNotEmpty)
+              Text(rating.comment!),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SeedButton extends StatelessWidget {
+  final BuildContext context;
+
+  const _SeedButton(this.context);
+
+  @override
+  Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      onPressed: () => _showSeedConfirmDialog(ctx),
+      onPressed: () => _showSeedConfirmDialog(context),
       icon: const Icon(Icons.storage),
       label: const Text('Demo-Daten einspielen'),
       style: ElevatedButton.styleFrom(

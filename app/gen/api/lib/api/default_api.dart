@@ -827,6 +827,186 @@ class DefaultApi {
     return null;
   }
 
+  /// Get user's items
+  ///
+  /// Returns all items belonging to the specified user
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> getUserItemsWithHttpInfo(int userId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/items'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Get user's items
+  ///
+  /// Returns all items belonging to the specified user
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<List<ItemOverview>?> getUserItems(int userId, { Future<void>? abortTrigger, }) async {
+    final response = await getUserItemsWithHttpInfo(userId, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      final responseBody = await _decodeBodyBytes(response);
+      return (await apiClient.deserializeAsync(responseBody, 'List<ItemOverview>') as List)
+        .cast<ItemOverview>()
+        .toList(growable: false);
+
+    }
+    return null;
+  }
+
+  /// Get user profile
+  ///
+  /// Returns public profile information for a user
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> getUserProfileWithHttpInfo(int userId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/profile'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Get user profile
+  ///
+  /// Returns public profile information for a user
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<UserProfile?> getUserProfile(int userId, { Future<void>? abortTrigger, }) async {
+    final response = await getUserProfileWithHttpInfo(userId, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UserProfile',) as UserProfile;
+    
+    }
+    return null;
+  }
+
+  /// Get user ratings
+  ///
+  /// Returns all user ratings received by the specified user
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> getUserRatingsWithHttpInfo(int userId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/ratings'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Get user ratings
+  ///
+  /// Returns all user ratings received by the specified user
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<List<UserRatingDetail>?> getUserRatings(int userId, { Future<void>? abortTrigger, }) async {
+    final response = await getUserRatingsWithHttpInfo(userId, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      final responseBody = await _decodeBodyBytes(response);
+      return (await apiClient.deserializeAsync(responseBody, 'List<UserRatingDetail>') as List)
+        .cast<UserRatingDetail>()
+        .toList(growable: false);
+
+    }
+    return null;
+  }
+
   /// Login
   ///
   /// Note: This method returns the HTTP [Response].

@@ -80,6 +80,9 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**getItemEdit**](doc//DefaultApi.md#getitemedit) | **GET** /items/{itemId}/edit | Get item edit details (owner only)
 *DefaultApi* | [**getRentRequest**](doc//DefaultApi.md#getrentrequest) | **GET** /rent-requests/{requestId} | Get a single rent request with messages and offers
 *DefaultApi* | [**getRentRequests**](doc//DefaultApi.md#getrentrequests) | **GET** /rent-requests | List rent requests for current user
+*DefaultApi* | [**getUserItems**](doc//DefaultApi.md#getuseritems) | **GET** /users/{userId}/items | Get user's items
+*DefaultApi* | [**getUserProfile**](doc//DefaultApi.md#getuserprofile) | **GET** /users/{userId}/profile | Get user profile
+*DefaultApi* | [**getUserRatings**](doc//DefaultApi.md#getuserratings) | **GET** /users/{userId}/ratings | Get user ratings
 *DefaultApi* | [**login**](doc//DefaultApi.md#login) | **POST** /auth/login | Login
 *DefaultApi* | [**logout**](doc//DefaultApi.md#logout) | **POST** /auth/logout | Logout
 *DefaultApi* | [**markRentRequestRead**](doc//DefaultApi.md#markrentrequestread) | **POST** /rent-requests/{requestId}/mark-read | Mark a rent request as read
@@ -127,7 +130,9 @@ Class | Method | HTTP request | Description
  - [UploadItemImageRequest](doc//UploadItemImageRequest.md)
  - [UploadItemImageResponse](doc//UploadItemImageResponse.md)
  - [User](doc//User.md)
+ - [UserProfile](doc//UserProfile.md)
  - [UserRating](doc//UserRating.md)
+ - [UserRatingDetail](doc//UserRatingDetail.md)
 
 
 ## Documentation For Authorization

@@ -25,7 +25,6 @@ from src.models.openapi import (
     RentRequestDetail,
     RentRequestOverview,
     SubmitItemRatingRequest,
-    SubmittedRentRatings,
     SubmitUserRatingRequest,
 )
 from src.models.openapi import (
@@ -520,17 +519,16 @@ async def confirm_return(
     return _detail_from_row(rr, item, requester, owner, user_id)
 
 
-async def submit_rent_ratings(
+async def submit_user_rating(
     db: AsyncSession,
     request_id: int,
     user_id: int,
     user_input: SubmitUserRatingRequest,
-    item_input: SubmitItemRatingRequest | None,
-) -> tuple[str, SubmittedRentRatings | None]:
+) -> tuple[str, ApiUserRating | None]:
     data = await _get_request_detail_row(db, request_id)
     if data is None:
         return "not_found", None
-    rr, item, requester, _ = data
+    rr, item, _, _ = data
     if user_id not in (rr.requester_id, item.author_id):
         return "forbidden", None
     if rr.returned_at is None:
@@ -539,15 +537,11 @@ async def submit_rent_ratings(
     is_requester = user_id == rr.requester_id
     if is_requester:
         valid_role_fields = (
-            user_input.communication is not None
-            and user_input.careful_handling is None
-            and item_input is not None
+            user_input.communication is not None and user_input.careful_handling is None
         )
     else:
         valid_role_fields = (
-            user_input.communication is None
-            and user_input.careful_handling is not None
-            and item_input is None
+            user_input.communication is None and user_input.careful_handling is not None
         )
     if not valid_role_fields:
         return "invalid", None
@@ -555,11 +549,6 @@ async def submit_rent_ratings(
     existing_user_rating = await _get_user_rating_by_reviewer(db, request_id, user_id)
     if existing_user_rating is not None:
         return "conflict", None
-    if is_requester:
-        existing_item_rating = await _get_item_rating_by_reviewer(db, request_id, user_id)
-        if existing_item_rating is not None:
-            return "conflict", None
-
     reviewee_id = item.author_id if is_requester else rr.requester_id
     user_comment = _normalize_comment(user_input.comment)
 
@@ -576,41 +565,60 @@ async def submit_rent_ratings(
     )
     db.add(user_rating)
 
-    item_rating = None
-    if item_input is not None:
-        item_rating = ItemRating(
-            rent_request_id=request_id,
-            item_id=item.id,
-            reviewer_id=user_id,
-            condition=item_input.condition,
-            cleanliness=item_input.cleanliness,
-            overall=(item_input.condition + item_input.cleanliness) / 2.0,
-            comment=_normalize_comment(item_input.comment),
-        )
-        db.add(item_rating)
-
     try:
         await db.flush()
         await db.refresh(user_rating)
-        if item_rating is not None:
-            await db.refresh(item_rating)
         await _refresh_profile_rating(db, reviewee_id)
-        if item_rating is not None:
-            await _refresh_item_score(db, item)
         await db.commit()
     except IntegrityError:
         await db.rollback()
         return "conflict", None
 
     await db.refresh(user_rating)
-    api_item_rating = None
-    if item_rating is not None:
-        await db.refresh(item_rating)
-        api_item_rating = _item_rating_from_row(item_rating, requester)
-    return "ok", SubmittedRentRatings(
-        user_rating=_user_rating_from_row(user_rating),
-        item_rating=api_item_rating,
+    return "ok", _user_rating_from_row(user_rating)
+
+
+async def submit_item_rating(
+    db: AsyncSession,
+    request_id: int,
+    user_id: int,
+    item_input: SubmitItemRatingRequest,
+) -> tuple[str, ApiItemRating | None]:
+    data = await _get_request_detail_row(db, request_id)
+    if data is None:
+        return "not_found", None
+    rr, item, requester, _ = data
+    if user_id != rr.requester_id:
+        return "forbidden", None
+    if rr.returned_at is None:
+        return "invalid", None
+
+    existing_item_rating = await _get_item_rating_by_reviewer(db, request_id, user_id)
+    if existing_item_rating is not None:
+        return "conflict", None
+
+    item_rating = ItemRating(
+        rent_request_id=request_id,
+        item_id=item.id,
+        reviewer_id=user_id,
+        condition=item_input.condition,
+        cleanliness=item_input.cleanliness,
+        overall=(item_input.condition + item_input.cleanliness) / 2.0,
+        comment=_normalize_comment(item_input.comment),
     )
+    db.add(item_rating)
+
+    try:
+        await db.flush()
+        await db.refresh(item_rating)
+        await _refresh_item_score(db, item)
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        return "conflict", None
+
+    await db.refresh(item_rating)
+    return "ok", _item_rating_from_row(item_rating, requester)
 
 
 def _normalize_comment(comment: str | None) -> str | None:

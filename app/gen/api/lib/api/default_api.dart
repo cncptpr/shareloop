@@ -1183,7 +1183,7 @@ class DefaultApi {
     return null;
   }
 
-  /// Rate the other participant and, for borrowers, the item after return
+  /// Rate the borrowed item after return
   ///
   /// Note: This method returns the HTTP [Response].
   ///
@@ -1191,14 +1191,14 @@ class DefaultApi {
   ///
   /// * [int] requestId (required):
   ///
-  /// * [SubmitRentRatingsRequest] submitRentRatingsRequest (required):
-  Future<Response> submitRentRatingsWithHttpInfo(int requestId, SubmitRentRatingsRequest submitRentRatingsRequest, { Future<void>? abortTrigger, }) async {
+  /// * [SubmitItemRatingRequest] submitItemRatingRequest (required):
+  Future<Response> submitItemRatingWithHttpInfo(int requestId, SubmitItemRatingRequest submitItemRatingRequest, { Future<void>? abortTrigger, }) async {
     // ignore: prefer_const_declarations
-    final path = r'/rent-requests/{requestId}/ratings'
+    final path = r'/rent-requests/{requestId}/item-rating'
       .replaceAll('{requestId}', requestId.toString());
 
     // ignore: prefer_final_locals
-    Object? postBody = submitRentRatingsRequest;
+    Object? postBody = submitItemRatingRequest;
 
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
@@ -1219,15 +1219,15 @@ class DefaultApi {
     );
   }
 
-  /// Rate the other participant and, for borrowers, the item after return
+  /// Rate the borrowed item after return
   ///
   /// Parameters:
   ///
   /// * [int] requestId (required):
   ///
-  /// * [SubmitRentRatingsRequest] submitRentRatingsRequest (required):
-  Future<SubmittedRentRatings?> submitRentRatings(int requestId, SubmitRentRatingsRequest submitRentRatingsRequest, { Future<void>? abortTrigger, }) async {
-    final response = await submitRentRatingsWithHttpInfo(requestId, submitRentRatingsRequest, abortTrigger: abortTrigger,);
+  /// * [SubmitItemRatingRequest] submitItemRatingRequest (required):
+  Future<ItemRating?> submitItemRating(int requestId, SubmitItemRatingRequest submitItemRatingRequest, { Future<void>? abortTrigger, }) async {
+    final response = await submitItemRatingWithHttpInfo(requestId, submitItemRatingRequest, abortTrigger: abortTrigger,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -1235,7 +1235,65 @@ class DefaultApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'SubmittedRentRatings',) as SubmittedRentRatings;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'ItemRating',) as ItemRating;
+    
+    }
+    return null;
+  }
+
+  /// Rate the other participant after return
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] requestId (required):
+  ///
+  /// * [SubmitUserRatingRequest] submitUserRatingRequest (required):
+  Future<Response> submitUserRatingWithHttpInfo(int requestId, SubmitUserRatingRequest submitUserRatingRequest, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/rent-requests/{requestId}/user-rating'
+      .replaceAll('{requestId}', requestId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody = submitUserRatingRequest;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Rate the other participant after return
+  ///
+  /// Parameters:
+  ///
+  /// * [int] requestId (required):
+  ///
+  /// * [SubmitUserRatingRequest] submitUserRatingRequest (required):
+  Future<UserRating?> submitUserRating(int requestId, SubmitUserRatingRequest submitUserRatingRequest, { Future<void>? abortTrigger, }) async {
+    final response = await submitUserRatingWithHttpInfo(requestId, submitUserRatingRequest, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UserRating',) as UserRating;
     
     }
     return null;

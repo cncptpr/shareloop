@@ -78,19 +78,23 @@ Future<RentRequestDetail?> confirmReturn(int requestId) async {
   }
 }
 
-Future<SubmittedRentRatings?> submitRentRatings({
+Future<UserRating?> submitUserRating({
   required int requestId,
   required SubmitUserRatingRequest userRating,
-  SubmitItemRatingRequest? itemRating,
 }) async {
   try {
-    return await AppConfig.apiClient.submitRentRatings(
-      requestId,
-      SubmitRentRatingsRequest(
-        userRating: userRating,
-        itemRating: itemRating,
-      ),
-    );
+    return await AppConfig.apiClient.submitUserRating(requestId, userRating);
+  } catch (_) {
+    return null;
+  }
+}
+
+Future<ItemRating?> submitItemRating({
+  required int requestId,
+  required SubmitItemRatingRequest itemRating,
+}) async {
+  try {
+    return await AppConfig.apiClient.submitItemRating(requestId, itemRating);
   } catch (_) {
     return null;
   }

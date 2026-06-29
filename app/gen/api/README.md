@@ -87,7 +87,8 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**searchItems**](doc//DefaultApi.md#searchitems) | **POST** /items/search | Search items
 *DefaultApi* | [**seedDatabase**](doc//DefaultApi.md#seeddatabase) | **POST** /seed | Seed the database with demo data
 *DefaultApi* | [**sendMessage**](doc//DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
-*DefaultApi* | [**submitRentRatings**](doc//DefaultApi.md#submitrentratings) | **POST** /rent-requests/{requestId}/ratings | Rate the other participant and, for borrowers, the item after return
+*DefaultApi* | [**submitItemRating**](doc//DefaultApi.md#submititemrating) | **POST** /rent-requests/{requestId}/item-rating | Rate the borrowed item after return
+*DefaultApi* | [**submitUserRating**](doc//DefaultApi.md#submituserrating) | **POST** /rent-requests/{requestId}/user-rating | Rate the other participant after return
 *DefaultApi* | [**updateItem**](doc//DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 *DefaultApi* | [**uploadItemImage**](doc//DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
 *DefaultApi* | [**verify**](doc//DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
@@ -119,9 +120,7 @@ Class | Method | HTTP request | Description
  - [SendMessageRequest](doc//SendMessageRequest.md)
  - [ServerInfo](doc//ServerInfo.md)
  - [SubmitItemRatingRequest](doc//SubmitItemRatingRequest.md)
- - [SubmitRentRatingsRequest](doc//SubmitRentRatingsRequest.md)
  - [SubmitUserRatingRequest](doc//SubmitUserRatingRequest.md)
- - [SubmittedRentRatings](doc//SubmittedRentRatings.md)
  - [UpdateItemRequest](doc//UpdateItemRequest.md)
  - [UploadItemImageRequest](doc//UploadItemImageRequest.md)
  - [UploadItemImageResponse](doc//UploadItemImageResponse.md)

@@ -329,20 +329,17 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     ref.invalidate(myRentRequestsProvider);
   }
 
-  Future<void> _showRatingDialog(
+  Future<void> _showUserRatingDialog(
       RentRequestDetail request, bool isOwner) async {
     if (_requestId == null) return;
     final revieweeName = isOwner ? request.requester.name : request.ownerName;
     final revieweeRole = isOwner ? 'Ausleiher' : 'Verleiher';
     final userCommentController = TextEditingController();
-    final itemCommentController = TextEditingController();
 
     int? friendliness;
     int? punctuality;
     int? reliability;
     int? roleSpecific;
-    int? condition;
-    int? cleanliness;
 
     final submitted = await showDialog<bool>(
       context: context,
@@ -352,11 +349,9 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
               punctuality != null &&
               reliability != null &&
               roleSpecific != null;
-          final itemRatingComplete =
-              isOwner || (condition != null && cleanliness != null);
 
           return AlertDialog(
-            title: Text(isOwner ? 'Ausleiher bewerten' : 'Ausleihe bewerten'),
+            title: Text('$revieweeRole bewerten'),
             content: SizedBox(
               width: 420,
               child: SingleChildScrollView(
@@ -402,38 +397,6 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                       maxLines: 3,
                       textInputAction: TextInputAction.newline,
                     ),
-                    if (!isOwner) ...[
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
-                        child: Divider(),
-                      ),
-                      _RatingSectionHeader(
-                        title: 'Gegenstand',
-                        subtitle: request.itemTitle,
-                      ),
-                      const SizedBox(height: 16),
-                      _RatingStars(
-                        label: 'Zustand',
-                        value: condition,
-                        onChanged: (value) =>
-                            setDialogState(() => condition = value),
-                      ),
-                      _RatingStars(
-                        label: 'Sauberkeit',
-                        value: cleanliness,
-                        onChanged: (value) =>
-                            setDialogState(() => cleanliness = value),
-                      ),
-                      TextField(
-                        controller: itemCommentController,
-                        decoration: const InputDecoration(
-                          labelText: 'Kommentar zum Gegenstand (optional)',
-                          border: OutlineInputBorder(),
-                        ),
-                        maxLines: 3,
-                        textInputAction: TextInputAction.newline,
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -444,9 +407,8 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                 child: const Text('Abbrechen'),
               ),
               FilledButton.icon(
-                onPressed: userRatingComplete && itemRatingComplete
-                    ? () => Navigator.pop(ctx, true)
-                    : null,
+                onPressed:
+                    userRatingComplete ? () => Navigator.pop(ctx, true) : null,
                 icon: const Icon(Icons.star, size: 18),
                 label: const Text('Bewertung senden'),
               ),
@@ -457,16 +419,13 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     );
     if (submitted != true) {
       userCommentController.dispose();
-      itemCommentController.dispose();
       return;
     }
 
     final userComment = userCommentController.text.trim();
-    final itemComment = itemCommentController.text.trim();
     userCommentController.dispose();
-    itemCommentController.dispose();
 
-    final ratings = await submitRentRatings(
+    final rating = await submitUserRating(
       requestId: _requestId!,
       userRating: SubmitUserRatingRequest(
         friendliness: friendliness!,
@@ -476,19 +435,108 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
         carefulHandling: isOwner ? roleSpecific! : null,
         comment: userComment.isEmpty ? null : userComment,
       ),
-      itemRating: isOwner
-          ? null
-          : SubmitItemRatingRequest(
-              condition: condition!,
-              cleanliness: cleanliness!,
-              comment: itemComment.isEmpty ? null : itemComment,
-            ),
     );
     if (!mounted) return;
-    if (ratings == null) {
+    if (rating == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Bewertung konnte nicht gespeichert werden.')),
+      );
+      return;
+    }
+
+    ref.invalidate(rentRequestProvider(_requestId!));
+    ref.invalidate(myRentRequestsProvider);
+  }
+
+  Future<void> _showItemRatingDialog(RentRequestDetail request) async {
+    if (_requestId == null) return;
+    final commentController = TextEditingController();
+    int? condition;
+    int? cleanliness;
+
+    final submitted = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          final ratingComplete = condition != null && cleanliness != null;
+          return AlertDialog(
+            title: const Text('Gegenstand bewerten'),
+            content: SizedBox(
+              width: 420,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _RatingSectionHeader(
+                      title: 'Gegenstand',
+                      subtitle: request.itemTitle,
+                    ),
+                    const SizedBox(height: 16),
+                    _RatingStars(
+                      label: 'Zustand',
+                      value: condition,
+                      onChanged: (value) =>
+                          setDialogState(() => condition = value),
+                    ),
+                    _RatingStars(
+                      label: 'Sauberkeit',
+                      value: cleanliness,
+                      onChanged: (value) =>
+                          setDialogState(() => cleanliness = value),
+                    ),
+                    TextField(
+                      controller: commentController,
+                      decoration: const InputDecoration(
+                        labelText: 'Kommentar zum Gegenstand (optional)',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: 3,
+                      textInputAction: TextInputAction.newline,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Abbrechen'),
+              ),
+              FilledButton.icon(
+                onPressed:
+                    ratingComplete ? () => Navigator.pop(ctx, true) : null,
+                icon: const Icon(Icons.star, size: 18),
+                label: const Text('Bewertung senden'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+    if (submitted != true) {
+      commentController.dispose();
+      return;
+    }
+
+    final comment = commentController.text.trim();
+    commentController.dispose();
+    final rating = await submitItemRating(
+      requestId: _requestId!,
+      itemRating: SubmitItemRatingRequest(
+        condition: condition!,
+        cleanliness: cleanliness!,
+        comment: comment.isEmpty ? null : comment,
+      ),
+    );
+    if (!mounted) return;
+    if (rating == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Gegenstandsbewertung konnte nicht gespeichert werden.'),
+        ),
       );
       return;
     }
@@ -661,12 +709,18 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     if (isOwner && !isReturned && isBorrowed) {
       actionCount++;
     }
-    final canRate = request != null &&
+    final canRateUser = request != null &&
         isReturned &&
         request.myUserRating == null &&
-        (isOwner || request.myItemRating == null) &&
         (isOwner || isRequester);
-    if (canRate) {
+    final canRateItem = request != null &&
+        isReturned &&
+        isRequester &&
+        request.myItemRating == null;
+    if (canRateUser) {
+      actionCount++;
+    }
+    if (canRateItem) {
       actionCount++;
     }
 
@@ -744,21 +798,27 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
           }
           offset--;
         }
-        if (canRate) {
+        if (canRateUser) {
           if (offset == 0) {
             final revieweeName =
                 isOwner ? request.requester.name : request.ownerName;
             return _SystemActionCard(
               icon: Icons.star_border,
-              title: isOwner
-                  ? 'Ausleiher bewerten'
-                  : 'Verleiher und Gegenstand bewerten',
-              subtitle: isOwner
-                  ? 'Bewerte $revieweeName nach der abgeschlossenen Ausleihe'
-                  : 'Bewerte $revieweeName und ${request.itemTitle}',
-              onTap: () => _showRatingDialog(request, isOwner),
+              title: isOwner ? 'Ausleiher bewerten' : 'Verleiher bewerten',
+              subtitle:
+                  'Bewerte $revieweeName nach der abgeschlossenen Ausleihe',
+              onTap: () => _showUserRatingDialog(request, isOwner),
             );
           }
+          offset--;
+        }
+        if (canRateItem && offset == 0) {
+          return _SystemActionCard(
+            icon: Icons.star_border,
+            title: 'Gegenstand bewerten',
+            subtitle: 'Bewerte ${request.itemTitle}',
+            onTap: () => _showItemRatingDialog(request),
+          );
         }
         return const SizedBox.shrink();
       },

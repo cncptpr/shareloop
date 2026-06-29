@@ -27,9 +27,7 @@ doc/SeedDatabase200Response.md
 doc/SendMessageRequest.md
 doc/ServerInfo.md
 doc/SubmitItemRatingRequest.md
-doc/SubmitRentRatingsRequest.md
 doc/SubmitUserRatingRequest.md
-doc/SubmittedRentRatings.md
 doc/UpdateItemRequest.md
 doc/UploadItemImageRequest.md
 doc/UploadItemImageResponse.md
@@ -70,14 +68,10 @@ lib/model/seed_database200_response.dart
 lib/model/send_message_request.dart
 lib/model/server_info.dart
 lib/model/submit_item_rating_request.dart
-lib/model/submit_rent_ratings_request.dart
 lib/model/submit_user_rating_request.dart
-lib/model/submitted_rent_ratings.dart
 lib/model/update_item_request.dart
 lib/model/upload_item_image_request.dart
 lib/model/upload_item_image_response.dart
 lib/model/user.dart
 lib/model/user_rating.dart
 pubspec.yaml
-test/item_rating_test.dart
-test/submit_item_rating_request_test.dart

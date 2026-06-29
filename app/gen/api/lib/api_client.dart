@@ -231,12 +231,8 @@ class ApiClient {
           return ServerInfo.fromJson(value);
         case 'SubmitItemRatingRequest':
           return SubmitItemRatingRequest.fromJson(value);
-        case 'SubmitRentRatingsRequest':
-          return SubmitRentRatingsRequest.fromJson(value);
         case 'SubmitUserRatingRequest':
           return SubmitUserRatingRequest.fromJson(value);
-        case 'SubmittedRentRatings':
-          return SubmittedRentRatings.fromJson(value);
         case 'UpdateItemRequest':
           return UpdateItemRequest.fromJson(value);
         case 'UploadItemImageRequest':

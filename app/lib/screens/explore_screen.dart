@@ -259,6 +259,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                         ref.read(searchFiltersProvider.notifier).toggleCategory(cat);
                         setDialogState(() {});
                       },
+                
                     );
                   }).toList(),
                 ),

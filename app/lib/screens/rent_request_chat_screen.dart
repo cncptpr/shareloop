@@ -333,7 +333,6 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
       RentRequestDetail request, bool isOwner) async {
     if (_requestId == null) return;
     final revieweeName = isOwner ? request.requester.name : request.ownerName;
-    final revieweeRole = isOwner ? 'Ausleiher' : 'Verleiher';
     final userCommentController = TextEditingController();
 
     int? friendliness;
@@ -351,7 +350,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
               roleSpecific != null;
 
           return AlertDialog(
-            title: Text('$revieweeRole bewerten'),
+            title: Text('$revieweeName bewerten'),
             content: SizedBox(
               width: 420,
               child: SingleChildScrollView(
@@ -359,10 +358,6 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _RatingSectionHeader(
-                      title: revieweeRole,
-                      subtitle: revieweeName,
-                    ),
                     const SizedBox(height: 16),
                     _RatingStars(
                       label: 'Freundlichkeit',
@@ -390,9 +385,9 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                     ),
                     TextField(
                       controller: userCommentController,
-                      decoration: InputDecoration(
-                        labelText: 'Kommentar zu $revieweeRole (optional)',
-                        border: const OutlineInputBorder(),
+                      decoration: const InputDecoration(
+                        labelText: 'Kommentar (optional)',
+                        border: OutlineInputBorder(),
                       ),
                       maxLines: 3,
                       textInputAction: TextInputAction.newline,
@@ -461,7 +456,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
         builder: (ctx, setDialogState) {
           final ratingComplete = condition != null && cleanliness != null;
           return AlertDialog(
-            title: const Text('Gegenstand bewerten'),
+            title: Text('${request.itemTitle} bewerten'),
             content: SizedBox(
               width: 420,
               child: SingleChildScrollView(
@@ -469,10 +464,6 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _RatingSectionHeader(
-                      title: 'Gegenstand',
-                      subtitle: request.itemTitle,
-                    ),
                     const SizedBox(height: 16),
                     _RatingStars(
                       label: 'Zustand',
@@ -489,7 +480,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                     TextField(
                       controller: commentController,
                       decoration: const InputDecoration(
-                        labelText: 'Kommentar zum Gegenstand (optional)',
+                        labelText: 'Kommentar (optional)',
                         border: OutlineInputBorder(),
                       ),
                       maxLines: 3,
@@ -804,9 +795,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                 isOwner ? request.requester.name : request.ownerName;
             return _SystemActionCard(
               icon: Icons.star_border,
-              title: isOwner ? 'Ausleiher bewerten' : 'Verleiher bewerten',
-              subtitle:
-                  'Bewerte $revieweeName nach der abgeschlossenen Ausleihe',
+              title: '$revieweeName bewerten',
               onTap: () => _showUserRatingDialog(request, isOwner),
             );
           }
@@ -815,8 +804,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
         if (canRateItem && offset == 0) {
           return _SystemActionCard(
             icon: Icons.star_border,
-            title: 'Gegenstand bewerten',
-            subtitle: 'Bewerte ${request.itemTitle}',
+            title: '${request.itemTitle} bewerten',
             onTap: () => _showItemRatingDialog(request),
           );
         }
@@ -1074,35 +1062,16 @@ class _RatingStars extends StatelessWidget {
   }
 }
 
-class _RatingSectionHeader extends StatelessWidget {
-  final String title;
-  final String subtitle;
-
-  const _RatingSectionHeader({required this.title, required this.subtitle});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 2),
-        Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
-      ],
-    );
-  }
-}
-
 class _SystemActionCard extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final VoidCallback onTap;
 
   const _SystemActionCard({
     required this.icon,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     required this.onTap,
   });
 
@@ -1136,13 +1105,14 @@ class _SystemActionCard extends StatelessWidget {
                           fontSize: 14,
                         ),
                       ),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
+                      if (subtitle != null)
+                        Text(
+                          subtitle!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(width: 12),

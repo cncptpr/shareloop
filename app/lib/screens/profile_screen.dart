@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart' show ItemOverview, ServerInfo, UserProfile, UserRatingDetail;
 import 'package:shareloop/app_config.dart';
+import 'package:shareloop/screens/edit_profile_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/state/auth.dart';
 import 'package:shareloop/state/profile.dart';
@@ -100,29 +101,59 @@ class _ProfileContent extends ConsumerWidget {
     final asyncItems = ref.watch(userItemsProvider(userId));
     final asyncRatings = ref.watch(userRatingsProvider(userId));
 
+    return asyncProfile.when(
+      data: (profile) {
+        final items = asyncItems.value ?? [];
+        final ratings = asyncRatings.value ?? [];
+        return _buildPage(context, ref, profile, items, ratings);
+      },
+      loading: () => Scaffold(
+        appBar: _appBar(context, ref, null),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: _appBar(context, ref, null),
+        body: Center(child: Text('$e')),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _appBar(BuildContext context, WidgetRef ref, UserProfile? profile) {
+    return AppBar(
+      title: const Text('Profile'),
+      actions: [
+        if (isOwnProfile && profile != null)
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () async {
+              final result = await EditProfileScreen.push(context, profile);
+              if (result == true) {
+                ref.invalidate(userProfileProvider(userId));
+              }
+            },
+          ),
+        if (isOwnProfile)
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await logout();
+              ref.invalidate(authProvider);
+            },
+          ),
+      ],
+    );
+  }
+
+  Widget _buildPage(
+    BuildContext context,
+    WidgetRef ref,
+    UserProfile profile,
+    List<ItemOverview> items,
+    List<UserRatingDetail> ratings,
+  ) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        actions: [
-          if (isOwnProfile)
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () async {
-                await logout();
-                ref.invalidate(authProvider);
-              },
-            ),
-        ],
-      ),
-      body: asyncProfile.when(
-        data: (profile) {
-          final items = asyncItems.value ?? [];
-          final ratings = asyncRatings.value ?? [];
-          return _buildBody(context, ref, profile, items, ratings);
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('$e')),
-      ),
+      appBar: _appBar(context, ref, profile),
+      body: _buildBody(context, ref, profile, items, ratings),
     );
   }
 
@@ -254,10 +285,12 @@ class _StatBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-        child: Column(
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
           children: [
             Text(
               value,
@@ -270,6 +303,7 @@ class _StatBox extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -301,9 +335,21 @@ class _BioSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: Text(
-        bio,
-        style: Theme.of(context).textTheme.bodyMedium,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Beschreibung',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 8),
+              Text(bio),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -331,21 +377,47 @@ class _ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: ListTile(
-        leading: item.imageUuid != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: Image.network(
-                  '${AppConfig.apiBaseUrl}/images/${item.imageUuid}',
-                  width: 56,
-                  height: 56,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.image),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (item.imageUuid != null)
+            Image.network(
+              '${AppConfig.apiBaseUrl}/images/${item.imageUuid}',
+              width: double.infinity,
+              height: 150,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const SizedBox(
+                height: 150,
+                child: Center(child: Icon(Icons.image)),
+              ),
+            )
+          else
+            const SizedBox(
+              height: 100,
+              child: Center(child: Icon(Icons.image, size: 48)),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    item.title,
+                    style: Theme.of(context).textTheme.titleSmall,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              )
-            : const Icon(Icons.image),
-        title: Text(item.title),
-        subtitle: Text('${item.score.toStringAsFixed(1)} \u2605'),
+                const SizedBox(width: 8),
+                Text(
+                  '${item.score.toStringAsFixed(1)} \u2605',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

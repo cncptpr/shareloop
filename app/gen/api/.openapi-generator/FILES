@@ -31,6 +31,7 @@ doc/ServerInfo.md
 doc/SubmitItemRatingRequest.md
 doc/SubmitUserRatingRequest.md
 doc/UpdateItemRequest.md
+doc/UpdateUserProfileRequest.md
 doc/UploadItemImageRequest.md
 doc/UploadItemImageResponse.md
 doc/User.md
@@ -76,6 +77,7 @@ lib/model/server_info.dart
 lib/model/submit_item_rating_request.dart
 lib/model/submit_user_rating_request.dart
 lib/model/update_item_request.dart
+lib/model/update_user_profile_request.dart
 lib/model/upload_item_image_request.dart
 lib/model/upload_item_image_response.dart
 lib/model/user.dart

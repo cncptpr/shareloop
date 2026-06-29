@@ -30,13 +30,31 @@ part 'auth/http_bearer_auth.dart';
 
 part 'api/default_api.dart';
 
+part 'model/create_item_request.dart';
+part 'model/create_item_response.dart';
+part 'model/create_offer_request.dart';
 part 'model/distance.dart';
-part 'model/featured_item.dart';
+part 'model/edit_item_images_request.dart';
+part 'model/item_detail.dart';
+part 'model/item_edit_detail.dart';
+part 'model/item_overview.dart';
+part 'model/item_search_request.dart';
 part 'model/lat_lng.dart';
 part 'model/login_request.dart';
 part 'model/login_result.dart';
+part 'model/message.dart';
 part 'model/person.dart';
 part 'model/refresh_request.dart';
+part 'model/rent_offer.dart';
+part 'model/rent_request_detail.dart';
+part 'model/rent_request_overview.dart';
+part 'model/reorder_entry.dart';
+part 'model/seed_database200_response.dart';
+part 'model/send_message_request.dart';
+part 'model/server_info.dart';
+part 'model/update_item_request.dart';
+part 'model/upload_item_image_request.dart';
+part 'model/upload_item_image_response.dart';
 part 'model/user.dart';
 
 

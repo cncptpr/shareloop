@@ -4,26 +4,48 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shareloop/app_config.dart';
 import 'package:shareloop/router.dart';
+import 'package:shareloop/services/notification_service.dart';
+import 'package:shareloop/state/seeding.dart';
+import 'package:shareloop/state/websocket.dart';
 
-/// This sample app shows an app with two screens.
-///
-/// The first route '/' is mapped to [HomeScreen], and the second route
-/// '/details' is mapped to [DetailsScreen].
-///
-/// The buttons use context.go() to navigate to each destination. On mobile
-/// devices, each destination is deep-linkable and on the web, can be navigated
-/// to using the address bar.
-void main() => runApp(const ProviderScope(child: MyApp()));
+final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
-/// The main app.
-class MyApp extends StatelessWidget {
-  /// Constructs a [MyApp]
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationService().init();
+  runApp(const ProviderScope(child: MyApp()));
+}
+
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkSeedOnStartup(ref);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print("[DEBUG] Print test");
-    return MaterialApp.router(routerConfig: router);
+    ref.watch(webSocketProvider);
+    return MaterialApp.router(
+      scaffoldMessengerKey: scaffoldMessengerKey,
+      title: _title,
+      routerConfig: router,
+    );
+  }
+
+  static String get _title {
+    const ns = AppConfig.storageNamespace;
+    return ns.isEmpty ? 'shareloop' : 'shareloop [$ns]';
   }
 }

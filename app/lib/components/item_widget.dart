@@ -1,42 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
+import 'package:shareloop/app_config.dart';
+import 'package:shareloop/screens/item_screen.dart';
 
 class ItemWidget extends ConsumerWidget {
-  final FeaturedItem item;
+  final ItemOverview item;
 
   const ItemWidget(this.item, {super.key});
 
   @override
   Widget build(ctx, ref) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            height: 300,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.vertical(
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        ctx,
+        MaterialPageRoute(builder: (_) => ItemScreen(itemId: item.id)),
+      ),
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(15),
               ),
-              image: DecorationImage(
-                image: AssetImage("assets/images/placeholder_image.jpg"),
-                fit: BoxFit.cover,
+              child: SizedBox(
+                width: double.infinity,
+                height: 300,
+                child: item.imageUuid != null
+                    ? Image.network(
+                        '${AppConfig.apiBaseUrl}/images/${item.imageUuid}',
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        "assets/images/placeholder_image.jpg",
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
-          ),
-          Text(item.title, textScaler: const TextScaler.linear(2)),
-          Text(item.description),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              person(item.author),
-              score(item.score),
-              locationWidget(item.city, item.distance),
-            ],
-          )
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(item.title, textScaler: const TextScaler.linear(2)),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    item.category,
+                    style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(item.description),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                person(item.author),
+                score(item.score),
+                locationWidget(item.city, item.distance),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

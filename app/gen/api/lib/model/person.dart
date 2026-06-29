@@ -13,25 +13,31 @@ part of openapi.api;
 class Person {
   /// Returns a new [Person] instance.
   Person({
+    required this.id,
     required this.name,
   });
+
+  int id;
 
   String name;
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is Person &&
+    other.id == id &&
     other.name == name;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
+    (id.hashCode) +
     (name.hashCode);
 
   @override
-  String toString() => 'Person[name=$name]';
+  String toString() => 'Person[id=$id, name=$name]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
+      json[r'id'] = this.id;
       json[r'name'] = this.name;
     return json;
   }
@@ -47,12 +53,15 @@ class Person {
       // Note 1: the values aren't checked for validity beyond being non-null.
       // Note 2: this code is stripped in release mode!
       assert(() {
+        assert(json.containsKey(r'id'), 'Required key "Person[id]" is missing from JSON.');
+        assert(json[r'id'] != null, 'Required key "Person[id]" has a null value in JSON.');
         assert(json.containsKey(r'name'), 'Required key "Person[name]" is missing from JSON.');
         assert(json[r'name'] != null, 'Required key "Person[name]" has a null value in JSON.');
         return true;
       }());
 
       return Person(
+        id: mapValueOfType<int>(json, r'id')!,
         name: mapValueOfType<String>(json, r'name')!,
       );
     }
@@ -101,6 +110,7 @@ class Person {
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
+    'id',
     'name',
   };
 }

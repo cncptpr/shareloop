@@ -21,15 +21,26 @@ services:
     ports:
       - "4000:4000"
     environment:
-      DATABASE_URL: postgres://shareloop:shareloop@db:5432/shareloop
+      DATABASE_URL: postgresql+asyncpg://shareloop:shareloop@db:5432/shareloop
+      UPLOADS_DIR: /uploads
+      SEEDING_DIR: /seeding
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./server/uploads:/uploads
+      # WARNING: Seeding is a DEVELOPMENT feature.
+      # Mounting valid seeding data enables the seeding
+      # feature and allows anyone to reset the database.
+      #
+      # Do NOT use this in production — remove this bind mount
+      # from a production deployment. 
+      - ./server/seeding:/seeding
 
   app:
     build: ./app
-    environment:
-      API_BASE_URL: http://localhost:8008/api
+    # environment:
+      # API_BASE_URL: http://localhost:8080/api
     ports:
       - "8080:80"
     depends_on:

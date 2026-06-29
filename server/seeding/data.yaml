@@ -1,0 +1,451 @@
+users:
+  - id: user_dev
+    email: dev@example.com
+    password: dev
+    name: Dev
+    bio: Dev user
+    rating: 4.9
+  - id: user_lisa
+    email: lisa@example.com
+    password: lisa
+    name: Lisa
+    bio: Car seller
+    rating: 4.3
+  - id: user_luca
+    email: luca@example.com
+    password: luca
+    name: Luca
+    bio: Outdoor enthusiast
+    rating: 4.5
+  - id: user_timon
+    email: timon@example.com
+    password: timon
+    name: Timon
+    bio: Spezi enthusiast
+    rating: 5.0
+
+items:
+  - id: item_inserat1
+    title: Inserat 1
+    description: Ganz tolles Inserat
+    author: ref(user_dev)
+    score: 4.9
+    lng: 13.405
+    lat: 52.52
+    city: Berlin
+    postalCode: "10115"
+    category: Sonstiges
+    images:
+      - path: images/wallhaven_4gqvxd.jpg
+        sort_order: 0
+      - path: images/logo_v1.jpeg
+        sort_order: 1
+
+  - id: item_internat
+    title: Internat
+    description: Ganz tolles Internat
+    author: ref(user_dev)
+    score: 4.9
+    lng: 11.582
+    lat: 48.1351
+    city: München
+    postalCode: "80331"
+    category: Sonstiges
+    images:
+      - path: images/wallhaven_e7651w.jpg
+        sort_order: 0
+
+  - id: item_inserat2
+    title: Inserat 2
+    description: Papput
+    author: ref(user_dev)
+    score: 4.9
+    lng: 9.9937
+    lat: 53.5511
+    city: Hamburg
+    postalCode: "20095"
+    category: Sonstiges
+    images:
+      - path: images/wallhaven_mdgzx9.jpg
+        sort_order: 0
+
+  - id: item_auto
+    title: Auto
+    description: Kann fahren
+    author: ref(user_lisa)
+    score: 4.3
+    lng: 6.9603
+    lat: 50.9375
+    city: Köln
+    postalCode: "50667"
+    category: Sport
+    images:
+      - path: images/auto.jpg
+        sort_order: 0
+      - path: images/IMG_0642.png
+        sort_order: 1
+      - path: images/wallhaven_477mrv.jpg
+        sort_order: 2
+      - path: images/wallhaven_nkmxk6.jpg
+        sort_order: 3
+
+  - id: item_spezi
+    title: Spezi
+    description: Bitte voll zurueck
+    author: ref(user_timon)
+    score: 5.0
+    lng: 8.6821
+    lat: 50.1109
+    city: Frankfurt am Main
+    postalCode: "60311"
+    category: Sonstiges
+    images:
+      - path: images/paulaner-spezi.jpg
+        sort_order: 0
+      - path: images/wallhaven_4576l3.jpg
+        sort_order: 1
+      - path: images/logo_v1.jpeg
+        sort_order: 2
+      - path: images/wallhaven_weq5jq.jpg
+        sort_order: 3
+
+  - id: item_fahrrad
+    title: Fahrrad
+    description: Trekkingrad, 28 Zoll, 21 Gänge
+    author: ref(user_lisa)
+    score: 4.1
+    lng: 6.9603
+    lat: 50.9375
+    city: Köln
+    postalCode: "50667"
+    category: Sport
+    images:
+      - path: images/bike.png
+        sort_order: 0
+
+  - id: item_bohrmaschine
+    title: Bohrmaschine
+    description: Professionelle Bohrmaschine für Heimwerker
+    author: ref(user_luca)
+    score: 4.5
+    lng: 9.18
+    lat: 48.78
+    city: Stuttgart
+    postalCode: "70173"
+    category: Werkzeug
+    images:
+      - path: images/wallhaven_477mrv.jpg
+        sort_order: 0
+      - path: images/wallhaven_nkmxk6.jpg
+        sort_order: 1
+
+  - id: item_zelt
+    title: Zelt
+    description: Geräumiges 4-Personen Zelt für Campingausflüge
+    author: ref(user_luca)
+    score: 4.2
+    lng: 9.18
+    lat: 48.78
+    city: Stuttgart
+    postalCode: "70173"
+    category: Sport
+    images:
+      - path: images/wallhaven_e7651w.jpg
+        sort_order: 0
+      - path: images/wallhaven_4gqvxd.jpg
+        sort_order: 1
+
+rent_requests:
+  # A: Lisa -> Spezi (Timon) -- OPEN, 1 offer
+  - id: req_a
+    item: ref(item_spezi)
+    requester: ref(user_lisa)
+    messages:
+      - author: ref(user_lisa)
+        content: Hey, kann ich die Spezi fürs Wochenende ausleihen?
+        created_at: "-3d 10:00"
+      - author: ref(user_timon)
+        content: Klar, wann brauchst du sie?
+        created_at: "-3d 14:00"
+      - author: ref(user_lisa)
+        content: Von Freitag bis Sonntag, 20.–22. Juni
+        created_at: "-3d 14:30"
+    offers:
+      - sender: ref(user_timon)
+        start_date: "+2d"
+        end_date: "+4d"
+        accepted: false
+        created_at: "-3d 15:00"
+    read_at: "-3d 16:00"
+    mark_read:
+      - ref(user_lisa)
+      - ref(user_timon)
+
+  # B: Dev -> Auto (Lisa) -- CLOSED (returned), 1 offer
+  - id: req_b
+    item: ref(item_auto)
+    requester: ref(user_dev)
+    borrow_confirmed: true
+    returned: true
+    messages:
+      - author: ref(user_dev)
+        content: Moin, kann ich das Auto für den Umzug am 1. Juli leihen?
+        created_at: "-2d 09:00"
+      - author: ref(user_lisa)
+        content: Klar, ein Tag reicht?
+        created_at: "-2d 09:30"
+      - author: ref(user_dev)
+        content: Ja, ein Tag sollte reichen!
+        created_at: "-2d 10:00"
+      - author: ref(user_dev)
+        content: Danke, hat alles geklappt!
+        created_at: "-1d 18:00"
+      - author: ref(user_lisa)
+        content: Gerne, viel Erfolg beim Umzug!
+        created_at: "-1d 18:30"
+      - author: ref(user_dev)
+        content: Alles gut zurückgegeben, danke!
+        created_at: "-1d 20:00"
+    offers:
+      - sender: ref(user_lisa)
+        start_date: "-1d"
+        end_date: "-1d"
+        accepted: true
+        created_at: "-2d 10:00"
+        accepted_at: "-2d 10:00"
+    borrow_confirmed_at: "-1d 08:00"
+    returned_at: "-1d 20:00"
+    read_at: "-1d 20:30"
+    mark_read:
+      - ref(user_dev)
+      - ref(user_lisa)
+
+  # C: Dev -> Spezi (Timon) -- OPEN, 11 msgs, 2 offers
+  - id: req_c
+    item: ref(item_spezi)
+    requester: ref(user_dev)
+    messages:
+      - author: ref(user_dev)
+        content: Hey, kann ich die Spezi auch mal ausleihen?
+        created_at: "-14d 10:00"
+      - author: ref(user_timon)
+        content: Klar, wann hättest du Zeit?
+        created_at: "-14d 11:00"
+      - author: ref(user_dev)
+        content: Am besten nächstes Wochenende
+        created_at: "-14d 12:00"
+      - author: ref(user_timon)
+        content: Samstag oder Sonntag?
+        created_at: "-13d 09:00"
+      - author: ref(user_dev)
+        content: Eher Sonntag, 22. Juni
+        created_at: "-13d 10:00"
+      - author: ref(user_timon)
+        content: Hmm, Samstag geht auch, aber erst abends. Geht das klar?
+        created_at: "-12d 14:00"
+      - author: ref(user_dev)
+        content: Klar, kein Problem!
+        created_at: "-12d 14:30"
+      - author: ref(user_timon)
+        content: Und kann ich sie vielleicht schon Freitagabend holen?
+        created_at: "-11d 16:00"
+      - author: ref(user_dev)
+        content: Ja, das geht klar. Ich schick dir ein neues Angebot.
+        created_at: "-11d 16:30"
+      - author: ref(user_timon)
+        content: Perfekt, das passt! Danke dir!
+        created_at: "-11d 17:00"
+      - author: ref(user_dev)
+        content: Gerne, bis Freitag!
+        created_at: "-11d 17:30"
+    offers:
+      - sender: ref(user_timon)
+        start_date: "+3d"
+        end_date: "+5d"
+        accepted: false
+        created_at: "-12d 14:30"
+      - sender: ref(user_timon)
+        start_date: "+1d"
+        end_date: "+5d"
+        accepted: false
+        created_at: "-11d 16:30"
+    read_at: "-11d 18:00"
+    mark_read:
+      - ref(user_timon)
+
+  # D: Dev -> Fahrrad (Lisa) -- OPEN, 6 msgs, no offer
+  - id: req_d
+    item: ref(item_fahrrad)
+    requester: ref(user_dev)
+    messages:
+      - author: ref(user_dev)
+        content: Hey, ist das Fahrrad noch frei?
+        created_at: "-4d 14:00"
+      - author: ref(user_lisa)
+        content: Ja, wann willst du es abholen?
+        created_at: "-4d 14:30"
+      - author: ref(user_dev)
+        content: Am Samstag vielleicht?
+        created_at: "-4d 15:00"
+      - author: ref(user_lisa)
+        content: Samstag Nachmittag geht klar
+        created_at: "-4d 15:30"
+      - author: ref(user_dev)
+        content: Super, sagen wir 15 Uhr?
+        created_at: "-4d 16:00"
+      - author: ref(user_lisa)
+        content: Passt, bis Samstag!
+        created_at: "-4d 16:30"
+    read_at: "-4d 17:00"
+    mark_read:
+      - ref(user_dev)
+      - ref(user_lisa)
+
+  # E: Lisa -> Internat (Dev) -- OPEN, 11 msgs, 2 offers
+  - id: req_e
+    item: ref(item_internat)
+    requester: ref(user_lisa)
+    messages:
+      - author: ref(user_lisa)
+        content: Hey, ich würde gern das Internat für ein Projekt nutzen
+        created_at: "-9d 09:00"
+      - author: ref(user_dev)
+        content: Cool, für wie lange?
+        created_at: "-9d 09:30"
+      - author: ref(user_lisa)
+        content: Zwei Wochen vielleicht?
+        created_at: "-9d 10:00"
+      - author: ref(user_dev)
+        content: Wann genau?
+        created_at: "-9d 10:30"
+      - author: ref(user_lisa)
+        content: Anfang Juli, 1. bis 14.
+        created_at: "-9d 11:00"
+      - author: ref(user_dev)
+        content: Hmm, zwei Wochen ist schon lang. Würde eine Woche reichen?
+        created_at: "-8d 10:00"
+      - author: ref(user_lisa)
+        content: Können wir machen, eine Woche ist auch ok
+        created_at: "-8d 10:30"
+      - author: ref(user_dev)
+        content: Eine Woche ist etwas knapp. Schaffst du 10 Tage?
+        created_at: "-7d 14:00"
+      - author: ref(user_lisa)
+        content: Okay, 10 Tage gehen klar. Ich erstelle ein neues Angebot.
+        created_at: "-7d 15:00"
+      - author: ref(user_dev)
+        content: Perfekt, 10 Tage sind super! Danke!
+        created_at: "-7d 15:30"
+      - author: ref(user_lisa)
+        content: Gerne, viel Erfolg mit dem Projekt!
+        created_at: "-7d 16:00"
+    offers:
+      - sender: ref(user_dev)
+        start_date: "+7d"
+        end_date: "+13d"
+        accepted: false
+        created_at: "-8d 10:30"
+      - sender: ref(user_dev)
+        start_date: "+7d"
+        end_date: "+16d"
+        accepted: false
+        created_at: "-7d 15:00"
+    read_at: "-7d 16:30"
+    mark_read:
+      - ref(user_lisa)
+      - ref(user_dev)
+
+  # F: Timon -> Inserat 1 (Dev) -- OPEN, 6 msgs, no offer
+  - id: req_f
+    item: ref(item_inserat1)
+    requester: ref(user_timon)
+    messages:
+      - author: ref(user_timon)
+        content: Moin, kann ich Inserat 1 ausleihen?
+        created_at: "-2d 11:00"
+      - author: ref(user_dev)
+        content: Ja, für wann?
+        created_at: "-2d 11:30"
+      - author: ref(user_timon)
+        content: Nächste Woche Di–Do
+        created_at: "-2d 12:00"
+      - author: ref(user_dev)
+        content: Klar, passt!
+        created_at: "-2d 12:30"
+      - author: ref(user_timon)
+        content: Super, danke!
+        created_at: "-2d 13:00"
+    read_at: "-2d 13:30"
+    mark_read:
+      - ref(user_dev)
+      - ref(user_timon)
+
+  # G: Lisa -> Inserat 2 (Dev) -- CLOSED (returned), 1 offer
+  - id: req_g
+    item: ref(item_inserat2)
+    requester: ref(user_lisa)
+    borrow_confirmed: true
+    returned: true
+    messages:
+      - author: ref(user_lisa)
+        content: Hey, kann ich Inserat 2 leihen?
+        created_at: "-14d 09:00"
+      - author: ref(user_dev)
+        content: Klar, wann?
+        created_at: "-14d 09:30"
+      - author: ref(user_lisa)
+        content: Diesen Freitag, 13. Juni
+        created_at: "-14d 10:00"
+      - author: ref(user_dev)
+        content: Passt, holst du es ab?
+        created_at: "-14d 10:30"
+      - author: ref(user_lisa)
+        content: Ja, komme gegen 17 Uhr vorbei
+        created_at: "-11d 16:00"
+      - author: ref(user_lisa)
+        content: Perfekt, bis Freitag!
+        created_at: "-11d 16:30"
+      - author: ref(user_dev)
+        content: Hat alles geklappt?
+        created_at: "-11d 20:00"
+      - author: ref(user_lisa)
+        content: Ja, danke! Kann es morgen zurückbringen.
+        created_at: "-11d 20:30"
+      - author: ref(user_dev)
+        content: Alles gut erhalten, danke!
+        created_at: "-10d 18:00"
+    offers:
+      - sender: ref(user_dev)
+        start_date: "-14d"
+        end_date: "-14d"
+        accepted: true
+        created_at: "-14d 10:30"
+        accepted_at: "-14d 10:30"
+    borrow_confirmed_at: "-11d 17:00"
+    returned_at: "-10d 17:00"
+    read_at: "-10d 18:30"
+    mark_read:
+      - ref(user_dev)
+      - ref(user_lisa)
+
+  # H: Dev -> Bohrmaschine (Luca) -- OPEN, 4 msgs, no offer
+  - id: req_h
+    item: ref(item_bohrmaschine)
+    requester: ref(user_dev)
+    messages:
+      - author: ref(user_dev)
+        content: Hey, kann ich die Bohrmaschine fürs Wochenende ausleihen?
+        created_at: "-1d 15:00"
+      - author: ref(user_luca)
+        content: Klar, für welches Projekt?
+        created_at: "-1d 15:30"
+      - author: ref(user_dev)
+        content: Ich will ein Regal im Keller aufbauen, brauche sie nur Samstag.
+        created_at: "-1d 16:00"
+      - author: ref(user_luca)
+        content: Klingt gut, hol sie dir einfach ab!
+        created_at: "-1d 16:30"
+    read_at: "-1d 17:00"
+    mark_read:
+      - ref(user_dev)
+      - ref(user_luca)

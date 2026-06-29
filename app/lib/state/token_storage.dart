@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shareloop/app_config.dart';
 
 enum UnauthorizedException {
   missingTokens(message: "Missing Tokens."),
@@ -13,38 +16,73 @@ enum UnauthorizedException {
 
 const _secureStorage = FlutterSecureStorage();
 
-const accessTokenKey = 'access_token';
-const refreshTokenKey = 'refresh_token';
-
 Future<bool> hasTokens() async {
-  final (a, r) = await (
-    _secureStorage.containsKey(key: accessTokenKey),
-    _secureStorage.containsKey(key: refreshTokenKey),
-  ).wait;
+  if (kIsWeb) {
+    final prefs = await SharedPreferences.getInstance();
+    final a = prefs.containsKey(AppConfig.accessTokenKey);
+    final r = prefs.containsKey(AppConfig.refreshTokenKey);
+    debugPrint('[storage] hasTokens(web) access=$a refresh=$r');
+    return a && r;
+  }
+  final a = await _secureStorage.containsKey(key: AppConfig.accessTokenKey);
+  final r = await _secureStorage.containsKey(key: AppConfig.refreshTokenKey);
+  debugPrint('[storage] hasTokens access=$a refresh=$r');
   return a && r;
 }
 
 Future<String?> getAccessToken() async {
-  return await _secureStorage.read(key: accessTokenKey);
+  if (kIsWeb) {
+    final prefs = await SharedPreferences.getInstance();
+    final val = prefs.getString(AppConfig.accessTokenKey);
+    debugPrint('[storage] getAccessToken(web)=${val != null ? "${val.substring(0, val.length > 20 ? 20 : val.length)}..." : "null"}');
+    return val;
+  }
+  final val = await _secureStorage.read(key: AppConfig.accessTokenKey);
+  debugPrint('[storage] getAccessToken=${val != null ? "${val.substring(0, val.length > 20 ? 20 : val.length)}..." : "null"}');
+  return val;
 }
 
 Future<String?> getRefreshToken() async {
-  return await _secureStorage.read(key: refreshTokenKey);
+  if (kIsWeb) {
+    final prefs = await SharedPreferences.getInstance();
+    final val = prefs.getString(AppConfig.refreshTokenKey);
+    debugPrint('[storage] getRefreshToken(web)=${val != null ? "present (length ${val.length})" : "null"}');
+    return val;
+  }
+  final val = await _secureStorage.read(key: AppConfig.refreshTokenKey);
+  debugPrint('[storage] getRefreshToken=${val != null ? "present (length ${val.length})" : "null"}');
+  return val;
 }
 
 Future<void> saveTokens({
   required String access,
   required String refresh,
 }) async {
-  await (
-    _secureStorage.write(key: accessTokenKey, value: access),
-    _secureStorage.write(key: refreshTokenKey, value: refresh),
-  ).wait;
+  debugPrint('[storage] saveTokens access.length=${access.length} refresh.length=${refresh.length}');
+  if (kIsWeb) {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AppConfig.accessTokenKey, access);
+    await prefs.setString(AppConfig.refreshTokenKey, refresh);
+  } else {
+    await (
+      _secureStorage.write(key: AppConfig.accessTokenKey, value: access),
+      _secureStorage.write(key: AppConfig.refreshTokenKey, value: refresh),
+    ).wait;
+  }
+  debugPrint('[storage] saveTokens done');
 }
 
 Future<void> deleteTokens() async {
-  await (
-    _secureStorage.delete(key: accessTokenKey),
-    _secureStorage.delete(key: refreshTokenKey),
-  ).wait;
+  debugPrint('[storage] deleteTokens');
+  if (kIsWeb) {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(AppConfig.accessTokenKey);
+    await prefs.remove(AppConfig.refreshTokenKey);
+  } else {
+    await (
+      _secureStorage.delete(key: AppConfig.accessTokenKey),
+      _secureStorage.delete(key: AppConfig.refreshTokenKey),
+    ).wait;
+  }
+  debugPrint('[storage] deleteTokens done');
 }

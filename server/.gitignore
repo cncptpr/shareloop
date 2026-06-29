@@ -3,3 +3,5 @@
 /build
 erl_crash.dump
 tokens.txt
+uploads/
+src/shareloop_server.egg-info

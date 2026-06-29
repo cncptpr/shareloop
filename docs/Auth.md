@@ -47,22 +47,19 @@ The profile screen shows for debug purposes the current auth state some infos.
 
 ### CLI tool
 
-Lives in `server/test/server/cli.gleam`.
+Lives in `server/src/cli/main.py`.
 
-Run with `gleam run -m server/cli`. Commands:
+Run with `python -m src.cli.main`. Commands:
 
 | Command                          | Description                                    |
 |----------------------------------|------------------------------------------------|
-| `help` / `-h`                    | Print help                                     |
-| `users create <email>`           | Create a new user (prompts for password)       |
-| `users list`                     | List all users                                 |
-| `users sessions`                 | Show active sessions with expiry times         |
-| `users login <email>`            | Login (prompts for password), saves tokens     |
-| `users validate`                 | Validate the stored access token               |
-| `users refresh`                  | Refresh tokens using the stored refresh token  |
-| `users expire-access [email]`    | Expire the stored access token (or all for email) |
-| `users expire-refresh [email]`   | Expire both tokens for the session (or all for email) |
-| `users logout`                   | Delete the session for the stored access token |
+| `create-user <email>`            | Create a new user (prompts for password)       |
+| `list-users`                     | List all users                                 |
+| `sessions`                       | Show active sessions with expiry times         |
+| `login <email>`                  | Login (prompts for password), saves tokens     |
+| `validate`                       | Validate the stored access token               |
+| `refresh`                        | Refresh tokens using the stored refresh token  |
+| `expire-access [email]`          | Expire the stored access token (or all for email) |
 
 Tokens are stored in `tokens.txt` in the server working directory.
 
@@ -87,25 +84,24 @@ Uses **PBKDF2 with HMAC-SHA256**, 600,000 iterations, 16-byte random salt, 32-by
 
 Stored format: `$pbkdf2-sha256$<iterations>$<base64url-salt>$<base64url-hash>`
 
-Implemented in `server/src/server/auth/password.gleam` with an Erlang NIF (`auth_ffi.pbkdf2_hmac`) calling `crypto:pbkdf2_hmac/5`.
+Implemented in `server/src/auth/password.py`.
 
 ### Tokens
 
 Both access and refresh tokens are generated as 32 random bytes, base64url-encoded for the client. The server stores `SHA-256(raw_bytes)` → base64url-encoded hash.
 
-Implemented in `server/src/server/auth/session.gleam`.
+Implemented in `server/src/auth/tokens.py`.
 
 ## Relevant Files
 
 ### Server
-- `server/src/server/auth.gleam` — core auth logic
-- `server/src/server/auth/*` — password and token helpers and http handlers for auth
-- `server/src/auth_ffi.erl` — Erlang FFI for PBKDF2
-- `server/priv/migrations/20260516000001-create_users.sql` — users table migration
-- `server/priv/migrations/20260516000002-create_sessions.sql` — sessions table migration
-- `server/test/server/cli.gleam` — dev CLI for auth operations
+- `server/src/handlers/auth.py` — auth HTTP handlers
+- `server/src/auth/password.py` — password hashing
+- `server/src/auth/tokens.py` — token generation and hashing
+- `server/src/cli/main.py` — dev CLI for auth operations
+- `server/src/db/models.py` — SQLAlchemy ORM models (single source of truth for DB schema)
+- `server/alembic/versions/` — Alembic migration versions
 
 ### App (Flutter/Dart)
 - `app/lib/state/auth.dart` — auth state management
 - `app/lib/state/token_storage.dart` — token persistence via `FlutterSecureStorage`
-

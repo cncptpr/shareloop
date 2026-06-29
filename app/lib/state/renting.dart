@@ -1,0 +1,85 @@
+// See docs/rent-request-chat-flow.md — state machine, providers, and invalidation rules.
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:openapi/api.dart';
+import '../app_config.dart';
+import 'auth.dart';
+
+final myRentRequestsProvider =
+    FutureProvider<List<RentRequestOverview>>((ref) async {
+  final user = ref.watch(authProvider).value;
+  if (user == null) return [];
+  final result = await AppConfig.apiClient.getRentRequests();
+  return result ?? [];
+});
+
+final rentRequestProvider =
+    FutureProvider.autoDispose.family<RentRequestDetail?, int>(
+  (ref, requestId) async {
+    try {
+      return await AppConfig.apiClient.getRentRequest(requestId);
+    } catch (_) {
+      return null;
+    }
+  },
+);
+
+Future<RentRequestDetail?> createRentRequest(int itemId) async {
+  try {
+    return await AppConfig.apiClient.createRentRequest(itemId);
+  } catch (_) {
+    return null;
+  }
+}
+
+Future<Message?> sendMessage(int requestId, String content) async {
+  try {
+    return await AppConfig.apiClient.sendMessage(
+      requestId,
+      SendMessageRequest(content: content),
+    );
+  } catch (_) {
+    return null;
+  }
+}
+
+Future<RentOffer?> createOffer(
+    int requestId, DateTime startDate, DateTime endDate) async {
+  try {
+    return await AppConfig.apiClient.createOffer(
+      requestId,
+      CreateOfferRequest(startDate: startDate, endDate: endDate),
+    );
+  } catch (_) {
+    return null;
+  }
+}
+
+Future<RentOffer?> acceptOffer(int offerId) async {
+  try {
+    return await AppConfig.apiClient.acceptOffer(offerId);
+  } catch (_) {
+    return null;
+  }
+}
+
+Future<RentRequestDetail?> confirmBorrow(int requestId) async {
+  try {
+    return await AppConfig.apiClient.confirmBorrow(requestId);
+  } catch (_) {
+    return null;
+  }
+}
+
+Future<RentRequestDetail?> confirmReturn(int requestId) async {
+  try {
+    return await AppConfig.apiClient.confirmReturn(requestId);
+  } catch (_) {
+    return null;
+  }
+}
+
+Future<void> markRentRequestRead(int requestId) async {
+  try {
+    await AppConfig.apiClient.markRentRequestRead(requestId);
+  } catch (_) {}
+}

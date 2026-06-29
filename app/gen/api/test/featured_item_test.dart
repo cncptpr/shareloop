@@ -51,6 +51,11 @@ void main() {
       // TODO
     });
 
+    // String imageUuid
+    test('to test the property `imageUuid`', () async {
+      // TODO
+    });
+
 
   });
 

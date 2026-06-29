@@ -5,13 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:openapi/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shareloop/app_config.dart';
 import 'package:shareloop/state/location.dart';
 
 sealed class SelectedLocation {
   Map<String, dynamic> selectedToJson();
   factory SelectedLocation.selectedFromJson(Map<String, dynamic> json) {
     if (json['type'] == 'GPSLocation') {
-      return GPSLocation();
+      return const GPSLocation();
     } else if (json['type'] == 'SearchedLocation') {
       return SearchedLocation.fromJson(json['loc'] as Map<String, dynamic>);
     }
@@ -22,6 +23,8 @@ sealed class SelectedLocation {
 }
 
 class GPSLocation implements SelectedLocation {
+  const GPSLocation();
+
   @override
   Map<String, dynamic> selectedToJson() => {
         'type': 'GPSLocation',
@@ -33,12 +36,16 @@ class SearchedLocation implements SelectedLocation {
   final double lng;
   final String displayName;
   final String name;
+  final String city;
+  final String postalCode;
 
   const SearchedLocation({
     required this.lat,
     required this.lng,
     required this.displayName,
     required this.name,
+    required this.city,
+    required this.postalCode,
   });
 
   Map<String, dynamic> toJson() => {
@@ -46,6 +53,8 @@ class SearchedLocation implements SelectedLocation {
         'lng': lng,
         'displayName': displayName,
         'name': name,
+        'city': city,
+        'postalCode': postalCode,
       };
 
   factory SearchedLocation.fromJson(Map<String, dynamic> json) =>
@@ -54,6 +63,8 @@ class SearchedLocation implements SelectedLocation {
         lng: (json['lng'] as num).toDouble(),
         displayName: json['displayName'] as String,
         name: json['name'] as String,
+        city: json['city'] as String,
+        postalCode: json['postalCode'] as String,
       );
 
   @override
@@ -69,16 +80,14 @@ class RateLimitException implements Exception {
 }
 
 const _maxStoredLocations = 20;
-const _keySelectedLocation = 'selected_location';
-const _keyStoredLocations = 'stored_locations';
 
 Future<void> _saveSelectedLocation(SelectedLocation? location) async {
   final prefs = await SharedPreferences.getInstance();
   if (location == null) {
-    await prefs.remove(_keySelectedLocation);
+    await prefs.remove(AppConfig.selectedLocationKey);
   } else {
     await prefs.setString(
-      _keySelectedLocation,
+      AppConfig.selectedLocationKey,
       jsonEncode(location.selectedToJson()),
     );
   }
@@ -87,18 +96,25 @@ Future<void> _saveSelectedLocation(SelectedLocation? location) async {
 Future<void> _saveStoredLocations(List<SearchedLocation> locations) async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString(
-    _keyStoredLocations,
+    AppConfig.storedLocationsKey,
     jsonEncode(locations.map((l) => l.toJson()).toList()),
   );
 }
 
 Future<List<SearchedLocation>> _loadStoredLocations() async {
   final prefs = await SharedPreferences.getInstance();
-  final raw = prefs.getString(_keyStoredLocations);
+  final raw = prefs.getString(AppConfig.storedLocationsKey);
   if (raw == null) return [];
   final list = jsonDecode(raw) as List;
   return list
-      .map((e) => SearchedLocation.fromJson(e as Map<String, dynamic>))
+      .map((e) {
+        try {
+          return SearchedLocation.fromJson(e as Map<String, dynamic>);
+        } catch (_) {
+          return null;
+        }
+      })
+      .whereType<SearchedLocation>()
       .toList();
 }
 
@@ -115,14 +131,16 @@ class SelectedLocationNotifier extends Notifier<SelectedLocation?> {
   }
 
   Future<void> _loadFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_keySelectedLocation);
-    if (raw != null) {
-      final location = SelectedLocation.selectedFromJson(
-        jsonDecode(raw) as Map<String, dynamic>,
-      );
-      state = location;
-    }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(AppConfig.selectedLocationKey);
+      if (raw != null) {
+        final location = SelectedLocation.selectedFromJson(
+          jsonDecode(raw) as Map<String, dynamic>,
+        );
+        state = location;
+      }
+    } catch (_) {}
   }
 
   Future<void> select(SelectedLocation location) async {
@@ -139,8 +157,6 @@ class SelectedLocationNotifier extends Notifier<SelectedLocation?> {
     await _saveStoredLocations(stored);
   }
 
-  Future<void> selectGPS() async => select(GPSLocation());
-
   Future<void> clear() async {
     state = null;
     await _saveSelectedLocation(null);
@@ -155,6 +171,16 @@ final selectedLocationProvider =
 final storedLocationsProvider = FutureProvider<List<SearchedLocation>>(
   (ref) => _loadStoredLocations(),
 );
+
+Future<void> addStoredLocation(SearchedLocation location) async {
+  final stored = await _loadStoredLocations();
+  stored.removeWhere((l) => l.lat == location.lat && l.lng == location.lng);
+  stored.insert(0, location);
+  if (stored.length > _maxStoredLocations) {
+    stored.removeLast();
+  }
+  await _saveStoredLocations(stored);
+}
 
 Future<void> removeStoredLocation(SearchedLocation location) async {
   final stored = await _loadStoredLocations();
@@ -195,6 +221,7 @@ final locationSearchProvider =
         'format': 'json',
         'limit': '5',
         'countrycodes': 'de',
+        'addressdetails': '1',
       },
     );
     final res = await _fetchWithRetry(
@@ -202,11 +229,20 @@ final locationSearchProvider =
     );
     final List<dynamic> data = jsonDecode(res.body);
     return data.map((j) {
+      final addr = j['address'] as Map<String, dynamic>?;
+      final city = (addr?['city'] ??
+          addr?['town'] ??
+          addr?['village'] ??
+          addr?['municipality'] ??
+          '') as String;
+      final postalCode = (addr?['postcode'] ?? '') as String;
       return SearchedLocation(
         lat: double.parse(j['lat'] as String),
         lng: double.parse(j['lon'] as String),
         displayName: j['display_name'] as String,
         name: j['name'] as String,
+        city: city,
+        postalCode: postalCode,
       );
     }).toList();
   },
@@ -240,6 +276,8 @@ final reverseLocationProvider =
       lng: lng,
       displayName: data['display_name'] as String,
       name: name,
+      city: city,
+      postalCode: postcode,
     );
   },
 );

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' show Response;
 import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
@@ -21,8 +22,10 @@ class RetryApiClient extends ApiClient {
     Object? body,
     Map<String, String> headerParams,
     Map<String, String> formParams,
-    String? contentType,
-  ) async {
+    String? contentType, {
+    Future<void>? abortTrigger,
+  }) async {
+    debugPrint('[http] $method $path');
     final response = await super.invokeAPI(
       path,
       method,
@@ -31,13 +34,17 @@ class RetryApiClient extends ApiClient {
       headerParams,
       formParams,
       contentType,
+      abortTrigger: abortTrigger,
     );
+    debugPrint('[http] response $method $path -> ${response.statusCode}');
 
     final isAuthError = response.statusCode == _authErrorStatusCode;
     final isRefreshRequest = path.startsWith(_refreshUrl);
     if (isAuthError && !isRefreshRequest) {
+      debugPrint('[http] 401 on $method $path, trying refresh...');
       try {
         await _refresh();
+        debugPrint('[http] refresh succeeded, retrying $method $path');
         return await super.invokeAPI(
           path,
           method,
@@ -46,8 +53,12 @@ class RetryApiClient extends ApiClient {
           headerParams,
           formParams,
           contentType,
+          abortTrigger: abortTrigger,
         );
-      } catch (_) {
+      } catch (e) {
+        debugPrint(
+          '[http] refresh failed: $e, returning original 401 response',
+        );
         return response;
       }
     }
@@ -56,7 +67,9 @@ class RetryApiClient extends ApiClient {
   }
 
   Future<void> _refresh() async {
+    debugPrint('[http] _refresh start');
     if (_refreshCompleter != null) {
+      debugPrint('[http] _refresh already in progress, waiting...');
       await _refreshCompleter!.future;
       return;
     }
@@ -64,11 +77,13 @@ class RetryApiClient extends ApiClient {
     _refreshCompleter = Completer<void>();
     try {
       final refreshToken = await getRefreshToken();
+      debugPrint('[http] _refresh got refreshToken=${refreshToken != null}');
       if (refreshToken == null) throw UnauthorizedException.refreshFailed;
 
       final result = await AppConfig.apiClient.refresh(
         RefreshRequest(refreshToken: refreshToken),
       );
+      debugPrint('[http] _refresh result=${result != null}');
       if (result == null) throw UnauthorizedException.refreshFailed;
 
       await saveTokens(
@@ -76,8 +91,10 @@ class RetryApiClient extends ApiClient {
         refresh: result.refreshToken,
       );
       AppConfig.bearerAuth.accessToken = result.accessToken;
+      debugPrint('[http] _refresh completed successfully');
       _refreshCompleter!.complete();
     } catch (e) {
+      debugPrint('[http] _refresh error: $e');
       _refreshCompleter!.completeError(e);
       _refreshCompleter = null;
       rethrow;

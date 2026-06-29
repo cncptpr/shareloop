@@ -2,6 +2,7 @@ FROM instrumentisto/flutter:3.41.6 AS build
 
 WORKDIR /app
 COPY --chown=1000:1000 . .
+RUN chown 1000:1000 /app
 
 USER 1000
 RUN flutter pub get && flutter build web --release
@@ -38,8 +39,18 @@ http {
         index index.html;
 
         location /api/ {
+            client_max_body_size 10M;
             proxy_pass http://server:4000;
             proxy_set_header Host $host;
+        }
+
+        location /ws {
+            proxy_pass http://server:4000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_read_timeout 86400;
         }
 
         location / {

@@ -79,3 +79,5 @@ lib/model/upload_item_image_response.dart
 lib/model/user.dart
 lib/model/user_rating.dart
 pubspec.yaml
+test/item_rating_test.dart
+test/submit_item_rating_request_test.dart

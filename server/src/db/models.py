@@ -248,11 +248,7 @@ class ItemRating(Base):
     __table_args__ = (
         UniqueConstraint("rent_request_id", "reviewer_id", name="uq_item_rating_once"),
         CheckConstraint("condition BETWEEN 1 AND 5", name="ck_item_rating_condition"),
-        CheckConstraint(
-            "description_accuracy BETWEEN 1 AND 5",
-            name="ck_item_rating_description_accuracy",
-        ),
-        CheckConstraint("functionality BETWEEN 1 AND 5", name="ck_item_rating_functionality"),
+        CheckConstraint("cleanliness BETWEEN 1 AND 5", name="ck_item_rating_cleanliness"),
         CheckConstraint("overall BETWEEN 1 AND 5", name="ck_item_rating_overall"),
     )
 
@@ -267,8 +263,7 @@ class ItemRating(Base):
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     condition: Mapped[int] = mapped_column(Integer, nullable=False)
-    description_accuracy: Mapped[int] = mapped_column(Integer, nullable=False)
-    functionality: Mapped[int] = mapped_column(Integer, nullable=False)
+    cleanliness: Mapped[int] = mapped_column(Integer, nullable=False)
     overall: Mapped[float] = mapped_column(Float, nullable=False)
     comment: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(

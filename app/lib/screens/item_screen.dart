@@ -228,12 +228,8 @@ class _ItemRatingEntry extends StatelessWidget {
           children: [
             _RatingMetric(label: 'Zustand', value: rating.condition),
             _RatingMetric(
-              label: 'Beschreibung',
-              value: rating.descriptionAccuracy,
-            ),
-            _RatingMetric(
-              label: 'Funktion',
-              value: rating.functionality,
+              label: 'Sauberkeit',
+              value: rating.cleanliness,
             ),
           ],
         ),

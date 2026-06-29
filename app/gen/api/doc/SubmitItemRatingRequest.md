@@ -9,8 +9,7 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **condition** | **int** |  | 
-**descriptionAccuracy** | **int** |  | 
-**functionality** | **int** |  | 
+**cleanliness** | **int** |  | 
 **comment** | **String** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

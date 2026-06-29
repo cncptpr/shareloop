@@ -13,8 +13,7 @@ Name | Type | Description | Notes
 **itemId** | **int** |  | 
 **reviewer** | [**Person**](Person.md) |  | 
 **condition** | **int** |  | 
-**descriptionAccuracy** | **int** |  | 
-**functionality** | **int** |  | 
+**cleanliness** | **int** |  | 
 **overall** | **double** |  | 
 **comment** | **String** |  | [optional] 
 **createdAt** | [**DateTime**](DateTime.md) |  | 

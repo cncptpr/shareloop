@@ -1165,7 +1165,7 @@ components:
 
     ItemRating:
       type: object
-      required: [id, rentRequestId, itemId, reviewer, condition, descriptionAccuracy, functionality, overall, createdAt]
+      required: [id, rentRequestId, itemId, reviewer, condition, cleanliness, overall, createdAt]
       properties:
         id:
           type: integer
@@ -1179,11 +1179,7 @@ components:
           type: integer
           minimum: 1
           maximum: 5
-        descriptionAccuracy:
-          type: integer
-          minimum: 1
-          maximum: 5
-        functionality:
+        cleanliness:
           type: integer
           minimum: 1
           maximum: 5
@@ -1231,17 +1227,13 @@ components:
 
     SubmitItemRatingRequest:
       type: object
-      required: [condition, descriptionAccuracy, functionality]
+      required: [condition, cleanliness]
       properties:
         condition:
           type: integer
           minimum: 1
           maximum: 5
-        descriptionAccuracy:
-          type: integer
-          minimum: 1
-          maximum: 5
-        functionality:
+        cleanliness:
           type: integer
           minimum: 1
           maximum: 5

@@ -158,8 +158,7 @@ def _item_rating_from_row(rating: ItemRating, reviewer: Profile) -> ApiItemRatin
         item_id=rating.item_id,
         reviewer=Person(id=reviewer.id, name=reviewer.name),
         condition=rating.condition,
-        description_accuracy=rating.description_accuracy,
-        functionality=rating.functionality,
+        cleanliness=rating.cleanliness,
         overall=rating.overall,
         comment=rating.comment,
         created_at=_ts_to_str(rating.created_at),
@@ -584,12 +583,8 @@ async def submit_rent_ratings(
             item_id=item.id,
             reviewer_id=user_id,
             condition=item_input.condition,
-            description_accuracy=item_input.description_accuracy,
-            functionality=item_input.functionality,
-            overall=(
-                item_input.condition + item_input.description_accuracy + item_input.functionality
-            )
-            / 3.0,
+            cleanliness=item_input.cleanliness,
+            overall=(item_input.condition + item_input.cleanliness) / 2.0,
             comment=_normalize_comment(item_input.comment),
         )
         db.add(item_rating)

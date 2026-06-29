@@ -41,13 +41,8 @@ void main() {
       // TODO
     });
 
-    // int descriptionAccuracy
-    test('to test the property `descriptionAccuracy`', () async {
-      // TODO
-    });
-
-    // int functionality
-    test('to test the property `functionality`', () async {
+    // int cleanliness
+    test('to test the property `cleanliness`', () async {
       // TODO
     });
 

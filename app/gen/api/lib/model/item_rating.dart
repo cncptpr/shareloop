@@ -18,8 +18,7 @@ class ItemRating {
     required this.itemId,
     required this.reviewer,
     required this.condition,
-    required this.descriptionAccuracy,
-    required this.functionality,
+    required this.cleanliness,
     required this.overall,
     this.comment,
     required this.createdAt,
@@ -39,11 +38,7 @@ class ItemRating {
 
   /// Minimum value: 1
   /// Maximum value: 5
-  int descriptionAccuracy;
-
-  /// Minimum value: 1
-  /// Maximum value: 5
-  int functionality;
+  int cleanliness;
 
   /// Minimum value: 1
   /// Maximum value: 5
@@ -60,8 +55,7 @@ class ItemRating {
     other.itemId == itemId &&
     other.reviewer == reviewer &&
     other.condition == condition &&
-    other.descriptionAccuracy == descriptionAccuracy &&
-    other.functionality == functionality &&
+    other.cleanliness == cleanliness &&
     other.overall == overall &&
     other.comment == comment &&
     other.createdAt == createdAt;
@@ -74,14 +68,13 @@ class ItemRating {
     (itemId.hashCode) +
     (reviewer.hashCode) +
     (condition.hashCode) +
-    (descriptionAccuracy.hashCode) +
-    (functionality.hashCode) +
+    (cleanliness.hashCode) +
     (overall.hashCode) +
     (comment == null ? 0 : comment!.hashCode) +
     (createdAt.hashCode);
 
   @override
-  String toString() => 'ItemRating[id=$id, rentRequestId=$rentRequestId, itemId=$itemId, reviewer=$reviewer, condition=$condition, descriptionAccuracy=$descriptionAccuracy, functionality=$functionality, overall=$overall, comment=$comment, createdAt=$createdAt]';
+  String toString() => 'ItemRating[id=$id, rentRequestId=$rentRequestId, itemId=$itemId, reviewer=$reviewer, condition=$condition, cleanliness=$cleanliness, overall=$overall, comment=$comment, createdAt=$createdAt]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -90,8 +83,7 @@ class ItemRating {
       json[r'itemId'] = this.itemId;
       json[r'reviewer'] = this.reviewer;
       json[r'condition'] = this.condition;
-      json[r'descriptionAccuracy'] = this.descriptionAccuracy;
-      json[r'functionality'] = this.functionality;
+      json[r'cleanliness'] = this.cleanliness;
       json[r'overall'] = this.overall;
     if (this.comment != null) {
       json[r'comment'] = this.comment;
@@ -123,10 +115,8 @@ class ItemRating {
         assert(json[r'reviewer'] != null, 'Required key "ItemRating[reviewer]" has a null value in JSON.');
         assert(json.containsKey(r'condition'), 'Required key "ItemRating[condition]" is missing from JSON.');
         assert(json[r'condition'] != null, 'Required key "ItemRating[condition]" has a null value in JSON.');
-        assert(json.containsKey(r'descriptionAccuracy'), 'Required key "ItemRating[descriptionAccuracy]" is missing from JSON.');
-        assert(json[r'descriptionAccuracy'] != null, 'Required key "ItemRating[descriptionAccuracy]" has a null value in JSON.');
-        assert(json.containsKey(r'functionality'), 'Required key "ItemRating[functionality]" is missing from JSON.');
-        assert(json[r'functionality'] != null, 'Required key "ItemRating[functionality]" has a null value in JSON.');
+        assert(json.containsKey(r'cleanliness'), 'Required key "ItemRating[cleanliness]" is missing from JSON.');
+        assert(json[r'cleanliness'] != null, 'Required key "ItemRating[cleanliness]" has a null value in JSON.');
         assert(json.containsKey(r'overall'), 'Required key "ItemRating[overall]" is missing from JSON.');
         assert(json[r'overall'] != null, 'Required key "ItemRating[overall]" has a null value in JSON.');
         assert(json.containsKey(r'createdAt'), 'Required key "ItemRating[createdAt]" is missing from JSON.');
@@ -140,8 +130,7 @@ class ItemRating {
         itemId: mapValueOfType<int>(json, r'itemId')!,
         reviewer: Person.fromJson(json[r'reviewer'])!,
         condition: mapValueOfType<int>(json, r'condition')!,
-        descriptionAccuracy: mapValueOfType<int>(json, r'descriptionAccuracy')!,
-        functionality: mapValueOfType<int>(json, r'functionality')!,
+        cleanliness: mapValueOfType<int>(json, r'cleanliness')!,
         overall: mapValueOfType<double>(json, r'overall')!,
         comment: mapValueOfType<String>(json, r'comment'),
         createdAt: mapDateTime(json, r'createdAt', r'')!,
@@ -197,8 +186,7 @@ class ItemRating {
     'itemId',
     'reviewer',
     'condition',
-    'descriptionAccuracy',
-    'functionality',
+    'cleanliness',
     'overall',
     'createdAt',
   };

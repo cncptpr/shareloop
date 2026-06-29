@@ -14,8 +14,7 @@ class SubmitItemRatingRequest {
   /// Returns a new [SubmitItemRatingRequest] instance.
   SubmitItemRatingRequest({
     required this.condition,
-    required this.descriptionAccuracy,
-    required this.functionality,
+    required this.cleanliness,
     this.comment,
   });
 
@@ -25,37 +24,30 @@ class SubmitItemRatingRequest {
 
   /// Minimum value: 1
   /// Maximum value: 5
-  int descriptionAccuracy;
-
-  /// Minimum value: 1
-  /// Maximum value: 5
-  int functionality;
+  int cleanliness;
 
   String? comment;
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is SubmitItemRatingRequest &&
     other.condition == condition &&
-    other.descriptionAccuracy == descriptionAccuracy &&
-    other.functionality == functionality &&
+    other.cleanliness == cleanliness &&
     other.comment == comment;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
     (condition.hashCode) +
-    (descriptionAccuracy.hashCode) +
-    (functionality.hashCode) +
+    (cleanliness.hashCode) +
     (comment == null ? 0 : comment!.hashCode);
 
   @override
-  String toString() => 'SubmitItemRatingRequest[condition=$condition, descriptionAccuracy=$descriptionAccuracy, functionality=$functionality, comment=$comment]';
+  String toString() => 'SubmitItemRatingRequest[condition=$condition, cleanliness=$cleanliness, comment=$comment]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
       json[r'condition'] = this.condition;
-      json[r'descriptionAccuracy'] = this.descriptionAccuracy;
-      json[r'functionality'] = this.functionality;
+      json[r'cleanliness'] = this.cleanliness;
     if (this.comment != null) {
       json[r'comment'] = this.comment;
     } else {
@@ -77,17 +69,14 @@ class SubmitItemRatingRequest {
       assert(() {
         assert(json.containsKey(r'condition'), 'Required key "SubmitItemRatingRequest[condition]" is missing from JSON.');
         assert(json[r'condition'] != null, 'Required key "SubmitItemRatingRequest[condition]" has a null value in JSON.');
-        assert(json.containsKey(r'descriptionAccuracy'), 'Required key "SubmitItemRatingRequest[descriptionAccuracy]" is missing from JSON.');
-        assert(json[r'descriptionAccuracy'] != null, 'Required key "SubmitItemRatingRequest[descriptionAccuracy]" has a null value in JSON.');
-        assert(json.containsKey(r'functionality'), 'Required key "SubmitItemRatingRequest[functionality]" is missing from JSON.');
-        assert(json[r'functionality'] != null, 'Required key "SubmitItemRatingRequest[functionality]" has a null value in JSON.');
+        assert(json.containsKey(r'cleanliness'), 'Required key "SubmitItemRatingRequest[cleanliness]" is missing from JSON.');
+        assert(json[r'cleanliness'] != null, 'Required key "SubmitItemRatingRequest[cleanliness]" has a null value in JSON.');
         return true;
       }());
 
       return SubmitItemRatingRequest(
         condition: mapValueOfType<int>(json, r'condition')!,
-        descriptionAccuracy: mapValueOfType<int>(json, r'descriptionAccuracy')!,
-        functionality: mapValueOfType<int>(json, r'functionality')!,
+        cleanliness: mapValueOfType<int>(json, r'cleanliness')!,
         comment: mapValueOfType<String>(json, r'comment'),
       );
     }
@@ -137,8 +126,7 @@ class SubmitItemRatingRequest {
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
     'condition',
-    'descriptionAccuracy',
-    'functionality',
+    'cleanliness',
   };
 }
 

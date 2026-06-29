@@ -228,7 +228,8 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                       child: Text(
                         'Der vereinbarte Ausleihzeitraum beginnt erst am '
                         '${_formatDateSimple(acceptedOffer.startDate)}.',
-                        style: TextStyle(color: Colors.orange[900], fontSize: 13),
+                        style:
+                            TextStyle(color: Colors.orange[900], fontSize: 13),
                       ),
                     ),
                   ],
@@ -299,7 +300,8 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                       child: Text(
                         'Der vereinbarte Ausleihzeitraum endet erst am '
                         '${_formatDateSimple(acceptedOffer.endDate)}.',
-                        style: TextStyle(color: Colors.orange[900], fontSize: 13),
+                        style:
+                            TextStyle(color: Colors.orange[900], fontSize: 13),
                       ),
                     ),
                   ],
@@ -340,8 +342,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     int? reliability;
     int? roleSpecific;
     int? condition;
-    int? descriptionAccuracy;
-    int? functionality;
+    int? cleanliness;
 
     final submitted = await showDialog<bool>(
       context: context,
@@ -351,10 +352,8 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
               punctuality != null &&
               reliability != null &&
               roleSpecific != null;
-          final itemRatingComplete = isOwner ||
-              (condition != null &&
-                  descriptionAccuracy != null &&
-                  functionality != null);
+          final itemRatingComplete =
+              isOwner || (condition != null && cleanliness != null);
 
           return AlertDialog(
             title: Text(isOwner ? 'Ausleiher bewerten' : 'Ausleihe bewerten'),
@@ -420,16 +419,10 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                             setDialogState(() => condition = value),
                       ),
                       _RatingStars(
-                        label: 'Entspricht der Beschreibung',
-                        value: descriptionAccuracy,
+                        label: 'Sauberkeit',
+                        value: cleanliness,
                         onChanged: (value) =>
-                            setDialogState(() => descriptionAccuracy = value),
-                      ),
-                      _RatingStars(
-                        label: 'Funktion wie beschrieben',
-                        value: functionality,
-                        onChanged: (value) =>
-                            setDialogState(() => functionality = value),
+                            setDialogState(() => cleanliness = value),
                       ),
                       TextField(
                         controller: itemCommentController,
@@ -487,8 +480,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
           ? null
           : SubmitItemRatingRequest(
               condition: condition!,
-              descriptionAccuracy: descriptionAccuracy!,
-              functionality: functionality!,
+              cleanliness: cleanliness!,
               comment: itemComment.isEmpty ? null : itemComment,
             ),
     );
@@ -785,7 +777,8 @@ String _formatMessageTime(DateTime dt) {
   final today = DateTime(now.year, now.month, now.day);
   final yesterday = today.subtract(const Duration(days: 1));
   final msgDate = DateTime(local.year, local.month, local.day);
-  final time = '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+  final time =
+      '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
   if (msgDate == today) return time;
   if (msgDate == yesterday) return 'Gestern $time';
   const wd = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];

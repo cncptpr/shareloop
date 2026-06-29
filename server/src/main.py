@@ -10,7 +10,7 @@ from sqlalchemy import select, text
 from src.config import settings
 from src.database import async_session_factory, engine
 from src.db.models import Base, SeedMeta, User
-from src.handlers import auth, images, items, renting
+from src.handlers import auth, images, items, ratings, renting
 from src.handlers.seeding import router as seeding_router
 from src.notifications.registry import registry
 from src.seeding.reader import load_and_validate
@@ -22,6 +22,7 @@ app = FastAPI(title="Shareloop API", version="1.0.0")
 
 app.include_router(auth.router)
 app.include_router(items.router)
+app.include_router(ratings.router)
 app.include_router(renting.router)
 app.include_router(images.router)
 app.include_router(seeding_router)

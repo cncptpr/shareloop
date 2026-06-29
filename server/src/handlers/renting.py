@@ -9,8 +9,6 @@ from src.dependencies import get_current_user
 from src.models.openapi import (
     CreateOfferRequest,
     SendMessageRequest,
-    SubmitItemRatingRequest,
-    SubmitUserRatingRequest,
 )
 from src.notifications.registry import registry
 from src.services import renting as renting_service
@@ -188,45 +186,3 @@ async def api_confirm_return(
     return detail
 
 
-@router.post(
-    "/api/rent-requests/{request_id}/user-rating",
-    status_code=status.HTTP_201_CREATED,
-)
-async def api_submit_user_rating(
-    request_id: int,
-    body: SubmitUserRatingRequest,
-    user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    result, rating = await renting_service.submit_user_rating(db, request_id, user.id, body)
-    if result == "ok" and rating is not None:
-        return rating
-    if result == "not_found":
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    if result == "forbidden":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    if result == "conflict":
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-
-
-@router.post(
-    "/api/rent-requests/{request_id}/item-rating",
-    status_code=status.HTTP_201_CREATED,
-)
-async def api_submit_item_rating(
-    request_id: int,
-    body: SubmitItemRatingRequest,
-    user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    result, rating = await renting_service.submit_item_rating(db, request_id, user.id, body)
-    if result == "ok" and rating is not None:
-        return rating
-    if result == "not_found":
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    if result == "forbidden":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    if result == "conflict":
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)

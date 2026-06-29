@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart' show ItemOverview, ServerInfo, UserProfile, UserRatingDetail;
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/edit_profile_screen.dart';
+import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/state/auth.dart';
 import 'package:shareloop/state/profile.dart';
@@ -378,7 +379,16 @@ class _ItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: Column(
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ItemScreen(itemId: item.id),
+            ),
+          );
+        },
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (item.imageUuid != null)
@@ -418,6 +428,7 @@ class _ItemCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

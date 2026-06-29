@@ -45,6 +45,7 @@ part 'model/login_result.dart';
 part 'model/message.dart';
 part 'model/person.dart';
 part 'model/refresh_request.dart';
+part 'model/register_request.dart';
 part 'model/rent_offer.dart';
 part 'model/rent_request_detail.dart';
 part 'model/rent_request_overview.dart';

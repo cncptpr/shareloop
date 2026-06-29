@@ -1016,6 +1016,59 @@ class DefaultApi {
     return null;
   }
 
+  /// Register a new user
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [RegisterRequest] registerRequest (required):
+  Future<Response> registerWithHttpInfo(RegisterRequest registerRequest, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/auth/register';
+
+    // ignore: prefer_final_locals
+    Object? postBody = registerRequest;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Register a new user
+  ///
+  /// Parameters:
+  ///
+  /// * [RegisterRequest] registerRequest (required):
+  Future<LoginResult?> register(RegisterRequest registerRequest, { Future<void>? abortTrigger, }) async {
+    final response = await registerWithHttpInfo(registerRequest, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'LoginResult',) as LoginResult;
+    
+    }
+    return null;
+  }
+
   /// Search items
   ///
   /// Search items with filters

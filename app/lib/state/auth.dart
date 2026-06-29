@@ -65,20 +65,38 @@ Future<User?> _fetchUser() async {
   }
 }
 
-Future<User> login(String email, String password) async {
-  debugPrint('[auth] login start email=$email');
-  final result = await AppConfig.apiClient.login(
-    LoginRequest(email: email, password: password),
+Future<User> register(String email, String password, String name) async {
+  final result = await AppConfig.apiClient.register(
+    RegisterRequest(email: email, password: password, name: name),
   );
   if (result == null) throw UnauthorizedException.loginFailed;
 
-  debugPrint('[auth] login succeeded, saving tokens');
   await saveTokens(access: result.accessToken, refresh: result.refreshToken);
   AppConfig.bearerAuth.accessToken = result.accessToken;
-  debugPrint('[auth] tokens saved, setting authenticated');
   authStatusNotifier.value = AuthStatus.authenticated;
 
   return result.user;
+}
+
+Future<User> login(String email, String password) async {
+  debugPrint('[auth] login start email=$email');
+  try {
+    final result = await AppConfig.apiClient.login(
+      LoginRequest(email: email, password: password),
+    );
+    if (result == null) throw UnauthorizedException.loginFailed;
+
+    debugPrint('[auth] login succeeded, saving tokens');
+    await saveTokens(access: result.accessToken, refresh: result.refreshToken);
+    AppConfig.bearerAuth.accessToken = result.accessToken;
+    debugPrint('[auth] tokens saved, setting authenticated');
+    authStatusNotifier.value = AuthStatus.authenticated;
+
+    return result.user;
+  } on ApiException catch (e) {
+    if (e.code == 401) throw UnauthorizedException.loginFailed;
+    rethrow;
+  }
 }
 
 Future<void> logout() async {

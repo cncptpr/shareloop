@@ -1,51 +1,32 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shareloop/screens/register_screen.dart';
+import 'package:openapi/api.dart';
 import 'package:shareloop/state/auth.dart';
-import 'package:shareloop/state/token_storage.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends ConsumerStatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
-
-  static Future<void> push(BuildContext ctx) async {
-    await Navigator.push(
-      ctx,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
-  }
-
-  /// For pushing during e.g. a build phase.
-  static Future<void> queuePush(BuildContext ctx) async {
-    WidgetsBinding.instance.addPostFrameCallback((_) => push(ctx));
-  }
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String? _error;
   bool _loading = false;
 
   @override
-  void initState() {
-    super.initState();
-    if (kDebugMode) {
-      _emailController.text = 'dev@example.com';
-      _passwordController.text = 'dev';
-    }
-  }
-
-  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
+
+  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -56,12 +37,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     try {
-      await login(_emailController.text.trim(), _passwordController.text);
+      await register(
+        _emailController.text.trim(),
+        _passwordController.text,
+        _nameController.text.trim(),
+      );
       ref.invalidate(authProvider);
       if (mounted) Navigator.pop(context);
-    } on UnauthorizedException {
-      setState(() => _error = 'Invalid credentials.');
-    } catch (e) {
+    } on ApiException catch (e) {
+      if (e.code == 409) {
+        setState(() => _error = 'Email already registered.');
+      } else {
+        setState(() => _error = 'Registration failed. Please try again.');
+      }
+    } catch (_) {
       setState(() => _error = 'Connection error. Please try again.');
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -71,7 +60,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text('Create Account')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -81,19 +70,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Name'),
+                  textCapitalization: TextCapitalization.words,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) return 'Required';
+                    if (!_emailRegex.hasMatch(v.trim())) {
+                      return 'Enter a valid email address';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
                   decoration: const InputDecoration(labelText: 'Password'),
                   obscureText: true,
-                  validator: (v) =>
-                      (v == null || v.isEmpty) ? 'Required' : null,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return 'Required';
+                    if (v.length < 6) return 'At least 6 characters';
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 24),
                 if (_error != null)
@@ -110,17 +115,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Login'),
-                ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const RegisterScreen(),
-                    ),
-                  ),
-                  child: const Text('Create account'),
+                      : const Text('Create Account'),
                 ),
               ],
             ),

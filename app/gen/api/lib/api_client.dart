@@ -213,6 +213,8 @@ class ApiClient {
           return Person.fromJson(value);
         case 'RefreshRequest':
           return RefreshRequest.fromJson(value);
+        case 'RegisterRequest':
+          return RegisterRequest.fromJson(value);
         case 'RentOffer':
           return RentOffer.fromJson(value);
         case 'RentRequestDetail':

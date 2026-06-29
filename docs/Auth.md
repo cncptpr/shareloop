@@ -24,6 +24,12 @@ Lives in `app/lib/state/auth.dart`.
 
 - `logout()` — calls, removes the tokens and sets status to `unauthenticated`.
 
+### Registration
+
+- `register(email, password, name)` — calls `POST /auth/register`, creates the user account with a `Profile` (using `name`), and immediately logs in (returns tokens). On success the user is authenticated without needing to log in separately.
+- Basic pattern-based email validation is applied client-side (no verification email is sent).
+- Returns `409 Conflict` if the email is already registered.
+
 ## API Client
 
 Use `AppConfig.apiClient` for all request. It is a preconfigured `ApiClient`, that automatically performs refreshes. 
@@ -67,12 +73,13 @@ Tokens are stored in `tokens.txt` in the server working directory.
 
 All auth endpoints are defined in `api/shareloop.openapi.yaml` and generated into server handlers.
 
-| Method | Path             | OperationId   | Auth required | Request body                                     | Response body                  |
-|--------|------------------|---------------|---------------|--------------------------------------------------|--------------------------------|
-| POST   | `/auth/login`    | `login`       | No            | `{ email: string, password: string }`            | `LoginResult` (user + tokens) |
-| POST   | `/auth/refresh`  | `refresh`     | No            | `{ refreshToken: string }`                       | `LoginResult` (new tokens)    |
-| POST   | `/auth/verify`   | `verify`      | Bearer token  | —                                                | `User`                        |
-| POST   | `/auth/logout`   | `logout`      | Bearer token  | —                                                | 204 No Content                |
+| Method | Path               | OperationId   | Auth required | Request body                                                       | Response body                  |
+|--------|--------------------|---------------|---------------|--------------------------------------------------------------------|--------------------------------|
+| POST   | `/auth/register`   | `register`    | No            | `{ email: string, password: string, name: string }`                | `LoginResult` (201)            |
+| POST   | `/auth/login`      | `login`       | No            | `{ email: string, password: string }`                              | `LoginResult` (user + tokens) |
+| POST   | `/auth/refresh`    | `refresh`     | No            | `{ refreshToken: string }`                                         | `LoginResult` (new tokens)    |
+| POST   | `/auth/verify`     | `verify`      | Bearer token  | —                                                                  | `User`                        |
+| POST   | `/auth/logout`     | `logout`      | Bearer token  | —                                                                  | 204 No Content                |
 
 All return **401** on invalid credentials, expired tokens, or missing/auth headers.
 

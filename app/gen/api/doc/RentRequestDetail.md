@@ -23,6 +23,8 @@ Name | Type | Description | Notes
 **messages** | [**List<Message>**](Message.md) |  | [default to const []]
 **offers** | [**List<RentOffer>**](RentOffer.md) |  | [default to const []]
 **lastRead** | [**DateTime**](DateTime.md) |  | 
+**myUserRating** | [**UserRating**](UserRating.md) |  | [optional] 
+**myItemRating** | [**ItemRating**](ItemRating.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

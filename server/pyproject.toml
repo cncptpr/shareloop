@@ -66,5 +66,5 @@ ignore = [
     "UP007",
     "B008",
 ]
-per-file-ignores = { "src/models/openapi.py" = ["F821", "N815"] }
+per-file-ignores = { "src/models/openapi.py" = ["F821", "I001", "N815"] }
 

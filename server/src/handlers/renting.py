@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database import get_db
 from src.db.models import User
 from src.dependencies import get_current_user
-from src.models.openapi import CreateOfferRequest, SendMessageRequest
+from src.models.openapi import CreateOfferRequest, SendMessageRequest, SubmitRentRatingsRequest
 from src.notifications.registry import registry
 from src.services import renting as renting_service
 
@@ -20,17 +20,17 @@ async def _notify_other(
     event_type: str,
     data: dict,
 ):
-    detail = await renting_service.get_rent_request_by_id(
-        db, request_id, current_user_id
-    )
+    detail = await renting_service.get_rent_request_by_id(db, request_id, current_user_id)
     if detail is None:
         return
     other_id = detail.requester.id if current_user_id != detail.requester.id else detail.owner_id
-    payload = json.dumps({
-        "type": event_type,
-        "rent_request_id": request_id,
-        "data": data,
-    })
+    payload = json.dumps(
+        {
+            "type": event_type,
+            "rent_request_id": request_id,
+            "data": data,
+        }
+    )
     await registry.notify(other_id, payload)
 
 
@@ -89,7 +89,10 @@ async def api_send_message(
     if msg is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     await _notify_other(
-        db, request_id, user.id, "message.created",
+        db,
+        request_id,
+        user.id,
+        "message.created",
         msg.model_dump(mode="json", by_alias=True),
     )
     return msg
@@ -106,13 +109,18 @@ async def api_create_offer(
         db,
         request_id,
         user.id,
-        body.start_date.isoformat() if hasattr(body.start_date, 'isoformat') else str(body.start_date),
-        body.end_date.isoformat() if hasattr(body.end_date, 'isoformat') else str(body.end_date),
+        body.start_date.isoformat()
+        if hasattr(body.start_date, "isoformat")
+        else str(body.start_date),
+        body.end_date.isoformat() if hasattr(body.end_date, "isoformat") else str(body.end_date),
     )
     if offer is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     await _notify_other(
-        db, request_id, user.id, "offer.created",
+        db,
+        request_id,
+        user.id,
+        "offer.created",
         offer.model_dump(mode="json", by_alias=True),
     )
     return offer
@@ -128,7 +136,10 @@ async def api_accept_offer(
     if offer is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     await _notify_other(
-        db, offer.rent_request_id, user.id, "offer.accepted",
+        db,
+        offer.rent_request_id,
+        user.id,
+        "offer.accepted",
         offer.model_dump(mode="json", by_alias=True),
     )
     return offer
@@ -144,7 +155,10 @@ async def api_confirm_borrow(
     if detail is None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     await _notify_other(
-        db, request_id, user.id, "borrow.confirmed",
+        db,
+        request_id,
+        user.id,
+        "borrow.confirmed",
         detail.model_dump(mode="json", by_alias=True),
     )
     return detail
@@ -160,7 +174,35 @@ async def api_confirm_return(
     if detail is None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     await _notify_other(
-        db, request_id, user.id, "return.confirmed",
+        db,
+        request_id,
+        user.id,
+        "return.confirmed",
         detail.model_dump(mode="json", by_alias=True),
     )
     return detail
+
+
+@router.post("/api/rent-requests/{request_id}/ratings", status_code=status.HTTP_201_CREATED)
+async def api_submit_rent_ratings(
+    request_id: int,
+    body: SubmitRentRatingsRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result, ratings = await renting_service.submit_rent_ratings(
+        db,
+        request_id,
+        user.id,
+        body.user_rating,
+        body.item_rating,
+    )
+    if result == "ok" and ratings is not None:
+        return ratings
+    if result == "not_found":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if result == "forbidden":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    if result == "conflict":
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)

@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config import settings
 from src.database import get_db
-from src.db.models import Item, ItemImage, Profile
+from src.db.models import Item, ItemImage, ItemRating, Profile
 from src.dependencies import get_current_user
 from src.models.openapi import (
     CreateItemRequest,
@@ -23,6 +23,9 @@ from src.models.openapi import (
     UpdateItemRequest,
     UploadItemImageRequest,
     UploadItemImageResponse,
+)
+from src.models.openapi import (
+    ItemRating as ApiItemRating,
 )
 from src.services.featured_items import get_featured_items
 from src.services.search import search_items
@@ -38,6 +41,7 @@ async def api_get_featured_items(
     location = None
     if body and "lat" in body and "lng" in body:
         from src.models.openapi import LatLng
+
         location = LatLng(lat=body["lat"], lng=body["lng"])
     items = await get_featured_items(db, location)
     return items
@@ -68,9 +72,9 @@ async def api_create_item(
         description=body.description,
         author_id=user.id,
         score=0.0,
-        location=sa_func.st_setsrid(
-            sa_func.st_makepoint(body.lng, body.lat), 4326
-        ).cast(GeoAlchemyGeography(srid=4326)),
+        location=sa_func.st_setsrid(sa_func.st_makepoint(body.lng, body.lat), 4326).cast(
+            GeoAlchemyGeography(srid=4326)
+        ),
         city=body.city,
         postal_code=body.postal_code,
         category=body.category,
@@ -111,6 +115,28 @@ async def api_get_item(item_id: int, db: AsyncSession = Depends(get_db)):
     )
     image_uuids = [str(r[0]) for r in img_result.all()]
 
+    rating_result = await db.execute(
+        select(ItemRating, Profile)
+        .join(Profile, Profile.id == ItemRating.reviewer_id)
+        .where(ItemRating.item_id == item_id)
+        .order_by(ItemRating.created_at.desc())
+    )
+    rating_rows = rating_result.all()
+    item_ratings = [
+        ApiItemRating(
+            id=rating.id,
+            rent_request_id=rating.rent_request_id,
+            item_id=rating.item_id,
+            reviewer=Person(id=reviewer.id, name=reviewer.name),
+            condition=rating.condition,
+            description_accuracy=rating.description_accuracy,
+            functionality=rating.functionality,
+            overall=rating.overall,
+            comment=rating.comment,
+            created_at=rating.created_at.isoformat().replace("+00:00", "Z"),
+        )
+        for rating, reviewer in rating_rows
+    ]
     return ItemDetail(
         id=row.id,
         title=row.title,
@@ -122,6 +148,8 @@ async def api_get_item(item_id: int, db: AsyncSession = Depends(get_db)):
         image_uuids=image_uuids,
         category=row.category,
         created_at=row.created_at,
+        item_rating_count=len(item_ratings),
+        item_ratings=item_ratings,
     )
 
 
@@ -147,9 +175,9 @@ async def api_update_item(
     item.city = body.city
     item.postal_code = body.postal_code
     item.category = body.category
-    item.location = sa_func.st_setsrid(
-        sa_func.st_makepoint(body.lng, body.lat), 4326
-    ).cast(GeoAlchemyGeography(srid=4326))
+    item.location = sa_func.st_setsrid(sa_func.st_makepoint(body.lng, body.lat), 4326).cast(
+        GeoAlchemyGeography(srid=4326)
+    )
     await db.commit()
     return CreateItemResponse(id=item.id)
 
@@ -171,8 +199,8 @@ async def api_get_item_edit(
             Item.city,
             Item.postal_code,
             Item.category,
-    sa_func.st_x(Item.location.cast(Geometry(srid=4326))).label("lng"),
-    sa_func.st_y(Item.location.cast(Geometry(srid=4326))).label("lat"),
+            sa_func.st_x(Item.location.cast(Geometry(srid=4326))).label("lng"),
+            sa_func.st_y(Item.location.cast(Geometry(srid=4326))).label("lat"),
             sa_func.to_char(Item.created_at, "YYYY-MM-DDThh24:mi:ssZ").label("created_at"),
         )
         .select_from(Item)
@@ -223,6 +251,7 @@ async def api_upload_item_image(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     import base64
+
     try:
         image_bytes = base64.b64decode(body.data)
     except Exception:
@@ -275,9 +304,7 @@ async def api_edit_item_images(
         except Exception:
             continue
         img_result = await db.execute(
-            select(ItemImage).where(
-                ItemImage.id == parsed, ItemImage.item_id == item_id
-            )
+            select(ItemImage).where(ItemImage.id == parsed, ItemImage.item_id == item_id)
         )
         img = img_result.scalar_one_or_none()
         if img:
@@ -293,7 +320,9 @@ async def api_edit_item_images(
         except Exception:
             continue
         await db.execute(
-            text("UPDATE item_images SET sort_order = :sort_order WHERE id = :id AND item_id = :item_id"),
+            text(
+                "UPDATE item_images SET sort_order = :sort_order WHERE id = :id AND item_id = :item_id"
+            ),
             {"sort_order": entry.sort_order, "id": str(parsed), "item_id": item_id},
         )
 

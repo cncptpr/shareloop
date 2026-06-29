@@ -1,0 +1,18 @@
+# openapi.model.SubmitItemRatingRequest
+
+## Load the model package
+```dart
+import 'package:openapi/api.dart';
+```
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**condition** | **int** |  | 
+**descriptionAccuracy** | **int** |  | 
+**functionality** | **int** |  | 
+**comment** | **String** |  | [optional] 
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

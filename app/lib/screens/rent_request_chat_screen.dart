@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/state/auth.dart';
+import 'package:shareloop/state/item_detail.dart';
 import 'package:shareloop/state/renting.dart';
 import 'package:shareloop/state/websocket.dart';
 
@@ -15,8 +16,8 @@ class RentRequestChatScreen extends ConsumerStatefulWidget {
   const RentRequestChatScreen.newRequest({
     required this.itemId,
     super.key,
-  }) : requestId = null,
-       rentRequest = null;
+  })  : requestId = null,
+        rentRequest = null;
 
   const RentRequestChatScreen.existing({
     required this.requestId,
@@ -29,8 +30,7 @@ class RentRequestChatScreen extends ConsumerStatefulWidget {
       _RentRequestChatScreenState();
 }
 
-class _RentRequestChatScreenState
-    extends ConsumerState<RentRequestChatScreen> {
+class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
   int? _requestId;
@@ -194,7 +194,7 @@ class _RentRequestChatScreenState
         ? offers.cast<RentOffer?>().firstWhere(
               (o) => o?.id == request?.latestAcceptedOfferId,
               orElse: () => null,
-          )
+            )
         : null;
 
     final now = DateTime.now();
@@ -221,7 +221,8 @@ class _RentRequestChatScreenState
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.warning_amber, color: Colors.orange[700], size: 20),
+                    Icon(Icons.warning_amber,
+                        color: Colors.orange[700], size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -264,7 +265,7 @@ class _RentRequestChatScreenState
         ? offers.cast<RentOffer?>().firstWhere(
               (o) => o?.id == request?.latestAcceptedOfferId,
               orElse: () => null,
-          )
+            )
         : null;
 
     final now = DateTime.now();
@@ -291,7 +292,8 @@ class _RentRequestChatScreenState
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.warning_amber, color: Colors.orange[700], size: 20),
+                    Icon(Icons.warning_amber,
+                        color: Colors.orange[700], size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -325,6 +327,185 @@ class _RentRequestChatScreenState
     ref.invalidate(myRentRequestsProvider);
   }
 
+  Future<void> _showRatingDialog(
+      RentRequestDetail request, bool isOwner) async {
+    if (_requestId == null) return;
+    final revieweeName = isOwner ? request.requester.name : request.ownerName;
+    final revieweeRole = isOwner ? 'Ausleiher' : 'Verleiher';
+    final userCommentController = TextEditingController();
+    final itemCommentController = TextEditingController();
+
+    int? friendliness;
+    int? punctuality;
+    int? reliability;
+    int? roleSpecific;
+    int? condition;
+    int? descriptionAccuracy;
+    int? functionality;
+
+    final submitted = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          final userRatingComplete = friendliness != null &&
+              punctuality != null &&
+              reliability != null &&
+              roleSpecific != null;
+          final itemRatingComplete = isOwner ||
+              (condition != null &&
+                  descriptionAccuracy != null &&
+                  functionality != null);
+
+          return AlertDialog(
+            title: Text(isOwner ? 'Ausleiher bewerten' : 'Ausleihe bewerten'),
+            content: SizedBox(
+              width: 420,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _RatingSectionHeader(
+                      title: revieweeRole,
+                      subtitle: revieweeName,
+                    ),
+                    const SizedBox(height: 16),
+                    _RatingStars(
+                      label: 'Freundlichkeit',
+                      value: friendliness,
+                      onChanged: (value) =>
+                          setDialogState(() => friendliness = value),
+                    ),
+                    _RatingStars(
+                      label: 'Pünktlichkeit',
+                      value: punctuality,
+                      onChanged: (value) =>
+                          setDialogState(() => punctuality = value),
+                    ),
+                    _RatingStars(
+                      label: 'Zuverlässigkeit',
+                      value: reliability,
+                      onChanged: (value) =>
+                          setDialogState(() => reliability = value),
+                    ),
+                    _RatingStars(
+                      label: isOwner ? 'Sorgsamer Umgang' : 'Kommunikation',
+                      value: roleSpecific,
+                      onChanged: (value) =>
+                          setDialogState(() => roleSpecific = value),
+                    ),
+                    TextField(
+                      controller: userCommentController,
+                      decoration: InputDecoration(
+                        labelText: 'Kommentar zu $revieweeRole (optional)',
+                        border: const OutlineInputBorder(),
+                      ),
+                      maxLines: 3,
+                      textInputAction: TextInputAction.newline,
+                    ),
+                    if (!isOwner) ...[
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 24),
+                        child: Divider(),
+                      ),
+                      _RatingSectionHeader(
+                        title: 'Gegenstand',
+                        subtitle: request.itemTitle,
+                      ),
+                      const SizedBox(height: 16),
+                      _RatingStars(
+                        label: 'Zustand',
+                        value: condition,
+                        onChanged: (value) =>
+                            setDialogState(() => condition = value),
+                      ),
+                      _RatingStars(
+                        label: 'Entspricht der Beschreibung',
+                        value: descriptionAccuracy,
+                        onChanged: (value) =>
+                            setDialogState(() => descriptionAccuracy = value),
+                      ),
+                      _RatingStars(
+                        label: 'Funktion wie beschrieben',
+                        value: functionality,
+                        onChanged: (value) =>
+                            setDialogState(() => functionality = value),
+                      ),
+                      TextField(
+                        controller: itemCommentController,
+                        decoration: const InputDecoration(
+                          labelText: 'Kommentar zum Gegenstand (optional)',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 3,
+                        textInputAction: TextInputAction.newline,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Abbrechen'),
+              ),
+              FilledButton.icon(
+                onPressed: userRatingComplete && itemRatingComplete
+                    ? () => Navigator.pop(ctx, true)
+                    : null,
+                icon: const Icon(Icons.star, size: 18),
+                label: const Text('Bewertung senden'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+    if (submitted != true) {
+      userCommentController.dispose();
+      itemCommentController.dispose();
+      return;
+    }
+
+    final userComment = userCommentController.text.trim();
+    final itemComment = itemCommentController.text.trim();
+    userCommentController.dispose();
+    itemCommentController.dispose();
+
+    final ratings = await submitRentRatings(
+      requestId: _requestId!,
+      userRating: SubmitUserRatingRequest(
+        friendliness: friendliness!,
+        punctuality: punctuality!,
+        reliability: reliability!,
+        communication: isOwner ? null : roleSpecific!,
+        carefulHandling: isOwner ? roleSpecific! : null,
+        comment: userComment.isEmpty ? null : userComment,
+      ),
+      itemRating: isOwner
+          ? null
+          : SubmitItemRatingRequest(
+              condition: condition!,
+              descriptionAccuracy: descriptionAccuracy!,
+              functionality: functionality!,
+              comment: itemComment.isEmpty ? null : itemComment,
+            ),
+    );
+    if (!mounted) return;
+    if (ratings == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Bewertung konnte nicht gespeichert werden.')),
+      );
+      return;
+    }
+
+    ref.invalidate(rentRequestProvider(_requestId!));
+    ref.invalidate(myRentRequestsProvider);
+    ref.invalidate(itemDetailProvider(request.itemId));
+  }
+
   RentRequestDetail? _resolveRequest(RentRequestDetail? fromProvider) {
     if (fromProvider != null) return fromProvider;
     if (widget.rentRequest != null && _requestId == widget.requestId) {
@@ -349,7 +530,9 @@ class _RentRequestChatScreenState
         ? ref.watch(rentRequestProvider(_requestId!))
         : const AsyncData<RentRequestDetail?>(null);
 
-    if (_requestId != null && asyncRequest.hasValue && asyncRequest.value == null) {
+    if (_requestId != null &&
+        asyncRequest.hasValue &&
+        asyncRequest.value == null) {
       final navigator = Navigator.of(context);
       Future.microtask(() {
         if (mounted) navigator.pop();
@@ -373,7 +556,8 @@ class _RentRequestChatScreenState
       WidgetsBinding.instance.addPostFrameCallback((_) => _tryScrollToBottom());
     }
 
-    if (_requestId != null && asyncRequest.hasValue &&
+    if (_requestId != null &&
+        asyncRequest.hasValue &&
         asyncRequest.value != null &&
         messages.length > _lastMessageCount) {
       _lastMessageCount = messages.length;
@@ -448,7 +632,8 @@ class _RentRequestChatScreenState
           _MessageInput(
             controller: _messageController,
             onSend: _sendMessage,
-            onCreateOffer: (isOwner || isRequester) && !isReturned ? _createOffer : null,
+            onCreateOffer:
+                (isOwner || isRequester) && !isReturned ? _createOffer : null,
           ),
         ],
       ),
@@ -470,15 +655,28 @@ class _RentRequestChatScreenState
       for (final m in messages) _ChatItem.message(m),
       for (final o in offers) _ChatItem.offer(o),
       if (request?.borrowConfirmedAt != null)
-        _ChatItem.system('Ausleihe bestätigt', createdAt: request!.borrowConfirmedAt!),
+        _ChatItem.system('Ausleihe bestätigt',
+            createdAt: request!.borrowConfirmedAt!),
       if (request?.returnedAt != null)
         _ChatItem.system('Rückgabe bestätigt', createdAt: request!.returnedAt!),
     ];
     chatItems.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
     int actionCount = 0;
-    if (isOwner && !isReturned && !isBorrowed && hasAcceptedOffer) actionCount++;
-    if (isOwner && !isReturned && isBorrowed) actionCount++;
+    if (isOwner && !isReturned && !isBorrowed && hasAcceptedOffer) {
+      actionCount++;
+    }
+    if (isOwner && !isReturned && isBorrowed) {
+      actionCount++;
+    }
+    final canRate = request != null &&
+        isReturned &&
+        request.myUserRating == null &&
+        (isOwner || request.myItemRating == null) &&
+        (isOwner || isRequester);
+    if (canRate) {
+      actionCount++;
+    }
 
     if (chatItems.isEmpty && actionCount == 0 && _requestId == null) {
       return const Center(
@@ -552,6 +750,23 @@ class _RentRequestChatScreenState
               onTap: _confirmReturn,
             );
           }
+          offset--;
+        }
+        if (canRate) {
+          if (offset == 0) {
+            final revieweeName =
+                isOwner ? request.requester.name : request.ownerName;
+            return _SystemActionCard(
+              icon: Icons.star_border,
+              title: isOwner
+                  ? 'Ausleiher bewerten'
+                  : 'Verleiher und Gegenstand bewerten',
+              subtitle: isOwner
+                  ? 'Bewerte $revieweeName nach der abgeschlossenen Ausleihe'
+                  : 'Bewerte $revieweeName und ${request.itemTitle}',
+              onTap: () => _showRatingDialog(request, isOwner),
+            );
+          }
         }
         return const SizedBox.shrink();
       },
@@ -583,7 +798,9 @@ String _formatMessageTime(DateTime dt) {
 String _statusText(RentRequestDetail req) {
   if (req.returnedAt != null) return 'Abgeschlossen · Rückgabe bestätigt';
   if (req.borrowConfirmedAt != null) return 'Ausgeliehen · Rückgabe ausstehend';
-  if (req.latestAcceptedOfferId != null) return 'Angebot akzeptiert · Ausleihe bestätigen';
+  if (req.latestAcceptedOfferId != null) {
+    return 'Angebot akzeptiert · Ausleihe bestätigen';
+  }
   if (req.latestOpenOfferId != null) return 'Angebot erhalten';
   return 'Ausstehend';
 }
@@ -642,7 +859,9 @@ class _StatusBanner extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: Colors.blue[700]),
           const SizedBox(width: 8),
-          Expanded(child: Text(statusText, style: TextStyle(color: Colors.blue[700]))),
+          Expanded(
+              child:
+                  Text(statusText, style: TextStyle(color: Colors.blue[700]))),
         ],
       ),
     );
@@ -743,6 +962,80 @@ class _OfferBubble extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _RatingStars extends StatelessWidget {
+  final String label;
+  final int? value;
+  final ValueChanged<int> onChanged;
+
+  const _RatingStars({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+              Text('${value ?? 0}/5'),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var star = 1; star <= 5; star++)
+                IconButton(
+                  constraints:
+                      const BoxConstraints.tightFor(width: 40, height: 40),
+                  padding: EdgeInsets.zero,
+                  tooltip: '$star Sterne',
+                  onPressed: () => onChanged(star),
+                  icon: Icon(
+                    value != null && star <= value!
+                        ? Icons.star
+                        : Icons.star_border,
+                    color: Colors.amber[700],
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RatingSectionHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const _RatingSectionHeader({required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 2),
+        Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
+      ],
     );
   }
 }
@@ -940,7 +1233,8 @@ class _MessageInput extends StatelessWidget {
                 decoration: const InputDecoration(
                   hintText: 'Nachricht schreiben...',
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => onSend(),

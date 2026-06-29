@@ -38,6 +38,7 @@ part 'model/edit_item_images_request.dart';
 part 'model/item_detail.dart';
 part 'model/item_edit_detail.dart';
 part 'model/item_overview.dart';
+part 'model/item_rating.dart';
 part 'model/item_search_request.dart';
 part 'model/lat_lng.dart';
 part 'model/login_request.dart';
@@ -52,10 +53,15 @@ part 'model/reorder_entry.dart';
 part 'model/seed_database200_response.dart';
 part 'model/send_message_request.dart';
 part 'model/server_info.dart';
+part 'model/submit_item_rating_request.dart';
+part 'model/submit_rent_ratings_request.dart';
+part 'model/submit_user_rating_request.dart';
+part 'model/submitted_rent_ratings.dart';
 part 'model/update_item_request.dart';
 part 'model/upload_item_image_request.dart';
 part 'model/upload_item_image_response.dart';
 part 'model/user.dart';
+part 'model/user_rating.dart';
 
 
 /// An [ApiClient] instance that uses the default values obtained from

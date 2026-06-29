@@ -32,6 +32,7 @@ async def startup():
     os.makedirs(settings.uploads_dir, exist_ok=True)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await apply_compat_migrations(conn)
     await apply_migrations()
     await init_seeding()
 
@@ -52,6 +53,15 @@ async def init_seeding():
             db.add(SeedMeta(id=1))
             await db.commit()
             logger.info("SeedMeta Zeile angelegt")
+
+
+async def apply_compat_migrations(conn):
+    await conn.execute(
+        text(
+            "ALTER TABLE item_ratings ALTER COLUMN overall TYPE DOUBLE PRECISION "
+            "USING overall::double precision"
+        )
+    )
 
 
 async def apply_migrations():

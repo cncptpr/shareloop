@@ -23,6 +23,8 @@ class ItemDetail {
     this.imageUuids = const [],
     required this.category,
     required this.createdAt,
+    required this.itemRatingCount,
+    this.itemRatings = const [],
   });
 
   int id;
@@ -57,6 +59,11 @@ class ItemDetail {
 
   DateTime createdAt;
 
+  /// Minimum value: 0
+  int itemRatingCount;
+
+  List<ItemRating> itemRatings;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is ItemDetail &&
     other.id == id &&
@@ -68,7 +75,9 @@ class ItemDetail {
     other.postalCode == postalCode &&
     _deepEquality.equals(other.imageUuids, imageUuids) &&
     other.category == category &&
-    other.createdAt == createdAt;
+    other.createdAt == createdAt &&
+    other.itemRatingCount == itemRatingCount &&
+    _deepEquality.equals(other.itemRatings, itemRatings);
 
   @override
   int get hashCode =>
@@ -82,10 +91,12 @@ class ItemDetail {
     (postalCode == null ? 0 : postalCode!.hashCode) +
     (imageUuids.hashCode) +
     (category.hashCode) +
-    (createdAt.hashCode);
+    (createdAt.hashCode) +
+    (itemRatingCount.hashCode) +
+    (itemRatings.hashCode);
 
   @override
-  String toString() => 'ItemDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, createdAt=$createdAt]';
+  String toString() => 'ItemDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, createdAt=$createdAt, itemRatingCount=$itemRatingCount, itemRatings=$itemRatings]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -107,6 +118,8 @@ class ItemDetail {
       json[r'imageUuids'] = this.imageUuids;
       json[r'category'] = this.category;
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
+      json[r'itemRatingCount'] = this.itemRatingCount;
+      json[r'itemRatings'] = this.itemRatings;
     return json;
   }
 
@@ -137,6 +150,10 @@ class ItemDetail {
         assert(json[r'category'] != null, 'Required key "ItemDetail[category]" has a null value in JSON.');
         assert(json.containsKey(r'createdAt'), 'Required key "ItemDetail[createdAt]" is missing from JSON.');
         assert(json[r'createdAt'] != null, 'Required key "ItemDetail[createdAt]" has a null value in JSON.');
+        assert(json.containsKey(r'itemRatingCount'), 'Required key "ItemDetail[itemRatingCount]" is missing from JSON.');
+        assert(json[r'itemRatingCount'] != null, 'Required key "ItemDetail[itemRatingCount]" has a null value in JSON.');
+        assert(json.containsKey(r'itemRatings'), 'Required key "ItemDetail[itemRatings]" is missing from JSON.');
+        assert(json[r'itemRatings'] != null, 'Required key "ItemDetail[itemRatings]" has a null value in JSON.');
         return true;
       }());
 
@@ -153,6 +170,8 @@ class ItemDetail {
             : const [],
         category: mapValueOfType<String>(json, r'category')!,
         createdAt: mapDateTime(json, r'createdAt', r'')!,
+        itemRatingCount: mapValueOfType<int>(json, r'itemRatingCount')!,
+        itemRatings: ItemRating.listFromJson(json[r'itemRatings']),
       );
     }
     return null;
@@ -208,6 +227,8 @@ class ItemDetail {
     'imageUuids',
     'category',
     'createdAt',
+    'itemRatingCount',
+    'itemRatings',
   };
 }
 

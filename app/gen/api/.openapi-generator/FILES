@@ -19,7 +19,6 @@ doc/LoginResult.md
 doc/Message.md
 doc/Person.md
 doc/RefreshRequest.md
-doc/RegisterRequest.md
 doc/RentOffer.md
 doc/RentRequestDetail.md
 doc/RentRequestOverview.md
@@ -30,6 +29,7 @@ doc/ServerInfo.md
 doc/SubmitItemRatingRequest.md
 doc/SubmitUserRatingRequest.md
 doc/UpdateItemRequest.md
+doc/UpdateUserProfileRequest.md
 doc/UploadItemImageRequest.md
 doc/UploadItemImageResponse.md
 doc/User.md
@@ -63,7 +63,6 @@ lib/model/login_result.dart
 lib/model/message.dart
 lib/model/person.dart
 lib/model/refresh_request.dart
-lib/model/register_request.dart
 lib/model/rent_offer.dart
 lib/model/rent_request_detail.dart
 lib/model/rent_request_overview.dart
@@ -74,6 +73,7 @@ lib/model/server_info.dart
 lib/model/submit_item_rating_request.dart
 lib/model/submit_user_rating_request.dart
 lib/model/update_item_request.dart
+lib/model/update_user_profile_request.dart
 lib/model/upload_item_image_request.dart
 lib/model/upload_item_image_response.dart
 lib/model/user.dart
@@ -81,4 +81,4 @@ lib/model/user_profile.dart
 lib/model/user_rating.dart
 lib/model/user_rating_detail.dart
 pubspec.yaml
-test/register_request_test.dart
+test/update_user_profile_request_test.dart

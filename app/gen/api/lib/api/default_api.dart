@@ -1590,6 +1590,68 @@ class DefaultApi {
     return null;
   }
 
+  /// Update own profile
+  ///
+  /// Update name and/or bio for the authenticated user's profile
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  ///
+  /// * [UpdateUserProfileRequest] updateUserProfileRequest (required):
+  Future<Response> updateUserProfileWithHttpInfo(int userId, UpdateUserProfileRequest updateUserProfileRequest, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/profile'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody = updateUserProfileRequest;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'PATCH',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Update own profile
+  ///
+  /// Update name and/or bio for the authenticated user's profile
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  ///
+  /// * [UpdateUserProfileRequest] updateUserProfileRequest (required):
+  Future<UserProfile?> updateUserProfile(int userId, UpdateUserProfileRequest updateUserProfileRequest, { Future<void>? abortTrigger, }) async {
+    final response = await updateUserProfileWithHttpInfo(userId, updateUserProfileRequest, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UserProfile',) as UserProfile;
+    
+    }
+    return null;
+  }
+
   /// Upload an image for an item
   ///
   /// Note: This method returns the HTTP [Response].

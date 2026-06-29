@@ -237,6 +237,8 @@ class ApiClient {
           return SubmitUserRatingRequest.fromJson(value);
         case 'UpdateItemRequest':
           return UpdateItemRequest.fromJson(value);
+        case 'UpdateUserProfileRequest':
+          return UpdateUserProfileRequest.fromJson(value);
         case 'UploadItemImageRequest':
           return UploadItemImageRequest.fromJson(value);
         case 'UploadItemImageResponse':

@@ -5,9 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_db
 from src.db.models import Item, ItemImage, Profile, RentRequest, User, UserRating
+from src.dependencies import get_current_user
 from src.models.openapi import (
     ItemOverview,
     Person,
+    UpdateUserProfileRequest,
     UserProfile,
     UserRatingDetail,
 )
@@ -25,7 +27,6 @@ async def api_get_user_profile(user_id: int, db: AsyncSession = Depends(get_db))
             User.created_at,
             Profile.name,
             Profile.bio,
-            Profile.rating,
         )
         .select_from(User)
         .outerjoin(Profile, Profile.id == User.id)
@@ -45,6 +46,20 @@ async def api_get_user_profile(user_id: int, db: AsyncSession = Depends(get_db))
     )
     rating_count = rating_count_result.scalar() or 0
 
+    avg_rating_result = await db.execute(
+        select(
+            (
+                sa_func.coalesce(sa_func.avg(UserRating.friendliness), 0)
+                + sa_func.coalesce(sa_func.avg(UserRating.punctuality), 0)
+                + sa_func.coalesce(sa_func.avg(UserRating.reliability), 0)
+                + sa_func.coalesce(sa_func.avg(UserRating.communication), 0)
+                + sa_func.coalesce(sa_func.avg(UserRating.careful_handling), 0)
+            )
+            / 5
+        ).where(UserRating.reviewee_id == user_id)
+    )
+    avg_rating = avg_rating_result.scalar()
+
     share_count_result = await db.execute(
         select(sa_func.count(RentRequest.id)).where(
             RentRequest.requester_id == user_id,
@@ -59,13 +74,37 @@ async def api_get_user_profile(user_id: int, db: AsyncSession = Depends(get_db))
         name=row.name or "",
         email=row.email,
         bio=row.bio,
-        rating=row.rating if row.rating is not None else None,
+        rating=avg_rating,
         created_at=row.created_at,
         last_online_at=row.last_online_at,
         item_count=item_count,
         rating_count=rating_count,
         share_count=share_count,
     )
+
+
+@router.patch("/api/users/{user_id}/profile")
+async def api_update_user_profile(
+    user_id: int,
+    body: UpdateUserProfileRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    profile = await db.get(Profile, user_id)
+    if profile is None:
+        profile = Profile(id=user_id)
+        db.add(profile)
+    if body.name is not None:
+        profile.name = body.name
+    if body.bio is not None:
+        profile.bio = body.bio
+    await db.commit()
+    await db.refresh(profile)
+
+    return await api_get_user_profile(user_id, db)
 
 
 @router.get("/api/users/{user_id}/items")

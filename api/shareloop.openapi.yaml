@@ -730,6 +730,39 @@ paths:
           description: User not found
         "500":
           description: Internal server error
+    patch:
+      summary: Update own profile
+      description: Update name and/or bio for the authenticated user's profile
+      operationId: updateUserProfile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserProfileRequest"
+      responses:
+        "200":
+          description: Updated user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not the same user
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
 
   /users/{userId}/items:
     get:
@@ -1455,6 +1488,15 @@ components:
           minimum: 1
           maximum: 5
         comment:
+          type: string
+          nullable: true
+
+    UpdateUserProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        bio:
           type: string
           nullable: true
 

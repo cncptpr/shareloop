@@ -38,6 +38,7 @@ Method | HTTP request | Description
 [**submitItemRating**](DefaultApi.md#submititemrating) | **POST** /rent-requests/{requestId}/item-rating | Rate the borrowed item after return
 [**submitUserRating**](DefaultApi.md#submituserrating) | **POST** /rent-requests/{requestId}/user-rating | Rate the other participant after return
 [**updateItem**](DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
+[**updateUserProfile**](DefaultApi.md#updateuserprofile) | **PATCH** /users/{userId}/profile | Update own profile
 [**uploadItemImage**](DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
 [**verify**](DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
 
@@ -1326,6 +1327,57 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**CreateItemResponse**](CreateItemResponse.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateUserProfile**
+> UserProfile updateUserProfile(userId, updateUserProfileRequest)
+
+Update own profile
+
+Update name and/or bio for the authenticated user's profile
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+final updateUserProfileRequest = UpdateUserProfileRequest(); // UpdateUserProfileRequest | 
+
+try {
+    final result = api_instance.updateUserProfile(userId, updateUserProfileRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->updateUserProfile: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+ **updateUserProfileRequest** | [**UpdateUserProfileRequest**](UpdateUserProfileRequest.md)|  | 
+
+### Return type
+
+[**UserProfile**](UserProfile.md)
 
 ### Authorization
 

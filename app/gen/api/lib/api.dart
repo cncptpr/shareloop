@@ -57,6 +57,7 @@ part 'model/server_info.dart';
 part 'model/submit_item_rating_request.dart';
 part 'model/submit_user_rating_request.dart';
 part 'model/update_item_request.dart';
+part 'model/update_user_profile_request.dart';
 part 'model/upload_item_image_request.dart';
 part 'model/upload_item_image_response.dart';
 part 'model/user.dart';

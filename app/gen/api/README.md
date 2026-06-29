@@ -94,6 +94,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**submitItemRating**](doc//DefaultApi.md#submititemrating) | **POST** /rent-requests/{requestId}/item-rating | Rate the borrowed item after return
 *DefaultApi* | [**submitUserRating**](doc//DefaultApi.md#submituserrating) | **POST** /rent-requests/{requestId}/user-rating | Rate the other participant after return
 *DefaultApi* | [**updateItem**](doc//DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
+*DefaultApi* | [**updateUserProfile**](doc//DefaultApi.md#updateuserprofile) | **PATCH** /users/{userId}/profile | Update own profile
 *DefaultApi* | [**uploadItemImage**](doc//DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
 *DefaultApi* | [**verify**](doc//DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
 
@@ -127,6 +128,7 @@ Class | Method | HTTP request | Description
  - [SubmitItemRatingRequest](doc//SubmitItemRatingRequest.md)
  - [SubmitUserRatingRequest](doc//SubmitUserRatingRequest.md)
  - [UpdateItemRequest](doc//UpdateItemRequest.md)
+ - [UpdateUserProfileRequest](doc//UpdateUserProfileRequest.md)
  - [UploadItemImageRequest](doc//UploadItemImageRequest.md)
  - [UploadItemImageResponse](doc//UploadItemImageResponse.md)
  - [User](doc//User.md)

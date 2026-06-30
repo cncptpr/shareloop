@@ -106,6 +106,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text('ShareLoop'),
         actions: [
           TextButton.icon(

@@ -11,99 +11,91 @@ class ItemWidget extends ConsumerWidget {
 
   @override
   Widget build(ctx, ref) {
+    final cs = Theme.of(ctx).colorScheme;
+    final tt = Theme.of(ctx).textTheme;
     return GestureDetector(
       onTap: () => Navigator.push(
         ctx,
         MaterialPageRoute(builder: (_) => ItemScreen(itemId: item.id)),
       ),
       child: Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(36),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(15),
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                height: 300,
-                child: item.imageUuid != null
-                    ? Image.network(
-                        '${AppConfig.apiBaseUrl}/images/${item.imageUuid}',
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        "assets/images/placeholder_image.jpg",
-                        fit: BoxFit.cover,
-                      ),
-              ),
+            AspectRatio(
+              aspectRatio: 1.52,
+              child: item.imageUuid != null
+                  ? Image.network(
+                      '${AppConfig.apiBaseUrl}/images/${item.imageUuid}',
+                      fit: BoxFit.cover,
+                    )
+                  : Image.asset(
+                      "assets/images/placeholder_image.jpg",
+                      fit: BoxFit.cover,
+                    ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(item.title,
-                      textScaler: const TextScaler.linear(2),
-                      style: Theme.of(ctx).textTheme.titleSmall,
-                    ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          style: tt.titleMedium,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      // TODO: replace with item.price when API supports it
+                      Text(
+                        '5€/Tag',
+                        style: tt.labelMedium?.copyWith(
+                          color: cs.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(height: 2),
                   Text(
-                    item.category,
-                    style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                    ),
+                    item.description,
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.star, size: 14, color: Colors.amber[700]),
+                      const SizedBox(width: 2),
+                      Text(item.score.toStringAsFixed(1), style: tt.labelSmall),
+                      const SizedBox(width: 16),
+                      if (item.distance != null) ...[
+                        Icon(Icons.location_on, size: 14, color: cs.onSurfaceVariant),
+                        const SizedBox(width: 2),
+                        Text(
+                          '${item.distance!.km.toStringAsFixed(1)} km',
+                          style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(item.description),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                person(item.author),
-                score(item.score),
-                locationWidget(item.city, item.distance),
-              ],
-            )
           ],
         ),
       ),
     );
-  }
-
-  Widget person(Person person) {
-    return Row(children: [
-      const Icon(Icons.person),
-      Text(person.name),
-    ]);
-  }
-
-  Widget score(double score) {
-    return Row(children: [
-      const Icon(Icons.star),
-      Text(score.toStringAsFixed(1)),
-    ]);
-  }
-
-  Widget locationWidget(String? city, Distance? distance) {
-    final parts = <String>[];
-    if (city != null && city.isNotEmpty) {
-      parts.add(city);
-    }
-    if (distance != null) {
-      parts.add('${distance.km.toStringAsFixed(0)} km');
-    }
-    if (parts.isEmpty) return const SizedBox.shrink();
-
-    return Row(children: [
-      const Icon(Icons.location_on, size: 16),
-      Text(parts.join(', ')),
-    ]);
   }
 }

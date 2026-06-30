@@ -8,11 +8,57 @@ import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/screens/rent_request_chat_screen.dart';
 import 'package:shareloop/state/auth.dart' show authProvider;
 import 'package:shareloop/state/item_detail.dart';
+import 'package:shareloop/state/items.dart' show featuredItemsProvider;
 
 class ItemScreen extends ConsumerWidget {
   final int itemId;
 
   const ItemScreen({super.key, required this.itemId});
+
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref, int itemId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Item löschen'),
+        content: const Text('Willst du dieses Item wirklich löschen?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Abbrechen'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Löschen'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await AppConfig.apiClient.deleteItem(itemId);
+      if (context.mounted) {
+        Navigator.pop(context);
+        ref.invalidate(featuredItemsProvider);
+      }
+    } on ApiException catch (e) {
+      if (e.code == 409) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Item wird aktuell ausgeliehen')),
+          );
+        }
+      } else {
+        rethrow;
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Fehler beim Löschen')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,7 +71,11 @@ class ItemScreen extends ConsumerWidget {
           if (asyncItem.hasValue &&
               asyncUser.hasValue &&
               asyncUser.value != null &&
-              asyncItem.value!.author.id == asyncUser.value!.id)
+              asyncItem.value!.author.id == asyncUser.value!.id) ...[
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () => _confirmDelete(context, ref, asyncItem.value!.id),
+            ),
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () async {
@@ -36,6 +86,7 @@ class ItemScreen extends ConsumerWidget {
                 }
               },
             ),
+          ],
         ],
       ),
       body: asyncItem.when(

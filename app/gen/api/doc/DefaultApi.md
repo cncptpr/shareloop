@@ -18,6 +18,7 @@ Method | HTTP request | Description
 [**declineSeed**](DefaultApi.md#declineseed) | **POST** /seed/decline | Decline seeding prompt
 [**deleteUserAvatar**](DefaultApi.md#deleteuseravatar) | **DELETE** /users/{userId}/avatar | Remove avatar image
 [**editItemImages**](DefaultApi.md#edititemimages) | **PUT** /items/{itemId}/images | Edit item images (reorder / delete)
+[**followUser**](DefaultApi.md#followuser) | **POST** /users/{userId}/follow | Follow a user
 [**getFeaturedItems**](DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 [**getImage**](DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
 [**getInfo**](DefaultApi.md#getinfo) | **GET** /info | Get server info
@@ -38,6 +39,7 @@ Method | HTTP request | Description
 [**sendMessage**](DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
 [**submitItemRating**](DefaultApi.md#submititemrating) | **POST** /rent-requests/{requestId}/item-rating | Rate the borrowed item after return
 [**submitUserRating**](DefaultApi.md#submituserrating) | **POST** /rent-requests/{requestId}/user-rating | Rate the other participant after return
+[**unfollowUser**](DefaultApi.md#unfollowuser) | **DELETE** /users/{userId}/follow | Unfollow a user
 [**updateItem**](DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 [**updateUserProfile**](DefaultApi.md#updateuserprofile) | **PATCH** /users/{userId}/profile | Update own profile
 [**uploadItemImage**](DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
@@ -462,6 +464,54 @@ void (empty response body)
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **followUser**
+> followUser(userId)
+
+Follow a user
+
+Follow the specified user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    api_instance.followUser(userId);
+} catch (e) {
+    print('Exception when calling DefaultApi->followUser: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -1337,6 +1387,54 @@ Name | Type | Description  | Notes
 
  - **Content-Type**: application/json
  - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **unfollowUser**
+> unfollowUser(userId)
+
+Unfollow a user
+
+Unfollow the specified user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    api_instance.unfollowUser(userId);
+} catch (e) {
+    print('Exception when calling DefaultApi->unfollowUser: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

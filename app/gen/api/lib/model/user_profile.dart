@@ -24,6 +24,8 @@ class UserProfile {
     required this.ratingCount,
     this.shareCount,
     this.avatarUuid,
+    this.followerCount,
+    this.isFollowed,
   });
 
   int id;
@@ -48,6 +50,16 @@ class UserProfile {
 
   String? avatarUuid;
 
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  int? followerCount;
+
+  bool? isFollowed;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is UserProfile &&
     other.id == id &&
@@ -60,7 +72,9 @@ class UserProfile {
     other.itemCount == itemCount &&
     other.ratingCount == ratingCount &&
     other.shareCount == shareCount &&
-    other.avatarUuid == avatarUuid;
+    other.avatarUuid == avatarUuid &&
+    other.followerCount == followerCount &&
+    other.isFollowed == isFollowed;
 
   @override
   int get hashCode =>
@@ -75,10 +89,12 @@ class UserProfile {
     (itemCount.hashCode) +
     (ratingCount.hashCode) +
     (shareCount == null ? 0 : shareCount!.hashCode) +
-    (avatarUuid == null ? 0 : avatarUuid!.hashCode);
+    (avatarUuid == null ? 0 : avatarUuid!.hashCode) +
+    (followerCount == null ? 0 : followerCount!.hashCode) +
+    (isFollowed == null ? 0 : isFollowed!.hashCode);
 
   @override
-  String toString() => 'UserProfile[id=$id, name=$name, email=$email, bio=$bio, rating=$rating, createdAt=$createdAt, lastOnlineAt=$lastOnlineAt, itemCount=$itemCount, ratingCount=$ratingCount, shareCount=$shareCount, avatarUuid=$avatarUuid]';
+  String toString() => 'UserProfile[id=$id, name=$name, email=$email, bio=$bio, rating=$rating, createdAt=$createdAt, lastOnlineAt=$lastOnlineAt, itemCount=$itemCount, ratingCount=$ratingCount, shareCount=$shareCount, avatarUuid=$avatarUuid, followerCount=$followerCount, isFollowed=$isFollowed]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -108,6 +124,16 @@ class UserProfile {
       json[r'avatarUuid'] = this.avatarUuid;
     } else {
       json[r'avatarUuid'] = null;
+    }
+    if (this.followerCount != null) {
+      json[r'followerCount'] = this.followerCount;
+    } else {
+      json[r'followerCount'] = null;
+    }
+    if (this.isFollowed != null) {
+      json[r'isFollowed'] = this.isFollowed;
+    } else {
+      json[r'isFollowed'] = null;
     }
     return json;
   }
@@ -152,6 +178,8 @@ class UserProfile {
         ratingCount: mapValueOfType<int>(json, r'ratingCount')!,
         shareCount: mapValueOfType<int>(json, r'shareCount'),
         avatarUuid: mapValueOfType<String>(json, r'avatarUuid'),
+        followerCount: mapValueOfType<int>(json, r'followerCount'),
+        isFollowed: mapValueOfType<bool>(json, r'isFollowed'),
       );
     }
     return null;

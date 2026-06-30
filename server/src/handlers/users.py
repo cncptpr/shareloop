@@ -3,14 +3,14 @@ import os
 import uuid as uuid_mod
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
+from sqlalchemy import exists, select
 from sqlalchemy import func as sa_func
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config import settings
 from src.database import get_db
-from src.db.models import Item, ItemImage, Profile, RentRequest, User, UserRating
-from src.dependencies import get_current_user
+from src.db.models import Follow, Item, ItemImage, Profile, RentRequest, User, UserRating
+from src.dependencies import get_current_user, get_optional_user
 from src.models.openapi import (
     ItemOverview,
     Person,
@@ -25,7 +25,11 @@ router = APIRouter(tags=["users"])
 
 
 @router.get("/api/users/{user_id}/profile")
-async def api_get_user_profile(user_id: int, db: AsyncSession = Depends(get_db)):
+async def api_get_user_profile(
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
+):
     result = await db.execute(
         select(
             User.id,
@@ -77,6 +81,25 @@ async def api_get_user_profile(user_id: int, db: AsyncSession = Depends(get_db))
     )
     share_count = share_count_result.scalar() or 0
 
+    follower_count_result = await db.execute(
+        select(sa_func.count(Follow.followed_id)).where(Follow.followed_id == user_id)
+    )
+    follower_count = follower_count_result.scalar() or 0
+
+    is_followed = None
+    if current_user is not None:
+        is_followed_result = await db.execute(
+            select(
+                exists(
+                    select(Follow).where(
+                        Follow.follower_id == current_user.id,
+                        Follow.followed_id == user_id,
+                    )
+                )
+            )
+        )
+        is_followed = is_followed_result.scalar() or False
+
     return UserProfile(
         id=row.id,
         name=row.name or "",
@@ -89,6 +112,8 @@ async def api_get_user_profile(user_id: int, db: AsyncSession = Depends(get_db))
         rating_count=rating_count,
         share_count=share_count,
         avatar_uuid=str(row.avatar_uuid) if row.avatar_uuid else None,
+        follower_count=follower_count,
+        is_followed=is_followed,
     )
 
 
@@ -263,5 +288,61 @@ async def api_delete_user_avatar(
                 break
         profile.avatar_uuid = None
         await db.commit()
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/api/users/{user_id}/follow", status_code=status.HTTP_201_CREATED)
+async def api_follow_user(
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    if user_id == current_user.id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot follow yourself")
+
+    target_exists = await db.execute(
+        select(exists(select(User).where(User.id == user_id)))
+    )
+    if not target_exists.scalar():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    already_following = await db.execute(
+        select(
+            exists(
+                select(Follow).where(
+                    Follow.follower_id == current_user.id,
+                    Follow.followed_id == user_id,
+                )
+            )
+        )
+    )
+    if already_following.scalar():
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Already following")
+
+    db.add(Follow(follower_id=current_user.id, followed_id=user_id))
+    await db.commit()
+
+    return Response(status_code=status.HTTP_201_CREATED)
+
+
+@router.delete("/api/users/{user_id}/follow", status_code=status.HTTP_204_NO_CONTENT)
+async def api_unfollow_user(
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Follow).where(
+            Follow.follower_id == current_user.id,
+            Follow.followed_id == user_id,
+        )
+    )
+    follow = result.scalar_one_or_none()
+    if follow is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not following")
+
+    await db.delete(follow)
+    await db.commit()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

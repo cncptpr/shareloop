@@ -177,7 +177,7 @@ class _ProfileContent extends ConsumerWidget {
           _StatsRow(profile: profile, months: months),
           const SizedBox(height: 16),
           if (!isOwnProfile) ... [
-            _FollowButton(),
+            _FollowButton(userId: userId, isFollowed: profile.isFollowed),
             const SizedBox(height: 16),
           ],
           if (profile.bio != null && profile.bio!.isNotEmpty) ... [
@@ -276,6 +276,11 @@ class _StatsRow extends StatelessWidget {
         )),
         const SizedBox(width: 8),
         Expanded(child: _StatBox(
+          label: 'Follower',
+          value: '${profile.followerCount}',
+        )),
+        const SizedBox(width: 8),
+        Expanded(child: _StatBox(
           label: 'Mitglied',
           value: '$months Monate',
         )),
@@ -316,18 +321,50 @@ class _StatBox extends StatelessWidget {
   }
 }
 
-class _FollowButton extends StatelessWidget {
+class _FollowButton extends ConsumerStatefulWidget {
+  final int userId;
+  final bool? isFollowed;
+
+  const _FollowButton({required this.userId, required this.isFollowed});
+
+  @override
+  ConsumerState<_FollowButton> createState() => _FollowButtonState();
+}
+
+class _FollowButtonState extends ConsumerState<_FollowButton> {
+  bool _loading = false;
+
+  Future<void> _toggle() async {
+    setState(() => _loading = true);
+    try {
+      if (widget.isFollowed == true) {
+        await AppConfig.apiClient.unfollowUser(widget.userId);
+      } else {
+        await AppConfig.apiClient.followUser(widget.userId);
+      }
+      ref.invalidate(userProfileProvider(widget.userId));
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(widget.isFollowed == true ? 'Fehler beim Entfolgen' : 'Fehler beim Folgen'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: FilledButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Follow kommt bald')),
-          );
-        },
-        child: const Text('Folgen'),
+        onPressed: _loading ? null : _toggle,
+        child: _loading
+            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+            : Text(widget.isFollowed == true ? 'Gefolgt' : 'Folgen'),
       ),
     );
   }

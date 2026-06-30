@@ -496,6 +496,56 @@ class DefaultApi {
     }
   }
 
+  /// Follow a user
+  ///
+  /// Follow the specified user
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> followUserWithHttpInfo(int userId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/follow'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Follow a user
+  ///
+  /// Follow the specified user
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<void> followUser(int userId, { Future<void>? abortTrigger, }) async {
+    final response = await followUserWithHttpInfo(userId, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
   /// Get featured items
   ///
   /// Returns a list of featured items
@@ -1580,6 +1630,56 @@ class DefaultApi {
     
     }
     return null;
+  }
+
+  /// Unfollow a user
+  ///
+  /// Unfollow the specified user
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> unfollowUserWithHttpInfo(int userId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/follow'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'DELETE',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Unfollow a user
+  ///
+  /// Unfollow the specified user
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<void> unfollowUser(int userId, { Future<void>? abortTrigger, }) async {
+    final response = await unfollowUserWithHttpInfo(userId, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
   }
 
   /// Update an item

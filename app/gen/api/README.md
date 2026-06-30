@@ -74,6 +74,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**declineSeed**](doc//DefaultApi.md#declineseed) | **POST** /seed/decline | Decline seeding prompt
 *DefaultApi* | [**deleteUserAvatar**](doc//DefaultApi.md#deleteuseravatar) | **DELETE** /users/{userId}/avatar | Remove avatar image
 *DefaultApi* | [**editItemImages**](doc//DefaultApi.md#edititemimages) | **PUT** /items/{itemId}/images | Edit item images (reorder / delete)
+*DefaultApi* | [**followUser**](doc//DefaultApi.md#followuser) | **POST** /users/{userId}/follow | Follow a user
 *DefaultApi* | [**getFeaturedItems**](doc//DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 *DefaultApi* | [**getImage**](doc//DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
 *DefaultApi* | [**getInfo**](doc//DefaultApi.md#getinfo) | **GET** /info | Get server info
@@ -94,6 +95,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**sendMessage**](doc//DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
 *DefaultApi* | [**submitItemRating**](doc//DefaultApi.md#submititemrating) | **POST** /rent-requests/{requestId}/item-rating | Rate the borrowed item after return
 *DefaultApi* | [**submitUserRating**](doc//DefaultApi.md#submituserrating) | **POST** /rent-requests/{requestId}/user-rating | Rate the other participant after return
+*DefaultApi* | [**unfollowUser**](doc//DefaultApi.md#unfollowuser) | **DELETE** /users/{userId}/follow | Unfollow a user
 *DefaultApi* | [**updateItem**](doc//DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 *DefaultApi* | [**updateUserProfile**](doc//DefaultApi.md#updateuserprofile) | **PATCH** /users/{userId}/profile | Update own profile
 *DefaultApi* | [**uploadItemImage**](doc//DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item

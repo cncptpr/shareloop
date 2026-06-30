@@ -1,8 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import base64
+import os
+import uuid as uuid_mod
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import func as sa_func
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.config import settings
 from src.database import get_db
 from src.db.models import Item, ItemImage, Profile, RentRequest, User, UserRating
 from src.dependencies import get_current_user
@@ -10,6 +15,8 @@ from src.models.openapi import (
     ItemOverview,
     Person,
     UpdateUserProfileRequest,
+    UploadItemImageRequest,
+    UploadItemImageResponse,
     UserProfile,
     UserRatingDetail,
 )
@@ -27,6 +34,7 @@ async def api_get_user_profile(user_id: int, db: AsyncSession = Depends(get_db))
             User.created_at,
             Profile.name,
             Profile.bio,
+            Profile.avatar_uuid,
         )
         .select_from(User)
         .outerjoin(Profile, Profile.id == User.id)
@@ -80,6 +88,7 @@ async def api_get_user_profile(user_id: int, db: AsyncSession = Depends(get_db))
         item_count=item_count,
         rating_count=rating_count,
         share_count=share_count,
+        avatar_uuid=str(row.avatar_uuid) if row.avatar_uuid else None,
     )
 
 
@@ -188,3 +197,71 @@ async def api_get_user_ratings(user_id: int, db: AsyncSession = Depends(get_db))
         )
         for rating, reviewer in rows
     ]
+
+
+def _detect_ext_mime(filename: str):
+    parts = filename.rsplit(".", 1)
+    ext = parts[-1].lower() if len(parts) > 1 else ""
+    mapping = {"jpg": "jpg", "jpeg": "jpg", "png": "png", "gif": "gif", "webp": "webp"}
+    ext = mapping.get(ext, "jpg")
+    mime = {"png": "image/png", "gif": "image/gif", "webp": "image/webp"}.get(ext, "image/jpeg")
+    return ext, mime
+
+
+@router.post("/api/users/{user_id}/avatar", status_code=status.HTTP_201_CREATED)
+async def api_upload_user_avatar(
+    user_id: int,
+    body: UploadItemImageRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    profile = await db.get(Profile, user_id)
+    if profile is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    if profile.avatar_uuid is not None:
+        old_ext, _ = _detect_ext_mime("")
+        for fname in os.listdir(settings.uploads_dir):
+            if fname.startswith(str(profile.avatar_uuid)):
+                os.remove(os.path.join(settings.uploads_dir, fname))
+                break
+
+    raw = base64.b64decode(body.data)
+    ext = _detect_ext_mime(body.filename)[0]
+    image_uuid = uuid_mod.uuid4()
+    dest = os.path.join(settings.uploads_dir, f"{image_uuid}.{ext}")
+    os.makedirs(settings.uploads_dir, exist_ok=True)
+    with open(dest, "wb") as f:
+        f.write(raw)
+
+    profile.avatar_uuid = image_uuid
+    await db.commit()
+
+    return UploadItemImageResponse(uuid=str(image_uuid))
+
+
+@router.delete("/api/users/{user_id}/avatar", status_code=status.HTTP_204_NO_CONTENT)
+async def api_delete_user_avatar(
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    profile = await db.get(Profile, user_id)
+    if profile is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    if profile.avatar_uuid is not None:
+        for fname in os.listdir(settings.uploads_dir):
+            if fname.startswith(str(profile.avatar_uuid)):
+                os.remove(os.path.join(settings.uploads_dir, fname))
+                break
+        profile.avatar_uuid = None
+        await db.commit()
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

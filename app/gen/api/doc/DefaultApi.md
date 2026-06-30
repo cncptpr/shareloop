@@ -16,6 +16,7 @@ Method | HTTP request | Description
 [**createOffer**](DefaultApi.md#createoffer) | **POST** /rent-requests/{requestId}/offers | Make or counter an offer
 [**createRentRequest**](DefaultApi.md#createrentrequest) | **POST** /items/{itemId}/rent-requests | Create or get existing open rent request
 [**declineSeed**](DefaultApi.md#declineseed) | **POST** /seed/decline | Decline seeding prompt
+[**deleteUserAvatar**](DefaultApi.md#deleteuseravatar) | **DELETE** /users/{userId}/avatar | Remove avatar image
 [**editItemImages**](DefaultApi.md#edititemimages) | **PUT** /items/{itemId}/images | Edit item images (reorder / delete)
 [**getFeaturedItems**](DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 [**getImage**](DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
@@ -40,6 +41,7 @@ Method | HTTP request | Description
 [**updateItem**](DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 [**updateUserProfile**](DefaultApi.md#updateuserprofile) | **PATCH** /users/{userId}/profile | Update own profile
 [**uploadItemImage**](DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
+[**uploadUserAvatar**](DefaultApi.md#uploaduseravatar) | **POST** /users/{userId}/avatar | Upload avatar image
 [**verify**](DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
 
 
@@ -365,6 +367,54 @@ No authorization required
 
  - **Content-Type**: Not defined
  - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **deleteUserAvatar**
+> deleteUserAvatar(userId)
+
+Remove avatar image
+
+Delete the avatar image for the authenticated user's profile
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    api_instance.deleteUserAvatar(userId);
+} catch (e) {
+    print('Exception when calling DefaultApi->deleteUserAvatar: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -1422,6 +1472,57 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **itemId** | **int**|  | 
+ **uploadItemImageRequest** | [**UploadItemImageRequest**](UploadItemImageRequest.md)|  | 
+
+### Return type
+
+[**UploadItemImageResponse**](UploadItemImageResponse.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **uploadUserAvatar**
+> UploadItemImageResponse uploadUserAvatar(userId, uploadItemImageRequest)
+
+Upload avatar image
+
+Upload a new avatar image for the authenticated user's profile. Replaces any existing avatar.
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+final uploadItemImageRequest = UploadItemImageRequest(); // UploadItemImageRequest | 
+
+try {
+    final result = api_instance.uploadUserAvatar(userId, uploadItemImageRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->uploadUserAvatar: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
  **uploadItemImageRequest** | [**UploadItemImageRequest**](UploadItemImageRequest.md)|  | 
 
 ### Return type

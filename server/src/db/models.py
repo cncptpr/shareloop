@@ -48,6 +48,9 @@ class Profile(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     bio: Mapped[str | None] = mapped_column(Text, nullable=True)
     rating: Mapped[float | None] = mapped_column(Numeric(3, 2), nullable=True)
+    avatar_uuid: Mapped[uuid_pkg.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True
+    )
     updated_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=True
     )

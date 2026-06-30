@@ -172,7 +172,7 @@ class _ProfileContent extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(child: _ProfileHeader(name: profile.name)),
+          Center(child: _ProfileHeader(name: profile.name, avatarUuid: profile.avatarUuid)),
           const SizedBox(height: 16),
           _StatsRow(profile: profile, months: months),
           const SizedBox(height: 16),
@@ -223,8 +223,9 @@ class _ProfileContent extends ConsumerWidget {
 
 class _ProfileHeader extends StatelessWidget {
   final String name;
+  final String? avatarUuid;
 
-  const _ProfileHeader({required this.name});
+  const _ProfileHeader({required this.name, this.avatarUuid});
 
   @override
   Widget build(BuildContext context) {
@@ -232,10 +233,15 @@ class _ProfileHeader extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 48,
-          child: Text(
-            name.isNotEmpty ? name[0].toUpperCase() : '?',
-            style: const TextStyle(fontSize: 36),
-          ),
+          backgroundImage: avatarUuid != null
+              ? NetworkImage('${AppConfig.apiBaseUrl}/images/$avatarUuid')
+              : null,
+          child: avatarUuid == null
+              ? Text(
+                  name.isNotEmpty ? name[0].toUpperCase() : '?',
+                  style: const TextStyle(fontSize: 36),
+                )
+              : null,
         ),
         const SizedBox(height: 12),
         Text(

@@ -42,6 +42,8 @@ class _MyAppState extends ConsumerState<MyApp> {
       scaffoldMessengerKey: scaffoldMessengerKey,
       title: _title,
       theme: buildTheme(),
+      darkTheme: buildDarkTheme(),
+      themeMode: ThemeMode.system,
       routerConfig: router,
     );
   }

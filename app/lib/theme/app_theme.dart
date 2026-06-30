@@ -30,7 +30,147 @@ ThemeData buildTheme() {
     surfaceTint: Color(0xFF3A674F),
   );
 
-  final textTheme = TextTheme(
+  final textTheme = _buildTextTheme();
+
+  return _buildThemeData(
+    colorScheme: colorScheme,
+    textTheme: textTheme,
+    appBarTheme: AppBarTheme(
+      centerTitle: true,
+      elevation: 0,
+      backgroundColor: colorScheme.primary,
+      foregroundColor: colorScheme.onPrimary,
+      titleTextStyle: textTheme.headlineSmall?.copyWith(
+        color: colorScheme.onPrimary,
+      ),
+    ),
+  );
+}
+
+ThemeData buildDarkTheme() {
+  const colorScheme = ColorScheme(
+    brightness: Brightness.dark,
+    primary: Color(0xFF6BB88A),
+    onPrimary: Color(0xFF003921),
+    primaryContainer: Color(0xFF003921),
+    onPrimaryContainer: Color(0xFFCEEED8),
+    secondary: Color(0xFF8EB9FF),
+    onSecondary: Color(0xFF003258),
+    secondaryContainer: Color(0xFF004880),
+    onSecondaryContainer: Color(0xFFD3E4FF),
+    tertiary: Color(0xFF8D9A91),
+    onTertiary: Color(0xFF1B2C20),
+    tertiaryContainer: Color(0xFF314236),
+    onTertiaryContainer: Color(0xFFDAE9D8),
+    error: Color(0xFFFFB4AB),
+    onError: Color(0xFF690005),
+    errorContainer: Color(0xFF93000A),
+    onErrorContainer: Color(0xFFFFDAD6),
+    surface: Color(0xFF121212),
+    onSurface: Color(0xFFE4E2E0),
+    onSurfaceVariant: Color(0xFFC0C9C1),
+    outline: Color(0xFF8A938B),
+    outlineVariant: Color(0xFF41483E),
+    inverseSurface: Color(0xFFE4E2E0),
+    inversePrimary: Color(0xFF14422D),
+    surfaceTint: Color(0xFF6BB88A),
+  );
+
+  final textTheme = _buildTextTheme();
+
+  return _buildThemeData(
+    colorScheme: colorScheme,
+    textTheme: textTheme,
+    appBarTheme: AppBarTheme(
+      centerTitle: true,
+      elevation: 0,
+      backgroundColor: colorScheme.surface,
+      foregroundColor: colorScheme.onSurface,
+      titleTextStyle: textTheme.headlineSmall?.copyWith(
+        color: colorScheme.onSurface,
+      ),
+    ),
+  );
+}
+
+ThemeData _buildThemeData({
+  required ColorScheme colorScheme,
+  required TextTheme textTheme,
+  required AppBarTheme appBarTheme,
+}) {
+  return ThemeData(
+    useMaterial3: true,
+    colorScheme: colorScheme,
+    scaffoldBackgroundColor: colorScheme.surface,
+    textTheme: textTheme,
+    appBarTheme: appBarTheme,
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: colorScheme.surface,
+      indicatorColor: colorScheme.primaryContainer,
+      indicatorShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+    dialogTheme: DialogThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+    dividerTheme: DividerThemeData(
+      color: colorScheme.outlineVariant,
+      thickness: 1,
+    ),
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      color: colorScheme.primary,
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return colorScheme.primary;
+        return colorScheme.outline;
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return colorScheme.primaryContainer;
+        return colorScheme.surfaceContainerHighest;
+      }),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      filled: true,
+      fillColor: colorScheme.surfaceContainerLow,
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+  );
+}
+
+TextTheme _buildTextTheme() {
+  return TextTheme(
     headlineLarge: GoogleFonts.manrope(
       fontSize: 40,
       fontWeight: FontWeight.w700,
@@ -72,84 +212,6 @@ ThemeData buildTheme() {
       fontSize: 12,
       fontWeight: FontWeight.w500,
       height: 1.2,
-    ),
-  );
-
-  return ThemeData(
-    useMaterial3: true,
-    colorScheme: colorScheme,
-    scaffoldBackgroundColor: colorScheme.surface,
-    textTheme: textTheme,
-    appBarTheme: AppBarTheme(
-      centerTitle: true,
-      elevation: 0,
-      backgroundColor: colorScheme.primary,
-      foregroundColor: colorScheme.onPrimary,
-      titleTextStyle: textTheme.headlineSmall?.copyWith(
-        color: colorScheme.onPrimary,
-      ),
-    ),
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: colorScheme.surface,
-      indicatorColor: colorScheme.primaryContainer,
-      indicatorShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-    ),
-    dialogTheme: DialogThemeData(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-    ),
-    cardTheme: CardThemeData(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-    ),
-    dividerTheme: DividerThemeData(
-      color: colorScheme.outlineVariant,
-      thickness: 1,
-    ),
-    progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: Color(0xFF14422D),
-    ),
-    switchTheme: SwitchThemeData(
-      thumbColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return colorScheme.primary;
-        return colorScheme.outline;
-      }),
-      trackColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return colorScheme.primaryContainer;
-        return colorScheme.surfaceContainerHighest;
-      }),
-    ),
-    filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      filled: true,
-      fillColor: colorScheme.surfaceContainerLow,
-    ),
-    snackBarTheme: SnackBarThemeData(
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
     ),
   );
 }

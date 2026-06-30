@@ -1,23 +1,29 @@
 from datetime import UTC, datetime
 
-from sqlalchemy import select
 from sqlalchemy import func as sa_func
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.models import Item, ItemRating, Profile, UserRating
 from src.models.openapi import (
     ItemRating as ApiItemRating,
+)
+from src.models.openapi import (
     SubmitItemRatingRequest,
     SubmitUserRatingRequest,
+)
+from src.models.openapi import (
     UserRating as ApiUserRating,
+)
+from src.services.rating_common import (
+    _get_item_rating_by_reviewer,
+    _get_user_rating_by_reviewer,
+    _item_rating_from_row,
+    _user_rating_from_row,
 )
 from src.services.renting import (
     _get_request_detail_row,
-    _user_rating_from_row,
-    _item_rating_from_row,
-    _get_user_rating_by_reviewer,
-    _get_item_rating_by_reviewer,
 )
 
 

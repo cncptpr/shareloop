@@ -167,12 +167,14 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             ),
 
             SliverToBoxAdapter(
-              child: SizedBox(
-                height: 40,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  children: [
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: SizedBox(
+                  height: 40,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    children: [
                     _ActiveFilterChip(
                       active: filters.maxDistanceKm != null,
                       label: filters.maxDistanceKm != null
@@ -245,6 +247,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 ),
               ),
             ),
+          ),
 
             if (!hasFilters) ...[
               SliverToBoxAdapter(

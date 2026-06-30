@@ -259,7 +259,7 @@ class RatingStars extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: Theme.of(context).textTheme.labelMedium,
                 ),
               ),
               Text('${value ?? 0}/5'),

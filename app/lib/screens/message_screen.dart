@@ -110,13 +110,13 @@ class _MessageScreenState extends ConsumerState<MessageScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: Theme.of(context).colorScheme.error,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 '${req.unreadCount}',
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onError,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),
@@ -154,7 +154,7 @@ class _SectionHeader extends StatelessWidget {
         style: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          color: Colors.grey[600],
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
           letterSpacing: 0.5,
         ),
       ),

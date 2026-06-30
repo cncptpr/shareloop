@@ -88,7 +88,7 @@ class _Content extends StatelessWidget {
                 Text(
                   item.category,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
                 const SizedBox(height: 16),
@@ -161,11 +161,11 @@ class _ItemRatingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         if (item.itemRatings.isEmpty)
-          const Row(
+          Row(
             children: [
-              Icon(Icons.star_border, color: Colors.grey),
-              SizedBox(width: 8),
-              Text('Noch keine Bewertungen'),
+              Icon(Icons.star_border, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              const SizedBox(width: 8),
+              const Text('Noch keine Bewertungen'),
             ],
           )
         else
@@ -210,7 +210,7 @@ class _ItemRatingEntry extends StatelessWidget {
                 children: [
                   Text(
                     rating.reviewer.name,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.labelMedium,
                   ),
                   Text(
                     MaterialLocalizations.of(context)
@@ -293,11 +293,12 @@ class _ImageGallery extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (imageUuids.isEmpty) {
+      final cs = Theme.of(context).colorScheme;
       return Container(
         height: 300,
-        color: Colors.grey[200],
-        child: const Center(
-            child: Icon(Icons.image, size: 64, color: Colors.grey)),
+        color: cs.surfaceContainerHigh,
+        child: Center(
+            child: Icon(Icons.image, size: 64, color: cs.onSurfaceVariant)),
       );
     }
 

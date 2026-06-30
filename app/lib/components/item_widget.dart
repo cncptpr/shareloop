@@ -50,7 +50,7 @@ class ItemWidget extends ConsumerWidget {
                   Text(
                     item.category,
                     style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(ctx).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],

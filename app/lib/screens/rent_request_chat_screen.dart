@@ -215,7 +215,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange[50],
+                  color: Theme.of(ctx).colorScheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -223,7 +223,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                   children: [
                     Icon(
                       Icons.warning_amber,
-                      color: Colors.orange[700],
+                      color: Theme.of(ctx).colorScheme.onTertiaryContainer,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -231,9 +231,8 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                       child: Text(
                         'Der vereinbarte Ausleihzeitraum beginnt erst am '
                         '${_formatDateSimple(acceptedOffer.startDate)}.',
-                        style: TextStyle(
-                          color: Colors.orange[900],
-                          fontSize: 13,
+                        style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(ctx).colorScheme.onTertiaryContainer,
                         ),
                       ),
                     ),
@@ -292,7 +291,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange[50],
+                  color: Theme.of(ctx).colorScheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -300,7 +299,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                   children: [
                     Icon(
                       Icons.warning_amber,
-                      color: Colors.orange[700],
+                      color: Theme.of(ctx).colorScheme.onTertiaryContainer,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -308,8 +307,10 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                       child: Text(
                         'Der vereinbarte Ausleihzeitraum endet erst am '
                         '${_formatDateSimple(acceptedOffer.endDate)}.',
-                        style:
-                            TextStyle(color: Colors.orange[900], fontSize: 13),
+                        style: TextStyle(
+                          color: Theme.of(ctx).colorScheme.onTertiaryContainer,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
@@ -411,7 +412,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                 isOwner
                     ? 'Anfrage von ${request.requester.name}'
                     : 'Anbieter: ${request.ownerName}',
-                style: const TextStyle(fontSize: 13),
+                style: Theme.of(context).textTheme.labelSmall,
               ),
           ],
         ),
@@ -517,16 +518,17 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     }
 
     if (chatItems.isEmpty && actionCount == 0 && _requestId == null) {
-      return const Center(
+      final cs = Theme.of(context).colorScheme;
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.chat_bubble_outline, size: 48, color: Colors.grey),
-            SizedBox(height: 12),
+            Icon(Icons.chat_bubble_outline, size: 48, color: cs.onSurfaceVariant),
+            const SizedBox(height: 12),
             Text(
               'Schreibe eine Nachricht,\num die Anfrage zu starten.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 15),
+              style: TextStyle(color: cs.onSurfaceVariant, fontSize: 15),
             ),
           ],
         ),
@@ -695,17 +697,17 @@ class _StatusBanner extends StatelessWidget {
     final statusText = _statusText(request);
     final icon = _statusIcon(request);
 
+    final cs = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: Colors.blue[50],
+      color: cs.secondaryContainer,
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.blue[700]),
+          Icon(icon, size: 20, color: cs.onSecondaryContainer),
           const SizedBox(width: 8),
           Expanded(
-              child:
-                  Text(statusText, style: TextStyle(color: Colors.blue[700]))),
+              child: Text(statusText, style: TextStyle(color: cs.onSecondaryContainer))),
         ],
       ),
     );
@@ -729,6 +731,7 @@ class _OfferBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final startStr = _formatDateSimple(offer.startDate);
     final endStr = _formatDateSimple(offer.endDate);
 
@@ -738,10 +741,10 @@ class _OfferBubble extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isAccepted ? Colors.green[50] : Colors.amber[50],
+          color: isAccepted ? cs.primaryContainer : cs.tertiaryContainer,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isAccepted ? Colors.green : Colors.amber,
+            color: isAccepted ? cs.primary : cs.tertiary,
             width: 1.5,
           ),
         ),
@@ -757,36 +760,34 @@ class _OfferBubble extends StatelessWidget {
                 Icon(
                   Icons.date_range,
                   size: 16,
-                  color: isAccepted ? Colors.green[700] : Colors.amber[800],
+                  color: isAccepted ? cs.primary : cs.onTertiaryContainer,
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  'Angebot${isMyOffer ? ' (von dir)' : ''}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: isAccepted ? Colors.green[700] : Colors.amber[800],
-                  ),
-                ),
-                if (isAccepted) ...[
-                  const Spacer(),
-                  Icon(Icons.check_circle, size: 16, color: Colors.green[700]),
-                  const SizedBox(width: 4),
                   Text(
-                    'Akzeptiert',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.green[700],
-                      fontWeight: FontWeight.w500,
+                    'Angebot${isMyOffer ? ' (von dir)' : ''}',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: isAccepted ? cs.primary : cs.onTertiaryContainer,
                     ),
                   ),
+                if (isAccepted) ...[
+                  const Spacer(),
+                  Icon(Icons.check_circle, size: 16, color: cs.primary),
+                  const SizedBox(width: 4),
+                    Text(
+                      'Akzeptiert',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: cs.primary,
+                      ),
+                    ),
                 ],
               ],
             ),
             const SizedBox(height: 8),
             Text(
               '$startStr – $endStr',
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             ),
             if (canAccept) ...[
               const SizedBox(height: 8),
@@ -797,8 +798,8 @@ class _OfferBubble extends StatelessWidget {
                   icon: const Icon(Icons.thumb_up, size: 18),
                   label: const Text('Akzeptieren'),
                   style: FilledButton.styleFrom(
-                    backgroundColor: Colors.green[600],
-                    foregroundColor: Colors.white,
+                    backgroundColor: cs.primary,
+                    foregroundColor: cs.onPrimary,
                   ),
                 ),
               ),
@@ -825,12 +826,13 @@ class _SystemActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         child: Material(
-          color: Colors.grey[100],
+          color: cs.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
@@ -840,7 +842,7 @@ class _SystemActionCard extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, size: 20, color: Colors.grey[700]),
+                  Icon(icon, size: 20, color: cs.onSurfaceVariant),
                   const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -848,23 +850,19 @@ class _SystemActionCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium,
                       ),
                       if (subtitle != null)
                         Text(
                           subtitle!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: cs.onSurfaceVariant,
                           ),
                         ),
                     ],
                   ),
                   const SizedBox(width: 12),
-                  Icon(Icons.chevron_right, size: 20, color: Colors.grey[500]),
+                  Icon(Icons.chevron_right, size: 20, color: cs.outline),
                 ],
               ),
             ),
@@ -883,33 +881,33 @@ class _SystemNoteBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final ts = _formatMessageTime(createdAt);
     return Center(
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: cs.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.info_outline, size: 14, color: Colors.grey[600]),
+            Icon(Icons.info_outline, size: 14, color: cs.onSurfaceVariant),
             const SizedBox(width: 6),
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey[700],
-                fontStyle: FontStyle.italic,
+              Text(
+                text,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: cs.onSurfaceVariant,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              ts,
-              style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-            ),
+              const SizedBox(width: 8),
+              Text(
+                ts,
+                style: TextStyle(fontSize: 11, color: cs.outline),
+              ),
           ],
         ),
       ),
@@ -925,13 +923,14 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isMe ? Colors.blue[100] : Colors.grey[200],
+          color: isMe ? cs.secondaryContainer : cs.surfaceContainerHigh,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
@@ -948,12 +947,12 @@ class _MessageBubble extends StatelessWidget {
           children: [
             Text(
               message.content,
-              style: const TextStyle(fontSize: 15),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 4),
             Text(
               _formatMessageTime(message.createdAt),
-              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
             ),
           ],
         ),
@@ -981,7 +980,7 @@ class _MessageInput extends StatelessWidget {
         color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),

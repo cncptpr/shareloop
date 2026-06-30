@@ -5,7 +5,7 @@ COPY --chown=1000:1000 . .
 RUN chown 1000:1000 /app
 
 USER 1000
-RUN flutter pub get && flutter build web --release
+RUN flutter pub get && flutter build web --release --dart-define=API_BASE_URL=/api
 
 FROM nginx:alpine-slim
 

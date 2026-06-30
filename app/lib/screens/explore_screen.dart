@@ -267,7 +267,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                     height: 280,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 48),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
                       separatorBuilder: (_, __) => const SizedBox(width: 12),
                       itemCount: items.length,
                       itemBuilder: (ctx, i) => _FeaturedItemCard(items[i]),

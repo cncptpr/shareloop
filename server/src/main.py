@@ -5,6 +5,7 @@ import os
 from datetime import UTC
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from starlette.middleware.cors import CORSMiddleware
 from sqlalchemy import select, text
 
 from src.config import settings
@@ -19,6 +20,14 @@ from src.seeding.state import set_seeding_available
 logger = logging.getLogger("shareloop")
 
 app = FastAPI(title="Shareloop API", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth.router)
 app.include_router(items.router)

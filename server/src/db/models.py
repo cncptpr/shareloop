@@ -206,6 +206,20 @@ class RentOffer(Base):
     )
 
 
+class Follow(Base):
+    __tablename__ = "follows"
+
+    follower_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
+    followed_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
 class UserRating(Base):
     __tablename__ = "user_ratings"
     __table_args__ = (

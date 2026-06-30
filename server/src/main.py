@@ -6,7 +6,7 @@ from datetime import UTC
 
 from alembic.config import Config
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from sqlalchemy import select, text
+from sqlalchemy import select
 from starlette.middleware.cors import CORSMiddleware
 
 from alembic import command
@@ -57,8 +57,6 @@ app.include_router(seeding_router)
 async def startup():
     os.makedirs(settings.uploads_dir, exist_ok=True)
     _check_uploads_writable()
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
     await run_alembic_migrations()
     await init_seeding()
 

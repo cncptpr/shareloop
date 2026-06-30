@@ -1,3 +1,4 @@
+import logging
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -8,6 +9,8 @@ from src.database import get_db
 from src.db.models import SeedMeta
 from src.seeding.engine import run_seed
 from src.seeding.state import is_seeding_available
+
+logger = logging.getLogger("shareloop.seeding")
 
 router = APIRouter(tags=["seeding"])
 
@@ -45,6 +48,7 @@ async def seed_database(db: AsyncSession = Depends(get_db)):
         return {"message": "Seeding erfolgreich"}
     except Exception as e:
         await db.rollback()
+        logger.exception("Seeding fehlgeschlagen")
         raise HTTPException(status_code=500, detail=f"Seeding fehlgeschlagen: {e}") from e
 
 

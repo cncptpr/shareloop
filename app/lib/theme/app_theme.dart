@@ -269,6 +269,21 @@ TextTheme _buildTextTheme() {
       fontWeight: FontWeight.w600,
       height: 1.3,
     ),
+    titleLarge: GoogleFonts.literata(
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      height: 1.3,
+    ),
+    titleMedium: GoogleFonts.literata(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      height: 1.4,
+    ),
+    titleSmall: GoogleFonts.literata(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      height: 1.4,
+    ),
     bodyLarge: GoogleFonts.nunitoSans(
       fontSize: 18,
       fontWeight: FontWeight.w400,

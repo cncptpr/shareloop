@@ -155,7 +155,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               sliver: SliverToBoxAdapter(
-                child: Text('Kategorien', style: tt.titleMedium),
+                child: Text('Entdecke Kategorien', style: tt.titleLarge),
               ),
             ),
             SliverPadding(
@@ -252,7 +252,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Empfohlene Artikel', style: tt.titleMedium),
+                      Text('Empfohlene Artikel', style: tt.titleLarge),
                       TextButton(
                         onPressed: () {},
                         child: const Text('Alle anzeigen'),
@@ -267,7 +267,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                     height: 280,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 48),
                       separatorBuilder: (_, __) => const SizedBox(width: 12),
                       itemCount: items.length,
                       itemBuilder: (ctx, i) => _FeaturedItemCard(items[i]),
@@ -283,7 +283,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('In deiner Nähe', style: tt.titleMedium),
+                      Text('In deiner Nähe', style: tt.titleLarge),
                     ],
                   ),
                 ),
@@ -561,24 +561,25 @@ class _CategoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     return Material(
       borderRadius: BorderRadius.circular(12),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: imageUrl != null ? _buildImageTile(cs) : _buildColorTile(cs),
+        child: imageUrl != null ? _buildImageTile(cs, tt) : _buildColorTile(cs, tt),
       ),
     );
   }
 
-  Widget _buildImageTile(ColorScheme cs) {
+  Widget _buildImageTile(ColorScheme cs, TextTheme tt) {
     return Stack(
       fit: StackFit.expand,
       children: [
         Image.network(
           imageUrl!,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _buildColorTile(cs),
+          errorBuilder: (_, __, ___) => _buildColorTile(cs, tt),
         ),
         Positioned.fill(
           child: Container(
@@ -609,7 +610,7 @@ class _CategoryTile extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: const TextStyle(
+                style: tt.titleMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -622,7 +623,7 @@ class _CategoryTile extends StatelessWidget {
     );
   }
 
-  Widget _buildColorTile(ColorScheme cs) {
+  Widget _buildColorTile(ColorScheme cs, TextTheme tt) {
     return Container(
       decoration: BoxDecoration(
         color: active ? cs.primary : cs.surfaceContainerHigh,
@@ -635,7 +636,7 @@ class _CategoryTile extends StatelessWidget {
           const SizedBox(width: 12),
           Text(
             label,
-            style: TextStyle(
+            style: tt.titleMedium?.copyWith(
               color: active ? cs.onPrimary : cs.onSurface,
               fontWeight: FontWeight.w600,
             ),

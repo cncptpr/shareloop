@@ -44,7 +44,10 @@ class ItemWidget extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Text(item.title, textScaler: const TextScaler.linear(2)),
+                    child: Text(item.title,
+                      textScaler: const TextScaler.linear(2),
+                      style: Theme.of(ctx).textTheme.titleSmall,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Text(

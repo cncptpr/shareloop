@@ -2,10 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
+import 'package:shareloop/app_config.dart';
 import 'package:shareloop/components/item_widget.dart';
 import 'package:shareloop/screens/create_item_screen.dart';
+import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/screens/location_picker_screen.dart';
-import 'package:shareloop/state/item_form.dart';
 import 'package:shareloop/state/item_search.dart';
 import 'package:shareloop/state/items.dart';
 import 'package:shareloop/state/location.dart';
@@ -92,6 +93,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     final label = _locationLabel(ref);
     final filters = ref.watch(searchFiltersProvider);
     final hasFilters = _hasActiveFilters(filters);
@@ -99,10 +102,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final itemsAsync = hasFilters
         ? ref.watch(searchItemsProvider)
         : ref.watch(featuredItemsProvider);
+    final featuredAsync = ref.watch(featuredItemsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Explore Screen'),
+        title: const Text('ShareLoop'),
         actions: [
           TextButton.icon(
             onPressed: _openLocationPicker,
@@ -115,167 +119,291 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         onPressed: () => CreateItemScreen.push(context),
         child: const Icon(Icons.add),
       ),
-      body: Column(
-        children: [
-          SearchBar(
-            hintText: "Suche für Inserate",
-            controller: _searchController,
-          ),
-          if (itemsAsync.isLoading || itemsAsync.isReloading)
-            const LinearProgressIndicator(),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Row(
-              children: [
-                ActionChip(
-                  label: Text(
-                    filters.categories.isEmpty
-                        ? 'Kategorien'
-                        : 'Kategorien (${filters.categories.length})',
-                  ),
-                  avatar: const Icon(Icons.category, size: 16),
-                  onPressed: () => _showCategoryDialog(context),
-                ),
-                const SizedBox(width: 4),
-                _ActiveFilterChip(
-                  active: filters.maxDistanceKm != null,
-                  label: filters.maxDistanceKm != null
-                      ? '≤${filters.maxDistanceKm!.toInt()} km'
-                      : 'Entfernung',
-                  icon: Icons.explore,
-                  onClear: filters.maxDistanceKm != null
-                      ? () => ref.read(searchFiltersProvider.notifier).setMaxDistanceKm(null)
-                      : null,
-                  childBuilder: () => PopupMenuButton<double>(
-                    onSelected: (v) {
-                      ref.read(searchFiltersProvider.notifier).setMaxDistanceKm(v);
-                    },
-                    itemBuilder: (_) => [
-                      const PopupMenuItem(value: 1, child: Text('1 km')),
-                      const PopupMenuItem(value: 5, child: Text('5 km')),
-                      const PopupMenuItem(value: 10, child: Text('10 km')),
-                      const PopupMenuItem(value: 25, child: Text('25 km')),
-                      const PopupMenuItem(value: 50, child: Text('50 km')),
-                    ],
-                    child: const Chip(
-                      label: Text('Entfernung'),
-                      avatar: Icon(Icons.explore, size: 16),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          if (hasFilters) {
+            ref.invalidate(searchItemsProvider);
+            await ref.read(searchItemsProvider.future);
+          } else {
+            ref.invalidate(featuredItemsProvider);
+            await ref.read(featuredItemsProvider.future);
+          }
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                child: SearchBar(
+                  hintText: 'Suche für Inserate',
+                  controller: _searchController,
+                  elevation: WidgetStateProperty.all(0),
+                  backgroundColor: WidgetStateProperty.all(cs.surfaceContainerHigh),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
                     ),
                   ),
                 ),
-                const SizedBox(width: 4),
-                _ActiveFilterChip(
-                  active: filters.minScore != null,
-                  label: filters.minScore != null
-                      ? '≥${filters.minScore}★'
-                      : 'Mindestbewertung',
-                  icon: Icons.star,
-                  onClear: filters.minScore != null
-                      ? () => ref.read(searchFiltersProvider.notifier).setMinScore(null)
-                      : null,
-                  childBuilder: () => PopupMenuButton<double>(
-                    onSelected: (v) {
-                      ref.read(searchFiltersProvider.notifier).setMinScore(v);
-                    },
-                    itemBuilder: (_) => [
-                      const PopupMenuItem(value: 3, child: Text('3★ und mehr')),
-                      const PopupMenuItem(value: 3.5, child: Text('3.5★ und mehr')),
-                      const PopupMenuItem(value: 4, child: Text('4★ und mehr')),
-                      const PopupMenuItem(value: 4.5, child: Text('4.5★ und mehr')),
-                    ],
-                    child: const Chip(
-                      label: Text('Mindestbewertung'),
-                      avatar: Icon(Icons.star, size: 16),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                PopupMenuButton<ItemSearchRequestSortByEnum>(
-                  onSelected: (v) {
-                    ref.read(searchFiltersProvider.notifier).setSortBy(v);
-                  },
-                  itemBuilder: (_) => [
-                    const PopupMenuItem(value: ItemSearchRequestSortByEnum.relevance, child: Text('Beste Treffer')),
-                    const PopupMenuItem(value: ItemSearchRequestSortByEnum.score, child: Text('Bewertung')),
-                    const PopupMenuItem(value: ItemSearchRequestSortByEnum.distance, child: Text('Entfernung')),
-                    const PopupMenuItem(value: ItemSearchRequestSortByEnum.newest, child: Text('Neueste')),
-                  ],
-                  child: Chip(
-                    label: Text(_sortLabel(filters.sortBy)),
-                    avatar: const Icon(Icons.sort, size: 16),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                if (hasFilters) {
-                  ref.invalidate(searchItemsProvider);
-                  await ref.read(searchItemsProvider.future);
-                } else {
-                  ref.invalidate(featuredItemsProvider);
-                  await ref.read(featuredItemsProvider.future);
-                }
-              },
-              child: itemsAsync.when(
-                skipLoadingOnReload: true,
-                data: (items) => ListView.builder(
-                  cacheExtent: 500,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: items.length,
-                  itemBuilder: (ctx, i) => ItemWidget(items[i], key: ValueKey(items[i].id)),
-                ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('Fehler: $e')),
               ),
             ),
-          ),
-        ],
+
+            if (itemsAsync.isLoading || itemsAsync.isReloading)
+              const SliverToBoxAdapter(child: LinearProgressIndicator()),
+
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              sliver: SliverToBoxAdapter(
+                child: Text('Kategorien', style: tt.titleMedium),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverToBoxAdapter(
+                child: _buildCategoryBento(filters, ref),
+              ),
+            ),
+
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 40,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: [
+                    _ActiveFilterChip(
+                      active: filters.maxDistanceKm != null,
+                      label: filters.maxDistanceKm != null
+                          ? '≤${filters.maxDistanceKm!.toInt()} km'
+                          : 'Entfernung',
+                      icon: Icons.explore,
+                      onClear: filters.maxDistanceKm != null
+                          ? () => ref.read(searchFiltersProvider.notifier).setMaxDistanceKm(null)
+                          : null,
+                      childBuilder: () => PopupMenuButton<double>(
+                        onSelected: (v) {
+                          ref.read(searchFiltersProvider.notifier).setMaxDistanceKm(v);
+                        },
+                        itemBuilder: (_) => [
+                          const PopupMenuItem(value: 1, child: Text('1 km')),
+                          const PopupMenuItem(value: 5, child: Text('5 km')),
+                          const PopupMenuItem(value: 10, child: Text('10 km')),
+                          const PopupMenuItem(value: 25, child: Text('25 km')),
+                          const PopupMenuItem(value: 50, child: Text('50 km')),
+                        ],
+                        child: const Chip(
+                          label: Text('Entfernung'),
+                          avatar: Icon(Icons.explore, size: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    _ActiveFilterChip(
+                      active: filters.minScore != null,
+                      label: filters.minScore != null
+                          ? '≥${filters.minScore}★'
+                          : 'Mindestbewertung',
+                      icon: Icons.star,
+                      onClear: filters.minScore != null
+                          ? () => ref.read(searchFiltersProvider.notifier).setMinScore(null)
+                          : null,
+                      childBuilder: () => PopupMenuButton<double>(
+                        onSelected: (v) {
+                          ref.read(searchFiltersProvider.notifier).setMinScore(v);
+                        },
+                        itemBuilder: (_) => [
+                          const PopupMenuItem(value: 3, child: Text('3★ und mehr')),
+                          const PopupMenuItem(value: 3.5, child: Text('3.5★ und mehr')),
+                          const PopupMenuItem(value: 4, child: Text('4★ und mehr')),
+                          const PopupMenuItem(value: 4.5, child: Text('4.5★ und mehr')),
+                        ],
+                        child: const Chip(
+                          label: Text('Mindestbewertung'),
+                          avatar: Icon(Icons.star, size: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    PopupMenuButton<ItemSearchRequestSortByEnum>(
+                      onSelected: (v) {
+                        ref.read(searchFiltersProvider.notifier).setSortBy(v);
+                      },
+                      itemBuilder: (_) => [
+                        const PopupMenuItem(value: ItemSearchRequestSortByEnum.relevance, child: Text('Beste Treffer')),
+                        const PopupMenuItem(value: ItemSearchRequestSortByEnum.score, child: Text('Bewertung')),
+                        const PopupMenuItem(value: ItemSearchRequestSortByEnum.distance, child: Text('Entfernung')),
+                        const PopupMenuItem(value: ItemSearchRequestSortByEnum.newest, child: Text('Neueste')),
+                      ],
+                      child: Chip(
+                        label: Text(_sortLabel(filters.sortBy)),
+                        avatar: const Icon(Icons.sort, size: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            if (!hasFilters) ...[
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Empfohlene Artikel', style: tt.titleMedium),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text('Alle anzeigen'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              featuredAsync.when(
+                data: (items) => SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 280,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      itemCount: items.length,
+                      itemBuilder: (ctx, i) => _FeaturedItemCard(items[i]),
+                    ),
+                  ),
+                ),
+                loading: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
+                error: (_, __) => const SliverToBoxAdapter(child: SizedBox.shrink()),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('In deiner Nähe', style: tt.titleMedium),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+
+            itemsAsync.when(
+              skipLoadingOnReload: true,
+              data: (items) => SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (ctx, i) => ItemWidget(items[i], key: ValueKey(items[i].id)),
+                    childCount: items.length,
+                  ),
+                ),
+              ),
+              loading: () => const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (e, _) => SliverToBoxAdapter(
+                child: Center(child: Text('Fehler: $e')),
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+          ],
+        ),
       ),
     );
   }
 
-  Future<void> _showCategoryDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setDialogState) {
-            final current = ref.read(searchFiltersProvider).categories;
-            return AlertDialog(
-              title: const Text('Kategorien'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: dummyCategories.map((cat) {
-                    final checked = current.contains(cat);
-                    return CheckboxListTile(
-                      title: Text(cat),
-                      value: checked,
-                      onChanged: (_) {
-                        ref.read(searchFiltersProvider.notifier).toggleCategory(cat);
-                        setDialogState(() {});
-                      },
-                
-                    );
-                  }).toList(),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Übernehmen'),
-                ),
-              ],
-            );
-          },
+  Widget _buildCategoryBento(SearchFilters filters, WidgetRef ref) {
+    _CategoryTile catTile(String name, IconData icon, {String? forcedImage}) {
+      final active = filters.categories.contains(name);
+      return _CategoryTile(
+        icon: icon,
+        label: name,
+        active: active,
+        imageUrl: forcedImage ?? _categoryImageUrls[name],
+        onTap: () => ref.read(searchFiltersProvider.notifier).toggleCategory(name),
+      );
+    }
+
+    _CategoryTile catEntry(String name) {
+      final entry = _categoryIcons.firstWhere((e) => e.key == name);
+      return catTile(entry.key, entry.value);
+    }
+
+    return Column(
+      children: [
+        _buildBentoRow(
+          left: catEntry('Werkzeug'),
+          right: Column(
+            children: [
+              Expanded(child: catEntry('Elektronik')),
+              const SizedBox(height: 8),
+              Expanded(child: catEntry('Sport')),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildBentoRow(
+          left: Column(
+            children: [
+              Expanded(child: catEntry('Bücher')),
+              const SizedBox(height: 8),
+              Expanded(child: catEntry('Sonstiges')),
+            ],
+          ),
+          right: catEntry('Outdoor'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBentoRow({
+    required Widget left,
+    required Widget right,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tileWidth = (constraints.maxWidth - 8) / 2;
+        return SizedBox(
+          height: tileWidth,
+          child: Row(
+            children: [
+              SizedBox(width: tileWidth, child: left),
+              const SizedBox(width: 8),
+              SizedBox(width: tileWidth, child: right),
+            ],
+          ),
         );
       },
     );
   }
+
+  static const _categoryIcons = <MapEntry<String, IconData>>[
+    MapEntry('Elektronik', Icons.devices),
+    MapEntry('Werkzeug', Icons.build),
+    MapEntry('Sport', Icons.fitness_center),
+    MapEntry('Bücher', Icons.menu_book),
+    MapEntry('Outdoor', Icons.kayaking),
+    MapEntry('Sonstiges', Icons.category),
+  ];
+
+  static const _categoryImageUrls = <String, String>{
+    'Werkzeug':
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBAEs4r8ImdNw86kvr3MxaKr2tSiASZMae2ft_fW44Lgnb18N5ew0eNoFCm1HbPr7-o5RdyKw6-zmMugFP7tZ6PV--x5hQBDb72ZpZY5FWpK4uuzf22DTDzJq4CRHh70nn8nUm4SPY_OpzTtriXzHfj0H0YyafvLYuc_yg2Brvr7dJXBLFk7aZfZCsZQZbJ-x_eSkn6BIXW3lLTX0oYfdXTUIjCukLwQ2qrwhiGW5NziCnQq6LTi4IWbJHwbYO7M7eRVOfnBb5axCoW',
+    'Outdoor':
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBCqvogEEr0YR_CqYcJQxsy3pfIPagibs6GbQOkLh0thVHouRrgcg0DMs7oT8vaEfzoMwZbrdUSn_sqWpqTY0mPGs52D-yzuWoTk2fjyul49oNKyjPXlsgFbmFvTWzsE1wWEBvVEHrC75zZR_JYzlKh3q4opNEO6jr9Og4ANkKJXPS1TR6oCzA1doC-i9BXEMqhd9mRIcXjMJeRTFq2mKXub0-fumS6Ggmy4p8RBsJSnmVa2DRCgfjnfj45mf8XmR8OXiF4Ni2bz2ey',
+    'Elektronik':
+        'https://images.unsplash.com/photo-1776090893591-90f5ea3fa523?fm=jpg&q=60&w=3000&auto=format&fit=crop',
+    'Sport':
+        'https://images.unsplash.com/photo-1764595753275-d9278a0b8f56?fm=jpg&q=60&w=3000&auto=format&fit=crop',
+    'Bücher':
+        'https://images.unsplash.com/photo-1739015828099-29531aa4bd1a?fm=jpg&q=60&w=3000&auto=format&fit=crop',
+    'Sonstiges':
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBl4itt0NFbkkuFV5EYUkakoB6BObwmfF2JWpI4R4zh97Tg1w2IvpNuRSjUXA7YqK3z_97Gtus50CovW-dVyehwbf_Kp3NsegS0rg8NLRmsd06e2-KVVIBFPcUf26sZlyzylNcsgY5sOvENpOztDjS1qcM2FmRTnOgwnV2EJK4wZzZej8qWKqrNsB9lEeOnrDftUOTKLHEqyUQOxziXJXlGVRRMkBb1FSyWVErIeZiAwD1ePMC0Ba5BmJe5Scz6XaHsy_QJNwETEClP',
+  };
 
   String _sortLabel(ItemSearchRequestSortByEnum sortBy) {
     if (sortBy == ItemSearchRequestSortByEnum.relevance) return 'Beste Treffer';
@@ -331,5 +459,189 @@ class _ActiveFilterChip extends StatelessWidget {
       );
     }
     return childBuilder();
+  }
+}
+
+class _FeaturedItemCard extends ConsumerWidget {
+  final ItemOverview item;
+
+  const _FeaturedItemCard(this.item);
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => ItemScreen(itemId: item.id)),
+      ),
+      child: SizedBox(
+        width: 180,
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: item.imageUuid != null
+                    ? Image.network(
+                        '${AppConfig.apiBaseUrl}/images/${item.imageUuid}',
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        "assets/images/placeholder_image.jpg",
+                        fit: BoxFit.cover,
+                      ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.title,
+                      style: tt.titleSmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      item.description,
+                      style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.star, size: 14, color: Colors.amber[700]),
+                        const SizedBox(width: 2),
+                        Text(item.score.toStringAsFixed(1), style: tt.labelSmall),
+                        const Spacer(),
+                        if (item.distance != null) ...[
+                          Icon(Icons.location_on, size: 14, color: cs.onSurfaceVariant),
+                          const SizedBox(width: 2),
+                          Text(
+                            '${item.distance!.km.toStringAsFixed(1)} km',
+                            style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool active;
+  final String? imageUrl;
+  final VoidCallback onTap;
+
+  const _CategoryTile({
+    required this.icon,
+    required this.label,
+    required this.active,
+    this.imageUrl,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Material(
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: imageUrl != null ? _buildImageTile(cs) : _buildColorTile(cs),
+      ),
+    );
+  }
+
+  Widget _buildImageTile(ColorScheme cs) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.network(
+          imageUrl!,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => _buildColorTile(cs),
+        ),
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
+              ),
+            ),
+          ),
+        ),
+        if (active)
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: cs.primary, width: 3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        Positioned(
+          bottom: 12,
+          left: 12,
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildColorTile(ColorScheme cs) {
+    return Container(
+      decoration: BoxDecoration(
+        color: active ? cs.primary : cs.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Icon(icon, color: active ? cs.onPrimary : cs.onSurfaceVariant),
+          const SizedBox(width: 12),
+          Text(
+            label,
+            style: TextStyle(
+              color: active ? cs.onPrimary : cs.onSurface,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

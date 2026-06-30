@@ -155,10 +155,19 @@ ThemeData _buildThemeData({
       ),
     ),
     cardTheme: CardThemeData(
-      elevation: 0,
+      elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
+    ),
+    chipTheme: ChipThemeData(
+      shape: const StadiumBorder(),
+      side: BorderSide(color: colorScheme.outlineVariant),
+      backgroundColor: colorScheme.surface,
+      labelStyle: textTheme.labelMedium?.copyWith(
+        color: colorScheme.onSurfaceVariant,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
     ),
     dividerTheme: DividerThemeData(
       color: colorScheme.outlineVariant,
@@ -244,44 +253,44 @@ ThemeData _buildThemeData({
 
 TextTheme _buildTextTheme() {
   return TextTheme(
-    headlineLarge: GoogleFonts.manrope(
+    headlineLarge: GoogleFonts.literata(
       fontSize: 40,
       fontWeight: FontWeight.w700,
       letterSpacing: -0.02,
       height: 1.2,
     ),
-    headlineMedium: GoogleFonts.manrope(
+    headlineMedium: GoogleFonts.literata(
       fontSize: 32,
       fontWeight: FontWeight.w600,
       height: 1.25,
     ),
-    headlineSmall: GoogleFonts.manrope(
+    headlineSmall: GoogleFonts.literata(
       fontSize: 24,
       fontWeight: FontWeight.w600,
       height: 1.3,
     ),
-    bodyLarge: GoogleFonts.beVietnamPro(
+    bodyLarge: GoogleFonts.nunitoSans(
       fontSize: 18,
       fontWeight: FontWeight.w400,
       height: 1.6,
     ),
-    bodyMedium: GoogleFonts.beVietnamPro(
+    bodyMedium: GoogleFonts.nunitoSans(
       fontSize: 16,
       fontWeight: FontWeight.w400,
       height: 1.5,
     ),
-    bodySmall: GoogleFonts.beVietnamPro(
+    bodySmall: GoogleFonts.nunitoSans(
       fontSize: 14,
       fontWeight: FontWeight.w400,
       height: 1.4,
     ),
-    labelMedium: GoogleFonts.beVietnamPro(
+    labelMedium: GoogleFonts.nunitoSans(
       fontSize: 14,
       fontWeight: FontWeight.w600,
       letterSpacing: 0.01,
       height: 1.2,
     ),
-    labelSmall: GoogleFonts.beVietnamPro(
+    labelSmall: GoogleFonts.nunitoSans(
       fontSize: 12,
       fontWeight: FontWeight.w500,
       height: 1.2,

@@ -23,6 +23,7 @@ class UserProfile {
     required this.itemCount,
     required this.ratingCount,
     this.shareCount,
+    this.avatarUuid,
   });
 
   int id;
@@ -45,6 +46,8 @@ class UserProfile {
 
   int? shareCount;
 
+  String? avatarUuid;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is UserProfile &&
     other.id == id &&
@@ -56,7 +59,8 @@ class UserProfile {
     other.lastOnlineAt == lastOnlineAt &&
     other.itemCount == itemCount &&
     other.ratingCount == ratingCount &&
-    other.shareCount == shareCount;
+    other.shareCount == shareCount &&
+    other.avatarUuid == avatarUuid;
 
   @override
   int get hashCode =>
@@ -70,10 +74,11 @@ class UserProfile {
     (lastOnlineAt.hashCode) +
     (itemCount.hashCode) +
     (ratingCount.hashCode) +
-    (shareCount == null ? 0 : shareCount!.hashCode);
+    (shareCount == null ? 0 : shareCount!.hashCode) +
+    (avatarUuid == null ? 0 : avatarUuid!.hashCode);
 
   @override
-  String toString() => 'UserProfile[id=$id, name=$name, email=$email, bio=$bio, rating=$rating, createdAt=$createdAt, lastOnlineAt=$lastOnlineAt, itemCount=$itemCount, ratingCount=$ratingCount, shareCount=$shareCount]';
+  String toString() => 'UserProfile[id=$id, name=$name, email=$email, bio=$bio, rating=$rating, createdAt=$createdAt, lastOnlineAt=$lastOnlineAt, itemCount=$itemCount, ratingCount=$ratingCount, shareCount=$shareCount, avatarUuid=$avatarUuid]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -98,6 +103,11 @@ class UserProfile {
       json[r'shareCount'] = this.shareCount;
     } else {
       json[r'shareCount'] = null;
+    }
+    if (this.avatarUuid != null) {
+      json[r'avatarUuid'] = this.avatarUuid;
+    } else {
+      json[r'avatarUuid'] = null;
     }
     return json;
   }
@@ -141,6 +151,7 @@ class UserProfile {
         itemCount: mapValueOfType<int>(json, r'itemCount')!,
         ratingCount: mapValueOfType<int>(json, r'ratingCount')!,
         shareCount: mapValueOfType<int>(json, r'shareCount'),
+        avatarUuid: mapValueOfType<String>(json, r'avatarUuid'),
       );
     }
     return null;

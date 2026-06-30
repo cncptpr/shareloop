@@ -73,6 +73,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**createRentRequest**](doc//DefaultApi.md#createrentrequest) | **POST** /items/{itemId}/rent-requests | Create or get existing open rent request
 *DefaultApi* | [**declineSeed**](doc//DefaultApi.md#declineseed) | **POST** /seed/decline | Decline seeding prompt
 *DefaultApi* | [**deleteItem**](doc//DefaultApi.md#deleteitem) | **DELETE** /items/{itemId} | Delete an item
+*DefaultApi* | [**deleteUserAvatar**](doc//DefaultApi.md#deleteuseravatar) | **DELETE** /users/{userId}/avatar | Remove avatar image
 *DefaultApi* | [**editItemImages**](doc//DefaultApi.md#edititemimages) | **PUT** /items/{itemId}/images | Edit item images (reorder / delete)
 *DefaultApi* | [**getBookedDates**](doc//DefaultApi.md#getbookeddates) | **GET** /items/{itemId}/booked-dates | Get booked date ranges for an item
 *DefaultApi* | [**getFeaturedItems**](doc//DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
@@ -98,6 +99,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**updateItem**](doc//DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 *DefaultApi* | [**updateUserProfile**](doc//DefaultApi.md#updateuserprofile) | **PATCH** /users/{userId}/profile | Update own profile
 *DefaultApi* | [**uploadItemImage**](doc//DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
+*DefaultApi* | [**uploadUserAvatar**](doc//DefaultApi.md#uploaduseravatar) | **POST** /users/{userId}/avatar | Upload avatar image
 *DefaultApi* | [**verify**](doc//DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
 
 

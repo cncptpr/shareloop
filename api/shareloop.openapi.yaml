@@ -863,6 +863,60 @@ paths:
         "500":
           description: Internal server error
 
+  /users/{userId}/avatar:
+    post:
+      summary: Upload avatar image
+      description: Upload a new avatar image for the authenticated user's profile. Replaces any existing avatar.
+      operationId: uploadUserAvatar
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadItemImageRequest"
+      responses:
+        "201":
+          description: Avatar uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadItemImageResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not the same user
+        "500":
+          description: Internal server error
+    delete:
+      summary: Remove avatar image
+      description: Delete the avatar image for the authenticated user's profile
+      operationId: deleteUserAvatar
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Avatar removed
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not the same user
+        "500":
+          description: Internal server error
+
   /auth/logout:
     post:
       summary: Logout
@@ -1029,6 +1083,10 @@ components:
           type: integer
         shareCount:
           type: integer
+          nullable: true
+        avatarUuid:
+          type: string
+          format: uuid
           nullable: true
 
     UserRatingDetail:

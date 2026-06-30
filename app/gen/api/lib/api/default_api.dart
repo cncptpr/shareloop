@@ -438,6 +438,55 @@ class DefaultApi {
     }
   }
 
+  /// Remove avatar image
+  ///
+  /// Delete the avatar image for the authenticated user's profile
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> deleteUserAvatarWithHttpInfo(int userId,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/avatar'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'DELETE',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Remove avatar image
+  ///
+  /// Delete the avatar image for the authenticated user's profile
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<void> deleteUserAvatar(int userId,) async {
+    final response = await deleteUserAvatarWithHttpInfo(userId,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
   /// Edit item images (reorder / delete)
   ///
   /// Note: This method returns the HTTP [Response].
@@ -1771,6 +1820,67 @@ class DefaultApi {
   /// * [UploadItemImageRequest] uploadItemImageRequest (required):
   Future<UploadItemImageResponse?> uploadItemImage(int itemId, UploadItemImageRequest uploadItemImageRequest,) async {
     final response = await uploadItemImageWithHttpInfo(itemId, uploadItemImageRequest,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UploadItemImageResponse',) as UploadItemImageResponse;
+    
+    }
+    return null;
+  }
+
+  /// Upload avatar image
+  ///
+  /// Upload a new avatar image for the authenticated user's profile. Replaces any existing avatar.
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  ///
+  /// * [UploadItemImageRequest] uploadItemImageRequest (required):
+  Future<Response> uploadUserAvatarWithHttpInfo(int userId, UploadItemImageRequest uploadItemImageRequest,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/avatar'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody = uploadItemImageRequest;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Upload avatar image
+  ///
+  /// Upload a new avatar image for the authenticated user's profile. Replaces any existing avatar.
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  ///
+  /// * [UploadItemImageRequest] uploadItemImageRequest (required):
+  Future<UploadItemImageResponse?> uploadUserAvatar(int userId, UploadItemImageRequest uploadItemImageRequest,) async {
+    final response = await uploadUserAvatarWithHttpInfo(userId, uploadItemImageRequest,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }

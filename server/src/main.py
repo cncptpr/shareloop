@@ -6,6 +6,7 @@ from datetime import UTC
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from sqlalchemy import select, text
+from starlette.middleware.cors import CORSMiddleware
 
 from src.config import settings
 from src.database import async_session_factory, engine
@@ -16,9 +17,31 @@ from src.notifications.registry import registry
 from src.seeding.reader import load_and_validate
 from src.seeding.state import set_seeding_available
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("shareloop")
 
+def _check_uploads_writable():
+    probe = os.path.join(settings.uploads_dir, ".write_probe")
+    try:
+        with open(probe, "w") as f:
+            f.write("probe")
+        os.remove(probe)
+    except OSError:
+        logger.error(
+            "Uploads dir '%s' is not writable – file uploads and seeding will fail",
+            settings.uploads_dir,
+        )
+
+
 app = FastAPI(title="Shareloop API", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth.router)
 app.include_router(items.router)
@@ -30,6 +53,7 @@ app.include_router(seeding_router)
 @app.on_event("startup")
 async def startup():
     os.makedirs(settings.uploads_dir, exist_ok=True)
+    _check_uploads_writable()
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     await apply_migrations()

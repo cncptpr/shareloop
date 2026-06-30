@@ -28,7 +28,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./server/uploads:/uploads
+      - uploads-data:/uploads
       # WARNING: Seeding is a DEVELOPMENT feature.
       # Mounting valid seeding data enables the seeding
       # feature and allows anyone to reset the database.
@@ -48,3 +48,4 @@ services:
 
 volumes:
   pg-data:
+  uploads-data:

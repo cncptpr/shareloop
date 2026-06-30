@@ -33,6 +33,7 @@ part 'api/default_api.dart';
 part 'model/create_item_request.dart';
 part 'model/create_item_response.dart';
 part 'model/create_offer_request.dart';
+part 'model/date_range.dart';
 part 'model/distance.dart';
 part 'model/edit_item_images_request.dart';
 part 'model/item_detail.dart';

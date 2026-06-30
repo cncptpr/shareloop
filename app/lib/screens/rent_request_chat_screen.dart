@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
+import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/state/auth.dart';
 import 'package:shareloop/screens/rating_dialogs.dart';
@@ -131,10 +132,25 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     if (_requestId == null) return;
     if (!mounted) return;
 
+    final itemId = widget.itemId ?? widget.rentRequest?.itemId;
+    final bookedRanges = itemId != null
+        ? (await AppConfig.apiClient.getBookedDates(itemId)) ?? []
+        : <DateRange>[];
+    if (!mounted) return;
+
     final dates = await showDateRangePicker(
       context: context,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
+      selectableDayPredicate: (day, _, __) {
+        final d = DateTime(day.year, day.month, day.day);
+        for (final r in bookedRanges) {
+          final start = DateTime(r.startDate.year, r.startDate.month, r.startDate.day);
+          final end = DateTime(r.endDate.year, r.endDate.month, r.endDate.day);
+          if (!d.isBefore(start) && !d.isAfter(end)) return false;
+        }
+        return true;
+      },
     );
     if (dates == null) return;
     await createOffer(_requestId!, dates.start, dates.end);

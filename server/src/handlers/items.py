@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config import settings
 from src.database import get_db
-from src.db.models import Item, ItemImage, ItemRating, Profile, RentRequest
+from src.db.models import Item, ItemImage, ItemRating, Profile, RentOffer, RentRequest
 from src.dependencies import get_current_user
 from src.models.openapi import (
     CreateItemRequest,
@@ -150,6 +150,22 @@ async def api_get_item(item_id: int, db: AsyncSession = Depends(get_db)):
         item_rating_count=len(item_ratings),
         item_ratings=item_ratings,
     )
+
+
+@router.get("/api/items/{item_id}/booked-dates")
+async def api_get_booked_dates(item_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(RentOffer.start_date, RentOffer.end_date)
+        .join(RentRequest, RentOffer.id == RentRequest.latest_accepted_offer_id)
+        .where(
+            RentRequest.item_id == item_id,
+            RentRequest.returned_at.is_(None),
+        )
+    )
+    return [
+        {"startDate": row.start_date.date().isoformat(), "endDate": row.end_date.date().isoformat()}
+        for row in result.all()
+    ]
 
 
 @router.put("/api/items/{item_id}")

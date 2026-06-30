@@ -18,6 +18,7 @@ Method | HTTP request | Description
 [**declineSeed**](DefaultApi.md#declineseed) | **POST** /seed/decline | Decline seeding prompt
 [**deleteItem**](DefaultApi.md#deleteitem) | **DELETE** /items/{itemId} | Delete an item
 [**editItemImages**](DefaultApi.md#edititemimages) | **PUT** /items/{itemId}/images | Edit item images (reorder / delete)
+[**getBookedDates**](DefaultApi.md#getbookeddates) | **GET** /items/{itemId}/booked-dates | Get booked date ranges for an item
 [**getFeaturedItems**](DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 [**getImage**](DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
 [**getInfo**](DefaultApi.md#getinfo) | **GET** /info | Get server info
@@ -458,6 +459,47 @@ void (empty response body)
 
  - **Content-Type**: application/json
  - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getBookedDates**
+> List<DateRange> getBookedDates(itemId)
+
+Get booked date ranges for an item
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+final itemId = 56; // int | 
+
+try {
+    final result = api_instance.getBookedDates(itemId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getBookedDates: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **itemId** | **int**|  | 
+
+### Return type
+
+[**List<DateRange>**](DateRange.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

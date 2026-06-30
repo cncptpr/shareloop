@@ -189,6 +189,8 @@ class ApiClient {
           return CreateItemResponse.fromJson(value);
         case 'CreateOfferRequest':
           return CreateOfferRequest.fromJson(value);
+        case 'DateRange':
+          return DateRange.fromJson(value);
         case 'Distance':
           return Distance.fromJson(value);
         case 'EditItemImagesRequest':

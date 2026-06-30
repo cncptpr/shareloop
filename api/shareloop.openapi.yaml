@@ -473,6 +473,30 @@ paths:
         "500":
           description: Internal server error
 
+  /items/{itemId}/booked-dates:
+    get:
+      summary: Get booked date ranges for an item
+      operationId: getBookedDates
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of booked date ranges
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DateRange"
+        "404":
+          description: Item not found
+        "500":
+          description: Internal server error
+
   /items/{itemId}/edit:
     get:
       summary: Get item edit details (owner only)
@@ -1341,6 +1365,17 @@ components:
         comment:
           type: string
           nullable: true
+
+    DateRange:
+      type: object
+      required: [startDate, endDate]
+      properties:
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
 
     CreateOfferRequest:
       type: object

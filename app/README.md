@@ -10,7 +10,7 @@ This is the mobile app for [shareloop](/README.md).
 
 ## Getting Started
 
-Use `$ mise run app:dev`, `$ flutter run` from `app` (the current dir) or you IDE's features to start the mobile app.
+Use `$ mise run app:dev`, `$ flutter run` from `app` (the current dir) or your IDE's features to start the mobile app.
 
 ## API
 The API connects by default to _http://127.0.0.1:4000/api_. To configure this, provide a `API_BASE_URL` define:

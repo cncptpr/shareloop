@@ -1,69 +1,36 @@
 # Server
 
-This is the backend for [shareloop](/README.md).
-
-If you are not actively developing this, [starting the server as
-a Docker container](/docs/Docker.md) should be enough.
+Backend for [shareloop](/README.md). See [Docker setup](/docs/Docker.md) to run the full stack without a local Python env.
 
 ## Requirements
 
-- Python >= 3.12
-- a running [Postgres Database](/docs/Docker.md)
+- A running [Postgres + PostGIS](/docs/Docker.md) instance
+- Python >= 3.12, [uv](https://docs.astral.sh/uv/) (both handled by mise)
 
-## Environment setup
-
-Create and activate a virtual environment (choose one):
+## Setup
 
 ```bash
-# Using pyenv + pyenv-virtualenv
-pyenv install 3.12
-pyenv virtualenv 3.12 shareloop
-pyenv local shareloop   # run in server/
-
-# Or using the built-in venv module
-python3 -m venv .venv
-source .venv/bin/activate
+uv sync
+uv sync --extra dev   # for linting / type checking
 ```
 
-Install dependencies:
+## Running
 
 ```bash
-pip install -r requirements.txt
-pip install mypy ruff types-psycopg2   # dev dependencies
+mise run server:dev
 ```
 
-## Getting started
-
-Run `$ mise run server:dev` or `$ uvicorn src.main:app --reload --host 0.0.0.0 --port 4000`
-in `server` (current dir) to start the server. The server will be available under port 4000.
-
-The server will host an api as described by the OpenAPI spec in `../api/`.
-Regenerate the Pydantic models from the spec by running
-`$ mise run server:api:gen`.
+The API is documented in `../api/shareloop.openapi.yaml`. Regenerate the Pydantic models with `mise run server:api:gen`.
 
 ## Database
 
-SQLAlchemy ORM models are defined in `src/db/models.py` — this is the single
-source of truth for the DB schema. Migrations are managed with **Alembic**
-(configured in `alembic.ini` + `alembic/env.py`).
-
-Migrations run **automatically on every server startup** via `alembic upgrade head`
-in `src/main.py:run_alembic_migrations()`.
-
-### Migration Commands
+Schema is defined in `src/db/models.py` (SQLAlchemy ORM). Migrations run automatically at startup via Alembic.
 
 | Action | Command |
 |---|---|
-| Apply all pending migrations | `mise run server:db:migrate` |
-| Create a new migration from model changes | `mise run server:db:migration:new -- -m "description"` |
-| Create an empty migration (manual SQL) | `mise run server:db:migration:create -- -m "description"` |
-| Stamp current DB as at a given revision | `mise run server:db:stamp` |
+| Apply pending migrations | `mise run server:db:migrate` |
+| New migration from model changes | `mise run server:db:migration:new -- -m "description"` |
+| Empty migration (manual SQL) | `mise run server:db:migration:create -- -m "description"` |
+| Stamp DB at current revision | `mise run server:db:stamp` |
 
-### Workflow
-
-1. Edit `src/db/models.py`
-2. Run `mise run server:db:migration:new -- -m "what changed"`
-3. Review the generated file in `alembic/versions/`
-4. Run `mise run server:db:migrate` to apply it
-5. Commit the migration file
-
+**Workflow:** edit `src/db/models.py` → `mise run server:db:migration:new -- -m "..."` → review → `mise run server:db:migrate` → commit.

@@ -32,6 +32,8 @@ Method | HTTP request | Description
 [**searchItems**](DefaultApi.md#searchitems) | **POST** /items/search | Search items
 [**seedDatabase**](DefaultApi.md#seeddatabase) | **POST** /seed | Seed the database with demo data
 [**sendMessage**](DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
+[**submitItemRating**](DefaultApi.md#submititemrating) | **POST** /rent-requests/{requestId}/item-rating | Rate the borrowed item after return
+[**submitUserRating**](DefaultApi.md#submituserrating) | **POST** /rent-requests/{requestId}/user-rating | Rate the other participant after return
 [**updateItem**](DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
 [**uploadItemImage**](DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
 [**verify**](DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
@@ -1045,6 +1047,104 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**Message**](Message.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **submitItemRating**
+> ItemRating submitItemRating(requestId, submitItemRatingRequest)
+
+Rate the borrowed item after return
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final requestId = 56; // int | 
+final submitItemRatingRequest = SubmitItemRatingRequest(); // SubmitItemRatingRequest | 
+
+try {
+    final result = api_instance.submitItemRating(requestId, submitItemRatingRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->submitItemRating: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **requestId** | **int**|  | 
+ **submitItemRatingRequest** | [**SubmitItemRatingRequest**](SubmitItemRatingRequest.md)|  | 
+
+### Return type
+
+[**ItemRating**](ItemRating.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **submitUserRating**
+> UserRating submitUserRating(requestId, submitUserRatingRequest)
+
+Rate the other participant after return
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final requestId = 56; // int | 
+final submitUserRatingRequest = SubmitUserRatingRequest(); // SubmitUserRatingRequest | 
+
+try {
+    final result = api_instance.submitUserRating(requestId, submitUserRatingRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->submitUserRating: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **requestId** | **int**|  | 
+ **submitUserRatingRequest** | [**SubmitUserRatingRequest**](SubmitUserRatingRequest.md)|  | 
+
+### Return type
+
+[**UserRating**](UserRating.md)
 
 ### Authorization
 

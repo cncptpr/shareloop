@@ -18,6 +18,8 @@ Name | Type | Description | Notes
 **imageUuids** | **List<String>** |  | [default to const []]
 **category** | **String** |  | 
 **createdAt** | [**DateTime**](DateTime.md) |  | 
+**itemRatingCount** | **int** |  | 
+**itemRatings** | [**List<ItemRating>**](ItemRating.md) |  | [default to const []]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

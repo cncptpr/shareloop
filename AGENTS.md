@@ -12,6 +12,8 @@
 
 6. While this is a small project, not necessarily ment to be released, I do like it. Please make an effort at keeping the code clean and at least pointing out broken things. Don't just make dirty, hacky solution to problems.
 
+7. Dont even try to run a command with `sudo`.
+
 ## Generated files (DO NOT EDIT — edit the source listed below and run codegen)
 
 | Generated file(s) | Source | Codegen command |

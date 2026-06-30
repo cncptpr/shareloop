@@ -4,7 +4,13 @@ from sqlalchemy import case, literal_column, select
 from sqlalchemy import func as sa_func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.db.models import Item, Message, Profile, RentOffer, RentRequest
+from src.db.models import (
+    Item,
+    Message,
+    Profile,
+    RentOffer,
+    RentRequest,
+)
 from src.models.openapi import (
     Message as ApiMessage,
 )
@@ -16,15 +22,13 @@ from src.models.openapi import (
 from src.models.openapi import (
     RentOffer as ApiRentOffer,
 )
+from src.services.rating_common import (
+    _get_item_rating_by_reviewer,
+    _get_user_rating_by_reviewer,
+    _ts_to_str,
+)
 
 EPOCH = datetime(1970, 1, 1, tzinfo=UTC)
-DEFAULT_LAST_READ = "1970-01-01T00:00:00.000Z"
-
-
-def _ts_to_str(dt: datetime | None) -> str:
-    if dt is None:
-        return DEFAULT_LAST_READ
-    return dt.isoformat().replace("+00:00", "Z")
 
 
 def _pick_last_read(
@@ -130,16 +134,12 @@ async def create_rent_request(
     return _detail_from_row(*data, user_id)
 
 
-async def get_rent_requests(
-    db: AsyncSession, user_id: int
-) -> list[RentRequestOverview]:
+async def get_rent_requests(db: AsyncSession, user_id: int) -> list[RentRequestOverview]:
     stmt = (
         select(RentRequest)
         .where(
             (RentRequest.requester_id == user_id)
-            | RentRequest.item_id.in_(
-                select(Item.id).where(Item.author_id == user_id)
-            )
+            | RentRequest.item_id.in_(select(Item.id).where(Item.author_id == user_id))
         )
         .order_by(RentRequest.updated_at.desc())
     )
@@ -160,25 +160,19 @@ async def get_rent_requests(
             continue
 
         if rr.requester_id not in profiles_cache:
-            result = await db.execute(
-                select(Profile).where(Profile.id == rr.requester_id)
-            )
+            result = await db.execute(select(Profile).where(Profile.id == rr.requester_id))
             profiles_cache[rr.requester_id] = result.scalar_one_or_none()
         requester = profiles_cache[rr.requester_id]
 
         if item.author_id not in profiles_cache:
-            result = await db.execute(
-                select(Profile).where(Profile.id == item.author_id)
-            )
+            result = await db.execute(select(Profile).where(Profile.id == item.author_id))
             profiles_cache[item.author_id] = result.scalar_one_or_none()
         owner = profiles_cache[item.author_id]
 
         if requester is None or owner is None:
             continue
 
-        overviews.append(
-            _overview_from_row(rr, item, requester, owner, unread_map.get(rr.id, 0))
-        )
+        overviews.append(_overview_from_row(rr, item, requester, owner, unread_map.get(rr.id, 0)))
     return overviews
 
 
@@ -199,12 +193,12 @@ async def get_rent_request_by_id(
     offers = await get_offers(db, request_id, user_id)
     if offers is not None:
         detail.offers = offers
+    detail.my_user_rating = await _get_user_rating_by_reviewer(db, request_id, user_id)
+    detail.my_item_rating = await _get_item_rating_by_reviewer(db, request_id, user_id)
     return detail
 
 
-async def mark_rent_request_read(
-    db: AsyncSession, request_id: int, user_id: int
-) -> bool:
+async def mark_rent_request_read(db: AsyncSession, request_id: int, user_id: int) -> bool:
     data = await _get_request_detail_row(db, request_id)
     if data is None:
         return False
@@ -244,9 +238,7 @@ async def send_message(
     )
 
 
-async def get_messages(
-    db: AsyncSession, request_id: int, user_id: int
-) -> list[ApiMessage] | None:
+async def get_messages(db: AsyncSession, request_id: int, user_id: int) -> list[ApiMessage] | None:
     data = await _get_request_detail_row(db, request_id)
     if data is None:
         return None
@@ -254,11 +246,7 @@ async def get_messages(
     if rr.requester_id != user_id and item.author_id != user_id:
         return None
 
-    stmt = (
-        select(Message)
-        .where(Message.rent_request_id == request_id)
-        .order_by(Message.created_at)
-    )
+    stmt = select(Message).where(Message.rent_request_id == request_id).order_by(Message.created_at)
     result = await db.execute(stmt)
     msgs = result.scalars().all()
     return [
@@ -334,9 +322,7 @@ async def create_offer(
     return _offer_from_row(offer)
 
 
-async def get_offers(
-    db: AsyncSession, request_id: int, user_id: int
-) -> list[ApiRentOffer] | None:
+async def get_offers(db: AsyncSession, request_id: int, user_id: int) -> list[ApiRentOffer] | None:
     data = await _get_request_detail_row(db, request_id)
     if data is None:
         return None
@@ -377,9 +363,7 @@ async def get_offers_after(
     return [_offer_from_row(o) for o in offers]
 
 
-async def accept_offer(
-    db: AsyncSession, offer_id: int, user_id: int
-) -> ApiRentOffer | None:
+async def accept_offer(db: AsyncSession, offer_id: int, user_id: int) -> ApiRentOffer | None:
     result = await db.execute(select(RentOffer).where(RentOffer.id == offer_id))
     offer = result.scalar_one_or_none()
     if offer is None:
@@ -452,21 +436,15 @@ async def confirm_return(
 async def _build_unread_map(db: AsyncSession, user_id: int) -> dict[int, int]:
     sa_func.now()
 
-    messages_subq = (
-        select(
-            Message.rent_request_id,
-            Message.created_at.label("event_at"),
-        )
-        .where(Message.author_id != user_id)
-    )
+    messages_subq = select(
+        Message.rent_request_id,
+        Message.created_at.label("event_at"),
+    ).where(Message.author_id != user_id)
 
-    offers_subq = (
-        select(
-            RentOffer.rent_request_id,
-            RentOffer.created_at.label("event_at"),
-        )
-        .where(RentOffer.sender_id != user_id)
-    )
+    offers_subq = select(
+        RentOffer.rent_request_id,
+        RentOffer.created_at.label("event_at"),
+    ).where(RentOffer.sender_id != user_id)
 
     accepted_subq = (
         select(
@@ -481,31 +459,25 @@ async def _build_unread_map(db: AsyncSession, user_id: int) -> dict[int, int]:
         )
     )
 
-    borrow_subq = (
-        select(
-            RentRequest.id.label("rent_request_id"),
-            RentRequest.borrow_confirmed_at.label("event_at"),
-        )
-        .where(
-            RentRequest.borrow_confirmed_at.isnot(None),
-            RentRequest.requester_id == user_id,
-        )
+    borrow_subq = select(
+        RentRequest.id.label("rent_request_id"),
+        RentRequest.borrow_confirmed_at.label("event_at"),
+    ).where(
+        RentRequest.borrow_confirmed_at.isnot(None),
+        RentRequest.requester_id == user_id,
     )
 
-    return_subq = (
-        select(
-            RentRequest.id.label("rent_request_id"),
-            RentRequest.returned_at.label("event_at"),
-        )
-        .where(
-            RentRequest.returned_at.isnot(None),
-            RentRequest.requester_id == user_id,
-        )
+    return_subq = select(
+        RentRequest.id.label("rent_request_id"),
+        RentRequest.returned_at.label("event_at"),
+    ).where(
+        RentRequest.returned_at.isnot(None),
+        RentRequest.requester_id == user_id,
     )
 
-    all_events = messages_subq.union_all(
-        offers_subq, accepted_subq, borrow_subq, return_subq
-    ).cte("u")
+    all_events = messages_subq.union_all(offers_subq, accepted_subq, borrow_subq, return_subq).cte(
+        "u"
+    )
 
     read_at_case = case(
         (user_id == RentRequest.requester_id, RentRequest.requester_read_at),
@@ -527,9 +499,7 @@ async def _build_unread_map(db: AsyncSession, user_id: int) -> dict[int, int]:
         )
         .where(
             (RentRequest.requester_id == user_id)
-            | RentRequest.item_id.in_(
-                select(Item.id).where(Item.author_id == user_id)
-            )
+            | RentRequest.item_id.in_(select(Item.id).where(Item.author_id == user_id))
         )
         .group_by(RentRequest.id)
     )

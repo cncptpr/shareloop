@@ -84,7 +84,7 @@ class ItemWidget extends ConsumerWidget {
   Widget score(double score) {
     return Row(children: [
       const Icon(Icons.star),
-      Text(score.toString()),
+      Text(score.toStringAsFixed(1)),
     ]);
   }
 

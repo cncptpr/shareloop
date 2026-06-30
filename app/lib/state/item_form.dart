@@ -10,10 +10,10 @@ import 'package:uuid/uuid.dart';
 
 const dummyCategories = [
   'Elektronik',
-  'Möbel',
-  'Kleidung',
-  'Bücher',
+  'Werkzeug',
   'Sport',
+  'Bücher',
+  'Outdoor',
   'Sonstiges',
 ];
 

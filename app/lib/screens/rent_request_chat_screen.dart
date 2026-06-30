@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/state/auth.dart';
+import 'package:shareloop/screens/rating_dialogs.dart';
 import 'package:shareloop/state/renting.dart';
 import 'package:shareloop/state/websocket.dart';
 
@@ -15,8 +16,8 @@ class RentRequestChatScreen extends ConsumerStatefulWidget {
   const RentRequestChatScreen.newRequest({
     required this.itemId,
     super.key,
-  }) : requestId = null,
-       rentRequest = null;
+  })  : requestId = null,
+        rentRequest = null;
 
   const RentRequestChatScreen.existing({
     required this.requestId,
@@ -29,8 +30,7 @@ class RentRequestChatScreen extends ConsumerStatefulWidget {
       _RentRequestChatScreenState();
 }
 
-class _RentRequestChatScreenState
-    extends ConsumerState<RentRequestChatScreen> {
+class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
   int? _requestId;
@@ -194,7 +194,7 @@ class _RentRequestChatScreenState
         ? offers.cast<RentOffer?>().firstWhere(
               (o) => o?.id == request?.latestAcceptedOfferId,
               orElse: () => null,
-          )
+            )
         : null;
 
     final now = DateTime.now();
@@ -221,13 +221,20 @@ class _RentRequestChatScreenState
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.warning_amber, color: Colors.orange[700], size: 20),
+                    Icon(
+                      Icons.warning_amber,
+                      color: Colors.orange[700],
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Der vereinbarte Ausleihzeitraum beginnt erst am '
                         '${_formatDateSimple(acceptedOffer.startDate)}.',
-                        style: TextStyle(color: Colors.orange[900], fontSize: 13),
+                        style: TextStyle(
+                          color: Colors.orange[900],
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
@@ -264,7 +271,7 @@ class _RentRequestChatScreenState
         ? offers.cast<RentOffer?>().firstWhere(
               (o) => o?.id == request?.latestAcceptedOfferId,
               orElse: () => null,
-          )
+            )
         : null;
 
     final now = DateTime.now();
@@ -291,13 +298,18 @@ class _RentRequestChatScreenState
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.warning_amber, color: Colors.orange[700], size: 20),
+                    Icon(
+                      Icons.warning_amber,
+                      color: Colors.orange[700],
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Der vereinbarte Ausleihzeitraum endet erst am '
                         '${_formatDateSimple(acceptedOffer.endDate)}.',
-                        style: TextStyle(color: Colors.orange[900], fontSize: 13),
+                        style:
+                            TextStyle(color: Colors.orange[900], fontSize: 13),
                       ),
                     ),
                   ],
@@ -325,6 +337,7 @@ class _RentRequestChatScreenState
     ref.invalidate(myRentRequestsProvider);
   }
 
+
   RentRequestDetail? _resolveRequest(RentRequestDetail? fromProvider) {
     if (fromProvider != null) return fromProvider;
     if (widget.rentRequest != null && _requestId == widget.requestId) {
@@ -349,7 +362,9 @@ class _RentRequestChatScreenState
         ? ref.watch(rentRequestProvider(_requestId!))
         : const AsyncData<RentRequestDetail?>(null);
 
-    if (_requestId != null && asyncRequest.hasValue && asyncRequest.value == null) {
+    if (_requestId != null &&
+        asyncRequest.hasValue &&
+        asyncRequest.value == null) {
       final navigator = Navigator.of(context);
       Future.microtask(() {
         if (mounted) navigator.pop();
@@ -373,7 +388,8 @@ class _RentRequestChatScreenState
       WidgetsBinding.instance.addPostFrameCallback((_) => _tryScrollToBottom());
     }
 
-    if (_requestId != null && asyncRequest.hasValue &&
+    if (_requestId != null &&
+        asyncRequest.hasValue &&
         asyncRequest.value != null &&
         messages.length > _lastMessageCount) {
       _lastMessageCount = messages.length;
@@ -448,7 +464,8 @@ class _RentRequestChatScreenState
           _MessageInput(
             controller: _messageController,
             onSend: _sendMessage,
-            onCreateOffer: (isOwner || isRequester) && !isReturned ? _createOffer : null,
+            onCreateOffer:
+                (isOwner || isRequester) && !isReturned ? _createOffer : null,
           ),
         ],
       ),
@@ -470,15 +487,34 @@ class _RentRequestChatScreenState
       for (final m in messages) _ChatItem.message(m),
       for (final o in offers) _ChatItem.offer(o),
       if (request?.borrowConfirmedAt != null)
-        _ChatItem.system('Ausleihe bestätigt', createdAt: request!.borrowConfirmedAt!),
+        _ChatItem.system('Ausleihe bestätigt',
+            createdAt: request!.borrowConfirmedAt!),
       if (request?.returnedAt != null)
         _ChatItem.system('Rückgabe bestätigt', createdAt: request!.returnedAt!),
     ];
     chatItems.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
     int actionCount = 0;
-    if (isOwner && !isReturned && !isBorrowed && hasAcceptedOffer) actionCount++;
-    if (isOwner && !isReturned && isBorrowed) actionCount++;
+    if (isOwner && !isReturned && !isBorrowed && hasAcceptedOffer) {
+      actionCount++;
+    }
+    if (isOwner && !isReturned && isBorrowed) {
+      actionCount++;
+    }
+    final canRateUser = request != null &&
+        isReturned &&
+        request.myUserRating == null &&
+        (isOwner || isRequester);
+    final canRateItem = request != null &&
+        isReturned &&
+        isRequester &&
+        request.myItemRating == null;
+    if (canRateUser) {
+      actionCount++;
+    }
+    if (canRateItem) {
+      actionCount++;
+    }
 
     if (chatItems.isEmpty && actionCount == 0 && _requestId == null) {
       return const Center(
@@ -552,6 +588,28 @@ class _RentRequestChatScreenState
               onTap: _confirmReturn,
             );
           }
+          offset--;
+        }
+        if (canRateUser) {
+          if (offset == 0) {
+            final revieweeName =
+                isOwner ? request.requester.name : request.ownerName;
+            return _SystemActionCard(
+              icon: Icons.star_border,
+              title: '$revieweeName bewerten',
+              onTap: () => showUserRatingDialog(
+                  context, ref, _requestId!, request, isOwner),
+            );
+          }
+          offset--;
+        }
+        if (canRateItem && offset == 0) {
+          return _SystemActionCard(
+            icon: Icons.star_border,
+            title: '${request.itemTitle} bewerten',
+            onTap: () => showItemRatingDialog(
+                context, ref, _requestId!, request),
+          );
         }
         return const SizedBox.shrink();
       },
@@ -570,7 +628,8 @@ String _formatMessageTime(DateTime dt) {
   final today = DateTime(now.year, now.month, now.day);
   final yesterday = today.subtract(const Duration(days: 1));
   final msgDate = DateTime(local.year, local.month, local.day);
-  final time = '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+  final time =
+      '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
   if (msgDate == today) return time;
   if (msgDate == yesterday) return 'Gestern $time';
   const wd = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
@@ -583,7 +642,9 @@ String _formatMessageTime(DateTime dt) {
 String _statusText(RentRequestDetail req) {
   if (req.returnedAt != null) return 'Abgeschlossen · Rückgabe bestätigt';
   if (req.borrowConfirmedAt != null) return 'Ausgeliehen · Rückgabe ausstehend';
-  if (req.latestAcceptedOfferId != null) return 'Angebot akzeptiert · Ausleihe bestätigen';
+  if (req.latestAcceptedOfferId != null) {
+    return 'Angebot akzeptiert · Ausleihe bestätigen';
+  }
   if (req.latestOpenOfferId != null) return 'Angebot erhalten';
   return 'Ausstehend';
 }
@@ -642,7 +703,9 @@ class _StatusBanner extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: Colors.blue[700]),
           const SizedBox(width: 8),
-          Expanded(child: Text(statusText, style: TextStyle(color: Colors.blue[700]))),
+          Expanded(
+              child:
+                  Text(statusText, style: TextStyle(color: Colors.blue[700]))),
         ],
       ),
     );
@@ -750,13 +813,13 @@ class _OfferBubble extends StatelessWidget {
 class _SystemActionCard extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final VoidCallback onTap;
 
   const _SystemActionCard({
     required this.icon,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     required this.onTap,
   });
 
@@ -790,13 +853,14 @@ class _SystemActionCard extends StatelessWidget {
                           fontSize: 14,
                         ),
                       ),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
+                      if (subtitle != null)
+                        Text(
+                          subtitle!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(width: 12),
@@ -940,7 +1004,8 @@ class _MessageInput extends StatelessWidget {
                 decoration: const InputDecoration(
                   hintText: 'Nachricht schreiben...',
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => onSend(),

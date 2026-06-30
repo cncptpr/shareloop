@@ -15,9 +15,27 @@ description = "Start the db with docker compose (external requirement)"
 run = "docker compose up -d db"
 
 [tasks."server:db:migrate"]
-description = "Run database migrations via Alembic"
+description = "Apply all pending Alembic migrations"
 run = "uv run alembic upgrade head"
 dir = "server"
+env = { PYTHONPATH = "." }
+
+[tasks."server:db:migration:new"]
+description = "Create a new migration from model changes (pass args after --)"
+run = "uv run alembic revision --autogenerate"
+dir = "server"
+env = { PYTHONPATH = "." }
+
+[tasks."server:db:migration:create"]
+description = "Create an empty migration for manual SQL (pass args after --)"
+run = "uv run alembic revision"
+dir = "server"
+
+[tasks."server:db:stamp"]
+description = "Stamp the database at the current head revision (no-op if already current)"
+run = "uv run alembic stamp head"
+dir = "server"
+env = { PYTHONPATH = "." }
 
 
 [tasks."server:lint"]

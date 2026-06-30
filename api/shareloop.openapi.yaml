@@ -374,6 +374,80 @@ paths:
         "500":
           description: Internal server error
 
+  /rent-requests/{requestId}/user-rating:
+    post:
+      summary: Rate the other participant after return
+      operationId: submitUserRating
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitUserRatingRequest"
+      responses:
+        "201":
+          description: Rating submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserRating"
+        "400":
+          description: Invalid rating or request is not returned yet
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not a participant
+        "409":
+          description: Current user already rated this rent request
+        "500":
+          description: Internal server error
+
+  /rent-requests/{requestId}/item-rating:
+    post:
+      summary: Rate the borrowed item after return
+      operationId: submitItemRating
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitItemRatingRequest"
+      responses:
+        "201":
+          description: Item rating submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemRating"
+        "400":
+          description: Invalid rating or request is not returned yet
+        "401":
+          description: Unauthorized
+        "403":
+          description: Only the borrower can rate the item
+        "404":
+          description: Rent request not found
+        "409":
+          description: Current user already rated this item for the rent request
+        "500":
+          description: Internal server error
+
   /items/{itemId}/edit:
     get:
       summary: Get item edit details (owner only)
@@ -818,7 +892,7 @@ components:
 
     ItemDetail:
       type: object
-      required: [id, title, description, author, score, createdAt, imageUuids, category]
+      required: [id, title, description, author, score, createdAt, imageUuids, category, itemRatingCount, itemRatings]
       properties:
         id:
           type: integer
@@ -845,6 +919,13 @@ components:
         createdAt:
           type: string
           format: date-time
+        itemRatingCount:
+          type: integer
+          minimum: 0
+        itemRatings:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemRating"
 
     ItemEditDetail:
       type: object
@@ -1021,6 +1102,12 @@ components:
         lastRead:
           type: string
           format: date-time
+        myUserRating:
+          $ref: "#/components/schemas/UserRating"
+          nullable: true
+        myItemRating:
+          $ref: "#/components/schemas/ItemRating"
+          nullable: true
 
     RentRequestOverview:
       type: object
@@ -1110,6 +1197,125 @@ components:
         updatedAt:
           type: string
           format: date-time
+
+    UserRating:
+      type: object
+      required: [id, rentRequestId, reviewerId, revieweeId, friendliness, punctuality, reliability, createdAt]
+      properties:
+        id:
+          type: integer
+        rentRequestId:
+          type: integer
+        reviewerId:
+          type: integer
+        revieweeId:
+          type: integer
+        friendliness:
+          type: integer
+          minimum: 1
+          maximum: 5
+        punctuality:
+          type: integer
+          minimum: 1
+          maximum: 5
+        reliability:
+          type: integer
+          minimum: 1
+          maximum: 5
+        communication:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        carefulHandling:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        comment:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    ItemRating:
+      type: object
+      required: [id, rentRequestId, itemId, reviewer, condition, cleanliness, overall, createdAt]
+      properties:
+        id:
+          type: integer
+        rentRequestId:
+          type: integer
+        itemId:
+          type: integer
+        reviewer:
+          $ref: "#/components/schemas/Person"
+        condition:
+          type: integer
+          minimum: 1
+          maximum: 5
+        cleanliness:
+          type: integer
+          minimum: 1
+          maximum: 5
+        overall:
+          type: number
+          format: double
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    SubmitUserRatingRequest:
+      type: object
+      required: [friendliness, punctuality, reliability]
+      properties:
+        friendliness:
+          type: integer
+          minimum: 1
+          maximum: 5
+        punctuality:
+          type: integer
+          minimum: 1
+          maximum: 5
+        reliability:
+          type: integer
+          minimum: 1
+          maximum: 5
+        communication:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        carefulHandling:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        comment:
+          type: string
+          nullable: true
+
+    SubmitItemRatingRequest:
+      type: object
+      required: [condition, cleanliness]
+      properties:
+        condition:
+          type: integer
+          minimum: 1
+          maximum: 5
+        cleanliness:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          nullable: true
 
     CreateOfferRequest:
       type: object

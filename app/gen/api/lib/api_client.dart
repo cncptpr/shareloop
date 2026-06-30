@@ -199,6 +199,8 @@ class ApiClient {
           return ItemEditDetail.fromJson(value);
         case 'ItemOverview':
           return ItemOverview.fromJson(value);
+        case 'ItemRating':
+          return ItemRating.fromJson(value);
         case 'ItemSearchRequest':
           return ItemSearchRequest.fromJson(value);
         case 'LatLng':
@@ -229,6 +231,10 @@ class ApiClient {
           return SendMessageRequest.fromJson(value);
         case 'ServerInfo':
           return ServerInfo.fromJson(value);
+        case 'SubmitItemRatingRequest':
+          return SubmitItemRatingRequest.fromJson(value);
+        case 'SubmitUserRatingRequest':
+          return SubmitUserRatingRequest.fromJson(value);
         case 'UpdateItemRequest':
           return UpdateItemRequest.fromJson(value);
         case 'UploadItemImageRequest':
@@ -237,6 +243,8 @@ class ApiClient {
           return UploadItemImageResponse.fromJson(value);
         case 'User':
           return User.fromJson(value);
+        case 'UserRating':
+          return UserRating.fromJson(value);
         default:
           dynamic match;
           if (value is List && (match = _regList.firstMatch(targetType)?.group(1)) != null) {

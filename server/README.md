@@ -44,13 +44,26 @@ Regenerate the Pydantic models from the spec by running
 ## Database
 
 SQLAlchemy ORM models are defined in `src/db/models.py` — this is the single
-source of truth for the DB schema. Migrations are managed with Alembic.
+source of truth for the DB schema. Migrations are managed with **Alembic**
+(configured in `alembic.ini` + `alembic/env.py`).
 
-To create a new migration after changing models:
+Migrations run **automatically on every server startup** via `alembic upgrade head`
+in `src/main.py:run_alembic_migrations()`.
 
-```
-$ alembic revision --autogenerate -m "description"
-$ alembic upgrade head
-```
+### Migration Commands
 
-To populate the Database with example data run `$ mise run server:db:seed`.
+| Action | Command |
+|---|---|
+| Apply all pending migrations | `mise run server:db:migrate` |
+| Create a new migration from model changes | `mise run server:db:migration:new -- -m "description"` |
+| Create an empty migration (manual SQL) | `mise run server:db:migration:create -- -m "description"` |
+| Stamp current DB as at a given revision | `mise run server:db:stamp` |
+
+### Workflow
+
+1. Edit `src/db/models.py`
+2. Run `mise run server:db:migration:new -- -m "what changed"`
+3. Review the generated file in `alembic/versions/`
+4. Run `mise run server:db:migrate` to apply it
+5. Commit the migration file
+

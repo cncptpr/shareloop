@@ -4,14 +4,16 @@ import logging
 import os
 from datetime import UTC
 
+from alembic.config import Config
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from sqlalchemy import select, text
+from sqlalchemy import select
 from starlette.middleware.cors import CORSMiddleware
 
+from alembic import command
 from src.config import settings
-from src.database import async_session_factory, engine
-from src.db.models import Base, SeedMeta, User
-from src.handlers import auth, images, items, renting
+from src.database import async_session_factory
+from src.db.models import SeedMeta, User
+from src.handlers import auth, images, items, ratings, renting
 from src.handlers.seeding import router as seeding_router
 from src.notifications.registry import registry
 from src.seeding.reader import load_and_validate
@@ -45,6 +47,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(items.router)
+app.include_router(ratings.router)
 app.include_router(renting.router)
 app.include_router(images.router)
 app.include_router(seeding_router)
@@ -54,9 +57,7 @@ app.include_router(seeding_router)
 async def startup():
     os.makedirs(settings.uploads_dir, exist_ok=True)
     _check_uploads_writable()
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    await apply_migrations()
+    await run_alembic_migrations()
     await init_seeding()
 
 
@@ -78,30 +79,12 @@ async def init_seeding():
             logger.info("SeedMeta Zeile angelegt")
 
 
-async def apply_migrations():
-    import glob
-    migration_dir = os.path.join(os.path.dirname(__file__), "..", "..", "db", "priv", "migrations")
-    if not os.path.isdir(migration_dir):
-        return
-    files = sorted(glob.glob(os.path.join(migration_dir, "*.sql")))
-    if not files:
-        return
-    async with engine.begin() as conn:
-        result = await conn.execute(
-            text("SELECT table_name FROM information_schema.tables WHERE table_name = 'alembic_version'")
-        )
-        if result.scalar_one_or_none():
-            return
-        for f in files:
-            with open(f) as fh:
-                sql = fh.read()
-            for stmt in sql.split("--- migration:up")[1].split("--- migration:down")[0].split(";"):
-                stmt = stmt.strip()
-                if stmt:
-                    try:
-                        await conn.execute(text(stmt))
-                    except Exception:
-                        pass
+async def run_alembic_migrations():
+    alembic_cfg = Config("alembic.ini")
+    database_url = settings.database_url.replace("postgres://", "postgresql+asyncpg://")
+    alembic_cfg.set_main_option("sqlalchemy.url", database_url)
+    loop = asyncio.get_running_loop()
+    await loop.run_in_executor(None, command.upgrade, alembic_cfg, "head")
 
 
 @app.websocket("/ws")

@@ -173,7 +173,6 @@ Future<void> showItemRatingDialog(
                     controller: commentController,
                     decoration: const InputDecoration(
                       labelText: 'Kommentar (optional)',
-                      border: OutlineInputBorder(),
                     ),
                     maxLines: 3,
                     textInputAction: TextInputAction.newline,

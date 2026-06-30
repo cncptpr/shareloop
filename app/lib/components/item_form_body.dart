@@ -79,7 +79,6 @@ class _ItemFormBodyState extends State<ItemFormBody> {
             controller: widget.titleController,
             decoration: const InputDecoration(
               labelText: 'Titel',
-              border: OutlineInputBorder(),
             ),
             validator: (v) {
               return (v == null || v.trim().isEmpty) ? 'Erforderlich' : null;
@@ -90,7 +89,6 @@ class _ItemFormBodyState extends State<ItemFormBody> {
             controller: widget.descriptionController,
             decoration: const InputDecoration(
               labelText: 'Beschreibung',
-              border: OutlineInputBorder(),
               alignLabelWithHint: true,
             ),
             maxLines: 5,
@@ -103,7 +101,6 @@ class _ItemFormBodyState extends State<ItemFormBody> {
             initialValue: (widget.category ?? '').isEmpty ? null : widget.category,
             decoration: const InputDecoration(
               labelText: 'Kategorie',
-              border: OutlineInputBorder(),
             ),
             items: dummyCategories
                 .map((c) => DropdownMenuItem(value: c, child: Text(c)))
@@ -119,7 +116,6 @@ class _ItemFormBodyState extends State<ItemFormBody> {
             child: InputDecorator(
               decoration: const InputDecoration(
                 labelText: 'Standort',
-                border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.location_on),
               ),
               child: Text(

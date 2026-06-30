@@ -1002,7 +1002,6 @@ class _MessageInput extends StatelessWidget {
                 controller: controller,
                 decoration: const InputDecoration(
                   hintText: 'Nachricht schreiben...',
-                  border: OutlineInputBorder(),
                   contentPadding:
                       EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),

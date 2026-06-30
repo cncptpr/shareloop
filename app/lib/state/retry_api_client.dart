@@ -82,7 +82,7 @@ class RetryApiClient extends ApiClient {
 
       final result = await AppConfig.apiClient.refresh(
         RefreshRequest(refreshToken: refreshToken),
-      );
+      ).timeout(const Duration(seconds: 10));
       debugPrint('[http] _refresh result=${result != null}');
       if (result == null) throw UnauthorizedException.refreshFailed;
 

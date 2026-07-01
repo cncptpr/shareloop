@@ -370,7 +370,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   }) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final tileWidth = (constraints.maxWidth - 8) / 2;
+        final tileWidth = ((constraints.maxWidth - 8) / 2).clamp(0.0, double.infinity);
         return SizedBox(
           height: tileWidth,
           child: Row(

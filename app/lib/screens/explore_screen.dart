@@ -153,28 +153,13 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             if (itemsAsync.isLoading || itemsAsync.isReloading)
               const SliverToBoxAdapter(child: LinearProgressIndicator()),
 
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              sliver: SliverToBoxAdapter(
-                child: Text('Entdecke Kategorien', style: tt.titleLarge),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverToBoxAdapter(
-                child: _buildCategoryBento(filters, ref),
-              ),
-            ),
-
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: SizedBox(
-                  height: 40,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    children: [
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Wrap(
+                  spacing: 4,
+                  runSpacing: 4,
+                  children: [
                     _ActiveFilterChip(
                       active: filters.maxDistanceKm != null,
                       label: filters.maxDistanceKm != null
@@ -201,7 +186,6 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 4),
                     _ActiveFilterChip(
                       active: filters.minScore != null,
                       label: filters.minScore != null
@@ -227,7 +211,6 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 4),
                     PopupMenuButton<ItemSearchRequestSortByEnum>(
                       onSelected: (v) {
                         ref.read(searchFiltersProvider.notifier).setSortBy(v);
@@ -247,7 +230,19 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 ),
               ),
             ),
-          ),
+
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              sliver: SliverToBoxAdapter(
+                child: Text('Entdecke Kategorien', style: tt.titleLarge),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverToBoxAdapter(
+                child: _buildCategoryBento(filters, ref),
+              ),
+            ),
 
             if (!hasFilters) ...[
               SliverToBoxAdapter(

@@ -164,7 +164,7 @@ class _ItemFormBodyState extends State<ItemFormBody> {
         onReorder: widget.onReorderImages,
         proxyDecorator: (child, index, animation) => Material(
           elevation: 4,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           child: child,
         ),
         itemBuilder: (ctx, i) {
@@ -228,10 +228,10 @@ class _ItemFormBodyState extends State<ItemFormBody> {
           border: Border.all(
             color: _dropHovering
                 ? Theme.of(context).colorScheme.primary
-                : Colors.grey,
+                : Theme.of(context).colorScheme.outline,
             width: 2,
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           color: _dropHovering
               ? Theme.of(context).colorScheme.primaryContainer
               : null,
@@ -323,7 +323,7 @@ class _ItemFormImageTile extends StatelessWidget {
 
     return Stack(
       children: [
-        ClipRRect(borderRadius: BorderRadius.circular(8), child: imageWidget),
+        ClipRRect(borderRadius: BorderRadius.circular(12), child: imageWidget),
         if (overlay != null) overlay,
       ],
     );

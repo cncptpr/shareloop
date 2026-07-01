@@ -105,7 +105,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Text(_error!,
-                        style: const TextStyle(color: Colors.red)),
+                        style: TextStyle(color: Theme.of(context).colorScheme.error)),
                   ),
                 ElevatedButton(
                   onPressed: _loading ? null : _submit,

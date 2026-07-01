@@ -87,9 +87,9 @@ class _Content extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   item.category,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                 ),
                 const SizedBox(height: 16),
                 if (!isOwnItem) ...[
@@ -150,7 +150,7 @@ class _ItemRatingsSection extends StatelessWidget {
               ),
             ),
             if (item.itemRatingCount > 0) ...[
-              Icon(Icons.star, size: 20, color: Colors.amber[700]),
+              Icon(Icons.star, size: 20, color: Theme.of(context).colorScheme.tertiary),
               const SizedBox(width: 4),
               Text(
                 '${item.score.toStringAsFixed(1)} (${item.itemRatingCount})',
@@ -161,11 +161,11 @@ class _ItemRatingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         if (item.itemRatings.isEmpty)
-          const Row(
+          Row(
             children: [
-              Icon(Icons.star_border, color: Colors.grey),
-              SizedBox(width: 8),
-              Text('Noch keine Bewertungen'),
+              Icon(Icons.star_border, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              const SizedBox(width: 8),
+              const Text('Noch keine Bewertungen'),
             ],
           )
         else
@@ -210,7 +210,7 @@ class _ItemRatingEntry extends StatelessWidget {
                 children: [
                   Text(
                     rating.reviewer.name,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   Text(
                     MaterialLocalizations.of(context)
@@ -258,7 +258,7 @@ class _ReadOnlyStars extends StatelessWidget {
           Icon(
             star <= value.round() ? Icons.star : Icons.star_border,
             size: 18,
-            color: Colors.amber[700],
+            color: Theme.of(context).colorScheme.tertiary,
           ),
       ],
     );
@@ -277,7 +277,7 @@ class _RatingMetric extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text('$label: '),
-        Icon(Icons.star, size: 16, color: Colors.amber[700]),
+        Icon(Icons.star, size: 16, color: Theme.of(context).colorScheme.tertiary),
         const SizedBox(width: 2),
         Text('$value'),
       ],
@@ -295,9 +295,9 @@ class _ImageGallery extends StatelessWidget {
     if (imageUuids.isEmpty) {
       return Container(
         height: 300,
-        color: Colors.grey[200],
-        child: const Center(
-            child: Icon(Icons.image, size: 64, color: Colors.grey)),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        child: Center(
+            child: Icon(Icons.image, size: 64, color: Theme.of(context).colorScheme.onSurfaceVariant)),
       );
     }
 
@@ -313,7 +313,7 @@ class _ImageGallery extends StatelessWidget {
           return GestureDetector(
             onTap: () => _openFullscreen(context, initialIndex: i),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
               child: Image.network(
                 '${AppConfig.apiBaseUrl}/images/$uuid',
                 height: 284,

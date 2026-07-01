@@ -306,7 +306,7 @@ class _ActiveFilterChip extends StatelessWidget {
       final theme = Theme.of(context);
       return Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: theme.colorScheme.outline),
         ),
         padding: const EdgeInsets.only(left: 4, right: 0),

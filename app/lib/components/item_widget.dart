@@ -22,7 +22,7 @@ class ItemWidget extends ConsumerWidget {
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(15),
+                top: Radius.circular(12),
               ),
               child: SizedBox(
                 width: double.infinity,
@@ -50,7 +50,7 @@ class ItemWidget extends ConsumerWidget {
                   Text(
                     item.category,
                     style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(ctx).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],

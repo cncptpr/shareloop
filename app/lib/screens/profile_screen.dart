@@ -93,8 +93,8 @@ class ProfileScreen extends ConsumerWidget {
       icon: const Icon(Icons.storage),
       label: const Text('Demo-Daten einspielen'),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.orange.shade100,
-        foregroundColor: Colors.orange.shade900,
+        backgroundColor: Theme.of(ctx).colorScheme.tertiaryContainer,
+        foregroundColor: Theme.of(ctx).colorScheme.onTertiaryContainer,
       ),
     );
   }

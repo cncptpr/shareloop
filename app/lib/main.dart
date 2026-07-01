@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/router.dart';
+import 'package:shareloop/theme/app_theme.dart';
 import 'package:shareloop/services/notification_service.dart';
 import 'package:shareloop/state/seeding.dart';
 import 'package:shareloop/state/websocket.dart';
@@ -40,6 +41,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     return MaterialApp.router(
       scaffoldMessengerKey: scaffoldMessengerKey,
       title: _title,
+      theme: terraTheme(),
       routerConfig: router,
     );
   }

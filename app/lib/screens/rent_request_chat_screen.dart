@@ -33,6 +33,7 @@ class RentRequestChatScreen extends ConsumerStatefulWidget {
 class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
+  late final WebSocketService _webSocketService;
   int? _requestId;
   bool _creatingRequest = false;
   bool _showScrollToBottom = false;
@@ -43,6 +44,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
   void initState() {
     super.initState();
     _requestId = widget.requestId;
+    _webSocketService = ref.read(webSocketProvider);
     _scrollController.addListener(_onScrollChanged);
   }
 
@@ -50,13 +52,13 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_requestId != null && mounted) {
-      ref.read(webSocketProvider).currentChatRequestId = _requestId;
+      _webSocketService.currentChatRequestId = _requestId;
     }
   }
 
   @override
   void dispose() {
-    ref.read(webSocketProvider).currentChatRequestId = null;
+    _webSocketService.currentChatRequestId = null;
     _messageController.dispose();
     _scrollController.removeListener(_onScrollChanged);
     _scrollController.dispose();
@@ -98,9 +100,9 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     _creatingRequest = true;
     try {
       final request = await createRentRequest(widget.itemId!);
-      if (request != null && mounted) {
+      if (request != null && context.mounted) {
         setState(() => _requestId = request.id);
-        ref.read(webSocketProvider).currentChatRequestId = request.id;
+        _webSocketService.currentChatRequestId = request.id;
         ref.invalidate(rentRequestProvider(request.id));
         ref.invalidate(myRentRequestsProvider);
       }
@@ -120,6 +122,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
 
     _messageController.clear();
     await sendMessage(_requestId!, text);
+    if (!context.mounted) return;
     ref.invalidate(rentRequestProvider(_requestId!));
     _scrollToBottom();
   }
@@ -138,6 +141,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     );
     if (dates == null) return;
     await createOffer(_requestId!, dates.start, dates.end);
+    if (!context.mounted) return;
     ref.invalidate(rentRequestProvider(_requestId!));
     ref.invalidate(myRentRequestsProvider);
     _scrollToBottom();
@@ -181,6 +185,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     if (confirmed != true) return;
 
     await acceptOffer(offerId);
+    if (!context.mounted) return;
     ref.invalidate(rentRequestProvider(_requestId!));
     ref.invalidate(myRentRequestsProvider);
   }
@@ -257,6 +262,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     if (confirmed != true) return;
 
     await confirmBorrow(_requestId!);
+    if (!context.mounted) return;
     ref.invalidate(rentRequestProvider(_requestId!));
     ref.invalidate(myRentRequestsProvider);
   }
@@ -334,6 +340,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     if (confirmed != true) return;
 
     await confirmReturn(_requestId!);
+    if (!context.mounted) return;
     ref.invalidate(rentRequestProvider(_requestId!));
     ref.invalidate(myRentRequestsProvider);
   }
@@ -354,7 +361,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     ref.listen(authProvider, (prev, next) {
       final prevId = prev?.asData?.value?.id;
       final nextId = next.asData?.value?.id;
-      if (prevId != null && prevId != nextId && _requestId != null && mounted) {
+      if (prevId != null && prevId != nextId && _requestId != null && context.mounted) {
         ref.invalidate(rentRequestProvider(_requestId!));
       }
     });
@@ -396,7 +403,9 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
       _lastMessageCount = messages.length;
       Future.microtask(() {
         markRentRequestRead(_requestId!).then((_) {
-          ref.invalidate(myRentRequestsProvider);
+          if (mounted && context.mounted) {
+            ref.invalidate(myRentRequestsProvider);
+          }
         });
       });
     }

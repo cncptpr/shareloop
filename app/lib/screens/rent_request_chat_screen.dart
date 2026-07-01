@@ -1015,45 +1015,71 @@ class _MessageInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
-            blurRadius: 4,
-            offset: const Offset(0, -2),
-          ),
-        ],
+        color: cs.surface.withValues(alpha: 0.8),
+        border: Border(top: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.4))),
       ),
       child: SafeArea(
         child: Row(
           children: [
             if (onCreateOffer != null) ...[
-              IconButton(
-                icon: const Icon(Icons.event),
-                tooltip: 'Angebot erstellen',
-                onPressed: onCreateOffer,
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: cs.surfaceContainer,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.add, color: cs.primary),
+                  tooltip: 'Angebot erstellen',
+                  onPressed: onCreateOffer,
+                  padding: EdgeInsets.zero,
+                ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 8),
             ],
             Expanded(
               child: TextField(
                 controller: controller,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Nachricht schreiben...',
+                  filled: true,
+                  fillColor: cs.surfaceContainerLow,
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => onSend(),
               ),
             ),
             const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.send),
-              onPressed: onSend,
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: cs.primary,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: cs.shadow.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                icon: Icon(Icons.send, color: cs.onPrimary, size: 20),
+                onPressed: onSend,
+                padding: EdgeInsets.zero,
+              ),
             ),
           ],
         ),

@@ -69,8 +69,8 @@ ThemeData buildTheme() {
 ThemeData buildDarkTheme() {
   const colorScheme = ColorScheme(
     brightness: Brightness.dark,
-    primary: Color(0xFF6BB88A),
-    onPrimary: Color(0xFF003921),
+    primary: Color(0xFF4A7C59),
+    onPrimary: Color(0xFFFFFFFF),
     primaryContainer: Color(0xFF003921),
     onPrimaryContainer: Color(0xFFCEEED8),
     primaryFixed: Color(0xFFBCEECF),

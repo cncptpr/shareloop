@@ -410,19 +410,48 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
       });
     }
 
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    final personName = request != null
+        ? (isOwner ? request.requester.name : request.ownerName)
+        : '';
+
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        title: Row(
           children: [
-            Text(title),
             if (request != null)
-              Text(
-                isOwner
-                    ? 'Anfrage von ${request.requester.name}'
-                    : 'Anbieter: ${request.ownerName}',
-                style: Theme.of(context).textTheme.labelSmall,
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: CircleAvatar(
+                  radius: 16,
+                  backgroundColor: cs.primaryContainer,
+                  child: Text(
+                    personName.isNotEmpty ? personName[0].toUpperCase() : '?',
+                    style: TextStyle(
+                      color: cs.onPrimaryContainer,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(personName.isNotEmpty ? personName : title,
+                      style: tt.titleMedium),
+                  if (request != null)
+                    Text(
+                      request.itemTitle,
+                      style: tt.labelSmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
         actions: [
@@ -939,12 +968,12 @@ class _MessageBubble extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isMe ? cs.secondaryContainer : cs.surfaceContainerHigh,
+          color: isMe ? cs.primary : cs.surfaceContainerHigh,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
-            bottomLeft: Radius.circular(isMe ? 16 : 4),
-            bottomRight: Radius.circular(isMe ? 4 : 16),
+            bottomLeft: Radius.circular(isMe ? 16 : 0),
+            bottomRight: Radius.circular(isMe ? 0 : 16),
           ),
         ),
         constraints: BoxConstraints(
@@ -956,12 +985,15 @@ class _MessageBubble extends StatelessWidget {
           children: [
             Text(
               message.content,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: TextStyle(color: isMe ? cs.onPrimary : null),
             ),
             const SizedBox(height: 4),
             Text(
               _formatMessageTime(message.createdAt),
-              style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+              style: TextStyle(
+                fontSize: 11,
+                color: isMe ? cs.onPrimary.withValues(alpha: 0.6) : cs.onSurfaceVariant,
+              ),
             ),
           ],
         ),

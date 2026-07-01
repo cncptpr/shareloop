@@ -174,11 +174,51 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           ref.read(searchFiltersProvider.notifier).setMaxDistanceKm(v);
                         },
                         itemBuilder: (_) => [
-                          const PopupMenuItem(value: 1, child: Text('1 km')),
-                          const PopupMenuItem(value: 5, child: Text('5 km')),
-                          const PopupMenuItem(value: 10, child: Text('10 km')),
-                          const PopupMenuItem(value: 25, child: Text('25 km')),
-                          const PopupMenuItem(value: 50, child: Text('50 km')),
+                          const PopupMenuItem(
+                            value: 1,
+                            child: ListTile(
+                              leading: Icon(Icons.directions_walk, size: 20),
+                              title: Text('1 km'),
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 5,
+                            child: ListTile(
+                              leading: Icon(Icons.directions_bike, size: 20),
+                              title: Text('5 km'),
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 10,
+                            child: ListTile(
+                              leading: Icon(Icons.directions_car, size: 20),
+                              title: Text('10 km'),
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 25,
+                            child: ListTile(
+                              leading: Icon(Icons.directions_car, size: 20),
+                              title: Text('25 km'),
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 50,
+                            child: ListTile(
+                              leading: Icon(Icons.flight, size: 20),
+                              title: Text('50 km'),
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
                         ],
                         child: const Chip(
                           label: Text('Entfernung'),
@@ -200,10 +240,42 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           ref.read(searchFiltersProvider.notifier).setMinScore(v);
                         },
                         itemBuilder: (_) => [
-                          const PopupMenuItem(value: 3, child: Text('3★ und mehr')),
-                          const PopupMenuItem(value: 3.5, child: Text('3.5★ und mehr')),
-                          const PopupMenuItem(value: 4, child: Text('4★ und mehr')),
-                          const PopupMenuItem(value: 4.5, child: Text('4.5★ und mehr')),
+                          const PopupMenuItem(
+                            value: 3,
+                            child: ListTile(
+                              leading: Icon(Icons.star_half, size: 20, color: Colors.amber),
+                              title: Text('3★ und mehr'),
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 3.5,
+                            child: ListTile(
+                              leading: Icon(Icons.star_half, size: 20, color: Colors.amber),
+                              title: Text('3.5★ und mehr'),
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 4,
+                            child: ListTile(
+                              leading: Icon(Icons.star, size: 20, color: Colors.amber),
+                              title: Text('4★ und mehr'),
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 4.5,
+                            child: ListTile(
+                              leading: Icon(Icons.star, size: 20, color: Colors.amber),
+                              title: Text('4.5★ und mehr'),
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
                         ],
                         child: const Chip(
                           label: Text('Mindestbewertung'),
@@ -216,10 +288,42 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                         ref.read(searchFiltersProvider.notifier).setSortBy(v);
                       },
                       itemBuilder: (_) => [
-                        const PopupMenuItem(value: ItemSearchRequestSortByEnum.relevance, child: Text('Beste Treffer')),
-                        const PopupMenuItem(value: ItemSearchRequestSortByEnum.score, child: Text('Bewertung')),
-                        const PopupMenuItem(value: ItemSearchRequestSortByEnum.distance, child: Text('Entfernung')),
-                        const PopupMenuItem(value: ItemSearchRequestSortByEnum.newest, child: Text('Neueste')),
+                        const PopupMenuItem(
+                          value: ItemSearchRequestSortByEnum.relevance,
+                          child: ListTile(
+                            leading: Icon(Icons.trending_up, size: 20),
+                            title: Text('Beste Treffer'),
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: ItemSearchRequestSortByEnum.score,
+                          child: ListTile(
+                            leading: Icon(Icons.star, size: 20, color: Colors.amber),
+                            title: Text('Bewertung'),
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: ItemSearchRequestSortByEnum.distance,
+                          child: ListTile(
+                            leading: Icon(Icons.near_me, size: 20),
+                            title: Text('Entfernung'),
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: ItemSearchRequestSortByEnum.newest,
+                          child: ListTile(
+                            leading: Icon(Icons.schedule, size: 20),
+                            title: Text('Neueste'),
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
                       ],
                       child: Chip(
                         label: Text(_sortLabel(filters.sortBy)),
@@ -289,10 +393,18 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               ),
             ],
 
+            if (hasFilters)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text('Deine Auswahl', style: tt.titleLarge),
+                ),
+              ),
+
             itemsAsync.when(
               skipLoadingOnReload: true,
               data: (items) => SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (ctx, i) => ItemWidget(items[i], key: ValueKey(items[i].id)),
@@ -393,7 +505,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     'Werkzeug':
         'https://lh3.googleusercontent.com/aida-public/AB6AXuBAEs4r8ImdNw86kvr3MxaKr2tSiASZMae2ft_fW44Lgnb18N5ew0eNoFCm1HbPr7-o5RdyKw6-zmMugFP7tZ6PV--x5hQBDb72ZpZY5FWpK4uuzf22DTDzJq4CRHh70nn8nUm4SPY_OpzTtriXzHfj0H0YyafvLYuc_yg2Brvr7dJXBLFk7aZfZCsZQZbJ-x_eSkn6BIXW3lLTX0oYfdXTUIjCukLwQ2qrwhiGW5NziCnQq6LTi4IWbJHwbYO7M7eRVOfnBb5axCoW',
     'Outdoor':
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBCqvogEEr0YR_CqYcJQxsy3pfIPagibs6GbQOkLh0thVHouRrgcg0DMs7oT8vaEfzoMwZbrdUSn_sqWpqTY0mPGs52D-yzuWoTk2fjyul49oNKyjPXlsgFbmFvTWzsE1wWEBvVEHrC75zZR_JYzlKh3q4opNEO6jr9Og4ANkKJXPS1TR6oCzA1doC-i9BXEMqhd9mRIcXjMJeRTFq2mKXub0-fumS6Ggmy4p8RBsJSnmVa2DRCgfjnfj45mf8XmR8OXiF4Ni2bz2ey',
+        'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?fm=jpg&q=60&w=3000&auto=format&fit=crop',
     'Elektronik':
         'https://images.unsplash.com/photo-1776090893591-90f5ea3fa523?fm=jpg&q=60&w=3000&auto=format&fit=crop',
     'Sport':

@@ -223,8 +223,10 @@ ThemeData _buildThemeData({
     ),
     popupMenuTheme: PopupMenuThemeData(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(16),
       ),
+      elevation: 4,
+      color: colorScheme.surface,
     ),
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(

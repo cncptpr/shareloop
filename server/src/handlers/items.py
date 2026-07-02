@@ -154,6 +154,10 @@ async def api_get_item(item_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.get("/api/items/{item_id}/booked-dates")
 async def api_get_booked_dates(item_id: int, db: AsyncSession = Depends(get_db)):
+    item = await db.get(Item, item_id)
+    if item is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
     result = await db.execute(
         select(RentOffer.start_date, RentOffer.end_date)
         .join(RentRequest, RentOffer.id == RentRequest.latest_accepted_offer_id)
@@ -163,7 +167,7 @@ async def api_get_booked_dates(item_id: int, db: AsyncSession = Depends(get_db))
         )
     )
     return [
-        {"startDate": row.start_date.date().isoformat(), "endDate": row.end_date.date().isoformat()}
+        {"startDate": row.start_date.isoformat(), "endDate": row.end_date.isoformat()}
         for row in result.all()
     ]
 

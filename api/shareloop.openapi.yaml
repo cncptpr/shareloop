@@ -1372,10 +1372,10 @@ components:
       properties:
         startDate:
           type: string
-          format: date
+          format: date-time
         endDate:
           type: string
-          format: date
+          format: date-time
 
     CreateOfferRequest:
       type: object

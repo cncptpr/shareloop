@@ -133,9 +133,14 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     if (!mounted) return;
 
     final itemId = widget.itemId ?? widget.rentRequest?.itemId;
-    final bookedRanges = itemId != null
-        ? (await AppConfig.apiClient.getBookedDates(itemId)) ?? []
-        : <DateRange>[];
+    List<DateRange> bookedRanges = [];
+    if (itemId != null) {
+      try {
+        bookedRanges = (await AppConfig.apiClient.getBookedDates(itemId)) ?? [];
+      } catch (_) {
+        bookedRanges = [];
+      }
+    }
     if (!mounted) return;
 
     final dates = await showDateRangePicker(

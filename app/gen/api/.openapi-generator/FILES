@@ -79,4 +79,3 @@ lib/model/upload_item_image_response.dart
 lib/model/user.dart
 lib/model/user_rating.dart
 pubspec.yaml
-test/date_range_test.dart

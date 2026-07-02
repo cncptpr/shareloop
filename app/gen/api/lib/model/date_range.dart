@@ -37,8 +37,8 @@ class DateRange {
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'startDate'] = _dateFormatter.format(this.startDate.toUtc());
-      json[r'endDate'] = _dateFormatter.format(this.endDate.toUtc());
+      json[r'startDate'] = this.startDate.toUtc().toIso8601String();
+      json[r'endDate'] = this.endDate.toUtc().toIso8601String();
     return json;
   }
 

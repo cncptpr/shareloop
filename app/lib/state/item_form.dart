@@ -207,4 +207,4 @@ Future<void> editItemImages(int itemId, EditItemImagesRequest request) async {
   debugPrint('[editItemImages] Done');
 }
 
-String imageUrl(String uuid) => '${AppConfig.apiBaseUrl}/images/$uuid';
+

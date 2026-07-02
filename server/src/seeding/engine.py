@@ -223,6 +223,12 @@ async def run_seed(db: AsyncSession) -> None:
 
         for ur_data in req_data.get("user_ratings", []):
             reviewer_id = _resolve(ur_data["reviewer"], resolved)
+            communication = None
+            careful_handling = None
+            if reviewer_id == requester_id:
+                communication = ur_data.get("communication")
+            elif reviewer_id == owner_id:
+                careful_handling = ur_data.get("carefulHandling")
             ur = UserRating(
                 rent_request_id=rr.id,
                 reviewer_id=reviewer_id,
@@ -230,8 +236,8 @@ async def run_seed(db: AsyncSession) -> None:
                 friendliness=ur_data["friendliness"],
                 punctuality=ur_data["punctuality"],
                 reliability=ur_data["reliability"],
-                communication=ur_data.get("communication"),
-                careful_handling=ur_data.get("carefulHandling"),
+                communication=communication,
+                careful_handling=careful_handling,
                 comment=ur_data.get("comment"),
                 created_at=_parse_ts(ur_data.get("created_at", "now")),
             )

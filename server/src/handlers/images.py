@@ -31,12 +31,13 @@ async def api_get_image(image_id: str, db: AsyncSession = Depends(get_db)):
         if os.path.exists(filepath):
             return FileResponse(filepath, media_type=image.mime_type)
 
-    for fname in os.listdir(settings.uploads_dir):
-        if fname.startswith(image_id):
-            filepath = os.path.join(settings.uploads_dir, fname)
-            mime_map = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "gif": "image/gif", "webp": "image/webp"}
-            ext = fname.rsplit(".", 1)[-1].lower() if "." in fname else ""
-            return FileResponse(filepath, media_type=mime_map.get(ext, "image/jpeg"))
+    if os.path.isdir(settings.uploads_dir):
+        for fname in os.listdir(settings.uploads_dir):
+            if fname.startswith(image_id):
+                filepath = os.path.join(settings.uploads_dir, fname)
+                mime_map = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "gif": "image/gif", "webp": "image/webp"}
+                ext = fname.rsplit(".", 1)[-1].lower() if "." in fname else ""
+                return FileResponse(filepath, media_type=mime_map.get(ext, "image/jpeg"))
 
     from fastapi import HTTPException, status
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

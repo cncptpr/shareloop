@@ -111,7 +111,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ? null
                         : (hasAvatar
                             ? NetworkImage(
-                                '${AppConfig.apiBaseUrl}/images/${widget.profile.avatarUuid}')
+                                AppConfig.imageUrl(widget.profile.avatarUuid!))
                             : null),
                     child: previewImage ?? (hasAvatar ? null : Text(initials, style: const TextStyle(fontSize: 36))),
                   ),

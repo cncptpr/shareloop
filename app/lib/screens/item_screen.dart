@@ -583,7 +583,7 @@ class _ImageGallery extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                '${AppConfig.apiBaseUrl}/images/$uuid',
+                AppConfig.imageUrl(uuid),
                 height: 284,
                 width: 284,
                 fit: BoxFit.cover,
@@ -657,7 +657,7 @@ class _FullscreenGalleryState extends State<_FullscreenGallery> {
           return InteractiveViewer(
             child: Center(
               child: Image.network(
-                '${AppConfig.apiBaseUrl}/images/$uuid',
+                AppConfig.imageUrl(uuid),
                 fit: BoxFit.contain,
                 loadingBuilder: (_, child, progress) {
                   if (progress == null) return child;

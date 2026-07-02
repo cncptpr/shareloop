@@ -91,8 +91,8 @@ class Item(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    images: Mapped[list["ItemImage"]] = relationship(back_populates="item")
-    ratings: Mapped[list["ItemRating"]] = relationship(back_populates="item")
+    images: Mapped[list["ItemImage"]] = relationship(back_populates="item", cascade="all, delete-orphan")
+    ratings: Mapped[list["ItemRating"]] = relationship(back_populates="item", cascade="all, delete-orphan")
 
 
 class ItemImage(Base):

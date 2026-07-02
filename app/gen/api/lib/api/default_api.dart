@@ -396,6 +396,56 @@ class DefaultApi {
     return null;
   }
 
+  /// Delete an item
+  ///
+  /// Delete an item listing. Only the owner can delete. Fails with 409 if the item has active rent requests.
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] itemId (required):
+  Future<Response> deleteItemWithHttpInfo(int itemId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/items/{itemId}'
+      .replaceAll('{itemId}', itemId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'DELETE',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Delete an item
+  ///
+  /// Delete an item listing. Only the owner can delete. Fails with 409 if the item has active rent requests.
+  ///
+  /// Parameters:
+  ///
+  /// * [int] itemId (required):
+  Future<void> deleteItem(int itemId, { Future<void>? abortTrigger, }) async {
+    final response = await deleteItemWithHttpInfo(itemId, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
   /// Edit item images (reorder / delete)
   ///
   /// Note: This method returns the HTTP [Response].

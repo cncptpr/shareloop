@@ -38,8 +38,8 @@ class ItemScreen extends ConsumerWidget {
     try {
       await AppConfig.apiClient.deleteItem(itemId);
       if (context.mounted) {
-        Navigator.pop(context);
         ref.invalidate(featuredItemsProvider);
+        Navigator.pop(context);
       }
     } on ApiException catch (e) {
       if (e.code == 409) {

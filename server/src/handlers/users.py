@@ -60,17 +60,18 @@ async def api_get_user_profile(
 
     avg_rating_result = await db.execute(
         select(
-            (
-                sa_func.coalesce(sa_func.avg(UserRating.friendliness), 0)
-                + sa_func.coalesce(sa_func.avg(UserRating.punctuality), 0)
-                + sa_func.coalesce(sa_func.avg(UserRating.reliability), 0)
-                + sa_func.coalesce(sa_func.avg(UserRating.communication), 0)
-                + sa_func.coalesce(sa_func.avg(UserRating.careful_handling), 0)
+            sa_func.avg(
+                (
+                    UserRating.friendliness
+                    + UserRating.punctuality
+                    + UserRating.reliability
+                    + sa_func.coalesce(UserRating.communication, UserRating.careful_handling)
+                )
+                / 4.0
             )
-            / 5
         ).where(UserRating.reviewee_id == user_id)
     )
-    avg_rating = avg_rating_result.scalar()
+    avg_rating = avg_rating_result.scalar_one_or_none()
 
     share_count_result = await db.execute(
         select(sa_func.count(RentRequest.id)).where(
@@ -129,7 +130,7 @@ async def api_update_user_profile(
 
     profile = await db.get(Profile, user_id)
     if profile is None:
-        profile = Profile(id=user_id)
+        profile = Profile(id=user_id, name=body.name or "")
         db.add(profile)
     if body.name is not None:
         profile.name = body.name
@@ -138,7 +139,7 @@ async def api_update_user_profile(
     await db.commit()
     await db.refresh(profile)
 
-    return await api_get_user_profile(user_id, db)
+    return await api_get_user_profile(user_id, db, current_user)
 
 
 @router.get("/api/users/{user_id}/items")
@@ -249,12 +250,16 @@ async def api_upload_user_avatar(
 
     if profile.avatar_uuid is not None:
         old_ext, _ = _detect_ext_mime("")
-        for fname in os.listdir(settings.uploads_dir):
-            if fname.startswith(str(profile.avatar_uuid)):
-                os.remove(os.path.join(settings.uploads_dir, fname))
-                break
+        if os.path.isdir(settings.uploads_dir):
+            for fname in os.listdir(settings.uploads_dir):
+                if fname.startswith(str(profile.avatar_uuid)):
+                    os.remove(os.path.join(settings.uploads_dir, fname))
+                    break
 
-    raw = base64.b64decode(body.data)
+    try:
+        raw = base64.b64decode(body.data)
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR) from None
     ext = _detect_ext_mime(body.filename)[0]
     image_uuid = uuid_mod.uuid4()
     dest = os.path.join(settings.uploads_dir, f"{image_uuid}.{ext}")
@@ -281,7 +286,7 @@ async def api_delete_user_avatar(
     if profile is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
-    if profile.avatar_uuid is not None:
+    if profile.avatar_uuid is not None and os.path.isdir(settings.uploads_dir):
         for fname in os.listdir(settings.uploads_dir):
             if fname.startswith(str(profile.avatar_uuid)):
                 os.remove(os.path.join(settings.uploads_dir, fname))

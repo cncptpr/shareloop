@@ -988,6 +988,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.110" },
     { name = "geoalchemy2", specifier = ">=0.14" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=2.0" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=2.1.0" },
     { name = "psycopg2-binary", specifier = ">=2.9" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.0" },

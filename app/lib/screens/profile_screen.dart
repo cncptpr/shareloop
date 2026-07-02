@@ -176,8 +176,8 @@ class _ProfileContent extends ConsumerWidget {
           const SizedBox(height: 16),
           _StatsRow(profile: profile, months: months),
           const SizedBox(height: 16),
-          if (!isOwnProfile) ... [
-            _FollowButton(userId: userId, isFollowed: profile.isFollowed),
+          if (!isOwnProfile && profile.isFollowed != null) ... [
+            _FollowButton(userId: userId, isFollowed: profile.isFollowed!),
             const SizedBox(height: 16),
           ],
           if (profile.bio != null && profile.bio!.isNotEmpty) ... [
@@ -234,7 +234,7 @@ class _ProfileHeader extends StatelessWidget {
         CircleAvatar(
           radius: 48,
           backgroundImage: avatarUuid != null
-              ? NetworkImage('${AppConfig.apiBaseUrl}/images/$avatarUuid')
+              ? NetworkImage(AppConfig.imageUrl(avatarUuid!))
               : null,
           child: avatarUuid == null
               ? Text(
@@ -277,7 +277,7 @@ class _StatsRow extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(child: _StatBox(
           label: 'Follower',
-          value: '${profile.followerCount}',
+          value: '${profile.followerCount ?? 0}',
         )),
         const SizedBox(width: 8),
         Expanded(child: _StatBox(
@@ -436,7 +436,7 @@ class _ItemCard extends StatelessWidget {
         children: [
           if (item.imageUuid != null)
             Image.network(
-              '${AppConfig.apiBaseUrl}/images/${item.imageUuid}',
+              AppConfig.imageUrl(item.imageUuid!),
               width: double.infinity,
               height: 150,
               fit: BoxFit.cover,

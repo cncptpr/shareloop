@@ -19,6 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "mypy>=2.1.0",
     "datamodel-code-generator>=0.25",
     "mypy>=2.0",
     "ruff>=0.5",

@@ -103,6 +103,10 @@ def load_and_validate(seeding_dir: str) -> dict[str, Any] | None:
             for field in ("friendliness", "punctuality", "reliability"):
                 if not isinstance(ur.get(field), int) or not 1 <= ur[field] <= 5:
                     return None
+            for field in ("communication", "carefulHandling"):
+                val = ur.get(field)
+                if val is not None and (not isinstance(val, int) or not 1 <= val <= 5):
+                    return None
 
         for ir in req.get("item_ratings", []):
             if not isinstance(ir, dict):

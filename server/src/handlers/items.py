@@ -195,11 +195,13 @@ async def api_delete_item(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     active = await db.execute(
-        select(RentRequest).where(
+        select(RentRequest.id)
+        .where(
             RentRequest.item_id == item_id,
             RentRequest.borrow_confirmed_at.isnot(None),
             RentRequest.returned_at.is_(None),
         )
+        .limit(1)
     )
     if active.scalar_one_or_none() is not None:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT)

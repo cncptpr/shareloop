@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/screens/item_screen.dart';
+import 'package:shareloop/app_config.dart';
 import 'package:shareloop/state/auth.dart';
+import 'package:shareloop/state/item_detail.dart';
 import 'package:shareloop/screens/rating_dialogs.dart';
 import 'package:shareloop/state/renting.dart';
 import 'package:shareloop/state/websocket.dart';
@@ -522,7 +524,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     bool isBorrowed,
     bool isReturned,
   ) {
-    final chatItems = <_ChatItem>[
+    final sorted = <_ChatItem>[
       for (final m in messages) _ChatItem.message(m),
       for (final o in offers) _ChatItem.offer(o),
       if (request?.borrowConfirmedAt != null)
@@ -531,15 +533,19 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
       if (request?.returnedAt != null)
         _ChatItem.system('Rückgabe bestätigt', createdAt: request!.returnedAt!),
     ];
-    chatItems.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    sorted.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
-    int actionCount = 0;
-    if (isOwner && !isReturned && !isBorrowed && hasAcceptedOffer) {
-      actionCount++;
+    final items = <_ListEntry>[];
+    DateTime? lastDate;
+    for (final item in sorted) {
+      final d = DateTime(item.createdAt.year, item.createdAt.month, item.createdAt.day);
+      if (lastDate == null || d != lastDate) {
+        items.add(_ListEntry.divider(d));
+        lastDate = d;
+      }
+      items.add(_ListEntry.chat(item));
     }
-    if (isOwner && !isReturned && isBorrowed) {
-      actionCount++;
-    }
+
     final canRateUser = request != null &&
         isReturned &&
         request.myUserRating == null &&
@@ -548,14 +554,40 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
         isReturned &&
         isRequester &&
         request.myItemRating == null;
+
+    if (isOwner && !isReturned && !isBorrowed && hasAcceptedOffer) {
+      items.add(_ListEntry.action(
+        Icons.check_circle_outline,
+        'Ausleihe bestätigen',
+        subtitle: 'Bestätige, dass der Artikel übergeben wurde',
+        onTap: _confirmBorrow,
+      ));
+    }
+    if (isOwner && !isReturned && isBorrowed) {
+      items.add(_ListEntry.action(
+        Icons.replay,
+        'Rückgabe bestätigen',
+        subtitle: 'Bestätige, dass der Artikel zurückgegeben wurde',
+        onTap: _confirmReturn,
+      ));
+    }
     if (canRateUser) {
-      actionCount++;
+      final revieweeName = isOwner ? request.requester.name : request.ownerName;
+      items.add(_ListEntry.action(
+        Icons.star_border,
+        '$revieweeName bewerten',
+        onTap: () => showUserRatingDialog(context, ref, _requestId!, request, isOwner),
+      ));
     }
     if (canRateItem) {
-      actionCount++;
+      items.add(_ListEntry.action(
+        Icons.star_border,
+        '${request.itemTitle} bewerten',
+        onTap: () => showItemRatingDialog(context, ref, _requestId!, request),
+      ));
     }
 
-    if (chatItems.isEmpty && actionCount == 0 && _requestId == null) {
+    if (items.isEmpty && _requestId == null) {
       final cs = Theme.of(context).colorScheme;
       return Center(
         child: Column(
@@ -576,82 +608,50 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(16),
-      itemCount: chatItems.length + actionCount,
+      itemCount: items.length,
       itemBuilder: (ctx, i) {
-        if (i < chatItems.length) {
-          final item = chatItems[i];
-          switch (item.type) {
-            case _ChatItemType.message:
-              final isMe = item.message!.authorId == userId;
-              return _MessageBubble(
-                message: item.message!,
-                isMe: isMe,
-              );
-            case _ChatItemType.offer:
-              final offer = item.offer!;
-              final isMyOffer = offer.senderId == userId;
-              final isAccepted = offer.id == request?.latestAcceptedOfferId;
-              final isLatestOpen = offer.id == request?.latestOpenOfferId;
-              return _OfferBubble(
-                offer: offer,
-                isMyOffer: isMyOffer,
-                isAccepted: isAccepted,
-                canAccept: !isMyOffer && isLatestOpen,
-                onAccept: () => _acceptOffer(offer.id),
-              );
-            case _ChatItemType.system:
-              return _SystemNoteBubble(
-                text: item.systemText!,
-                createdAt: item.createdAt,
-              );
-          }
-        }
-
-        var offset = i - chatItems.length;
-        if (isOwner && !isReturned && !isBorrowed && hasAcceptedOffer) {
-          if (offset == 0) {
+        final entry = items[i];
+        switch (entry.type) {
+          case _ListEntryType.divider:
+            return _DateDivider(date: entry.date!);
+          case _ListEntryType.chatItem:
+            final item = entry.chatItem!;
+            switch (item.type) {
+              case _ChatItemType.message:
+                final isMe = item.message!.authorId == userId;
+                return _MessageBubble(
+                  message: item.message!,
+                  isMe: isMe,
+                );
+              case _ChatItemType.offer:
+                final offer = item.offer!;
+                final isMyOffer = offer.senderId == userId;
+                final isAccepted = offer.id == request?.latestAcceptedOfferId;
+                final isLatestOpen = offer.id == request?.latestOpenOfferId;
+                return _OfferCard(
+                  offer: offer,
+                  isMyOffer: isMyOffer,
+                  isAccepted: isAccepted,
+                  canConfirm: !isMyOffer && isLatestOpen,
+                  onConfirm: () => _acceptOffer(offer.id),
+                  onReschedule: !isMyOffer && isLatestOpen ? _createOffer : null,
+                  itemId: request!.itemId,
+                );
+              case _ChatItemType.system:
+                return _SystemNoteBubble(
+                  text: item.systemText!,
+                  createdAt: item.createdAt,
+                );
+            }
+          case _ListEntryType.actionCard:
+            final a = entry.action!;
             return _SystemActionCard(
-              icon: Icons.check_circle_outline,
-              title: 'Ausleihe bestätigen',
-              subtitle: 'Bestätige, dass der Artikel übergeben wurde',
-              onTap: _confirmBorrow,
+              icon: a.icon,
+              title: a.title,
+              subtitle: a.subtitle,
+              onTap: a.onTap,
             );
-          }
-          offset--;
         }
-        if (isOwner && !isReturned && isBorrowed) {
-          if (offset == 0) {
-            return _SystemActionCard(
-              icon: Icons.replay,
-              title: 'Rückgabe bestätigen',
-              subtitle: 'Bestätige, dass der Artikel zurückgegeben wurde',
-              onTap: _confirmReturn,
-            );
-          }
-          offset--;
-        }
-        if (canRateUser) {
-          if (offset == 0) {
-            final revieweeName =
-                isOwner ? request.requester.name : request.ownerName;
-            return _SystemActionCard(
-              icon: Icons.star_border,
-              title: '$revieweeName bewerten',
-              onTap: () => showUserRatingDialog(
-                  context, ref, _requestId!, request, isOwner),
-            );
-          }
-          offset--;
-        }
-        if (canRateItem && offset == 0) {
-          return _SystemActionCard(
-            icon: Icons.star_border,
-            title: '${request.itemTitle} bewerten',
-            onTap: () => showItemRatingDialog(
-                context, ref, _requestId!, request),
-          );
-        }
-        return const SizedBox.shrink();
       },
     );
   }
@@ -661,6 +661,16 @@ String _formatDateSimple(DateTime dt) {
   final d = dt.toLocal();
   return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
 }
+
+String _formatDateGerman(DateTime dt) {
+  final d = dt.toLocal();
+  const wochentage = [
+    'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag',
+  ];
+  final wd = wochentage[d.weekday - 1];
+  return '$wd ${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
+}
+
 
 String _formatMessageTime(DateTime dt) {
   final local = dt.toLocal();
@@ -724,6 +734,67 @@ class _ChatItem {
         offer = null;
 }
 
+enum _ListEntryType { divider, chatItem, actionCard }
+
+class _ActionCardData {
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final VoidCallback onTap;
+  _ActionCardData(this.icon, this.title, {this.subtitle, required this.onTap});
+}
+
+class _ListEntry {
+  final _ListEntryType type;
+  final DateTime? date;
+  final _ChatItem? chatItem;
+  final _ActionCardData? action;
+
+  _ListEntry.divider(this.date)
+      : type = _ListEntryType.divider,
+        chatItem = null,
+        action = null;
+
+  _ListEntry.chat(this.chatItem)
+      : type = _ListEntryType.chatItem,
+        date = null,
+        action = null;
+
+  _ListEntry.action(IconData icon, String title, {String? subtitle, required VoidCallback onTap})
+      : type = _ListEntryType.actionCard,
+        date = null,
+        chatItem = null,
+        action = _ActionCardData(icon, title, subtitle: subtitle, onTap: onTap);
+}
+
+class _DateDivider extends StatelessWidget {
+  final DateTime date;
+  const _DateDivider({required this.date});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(
+        children: [
+          const Expanded(child: Divider()),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              _formatDateGerman(date),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+            ),
+          ),
+          const Expanded(child: Divider()),
+        ],
+      ),
+    );
+  }
+}
+
 class _StatusBanner extends StatelessWidget {
   final RentRequestDetail request;
   final bool isOwner;
@@ -752,99 +823,130 @@ class _StatusBanner extends StatelessWidget {
   }
 }
 
-class _OfferBubble extends StatelessWidget {
+class _OfferCard extends ConsumerWidget {
   final RentOffer offer;
   final bool isMyOffer;
   final bool isAccepted;
-  final bool canAccept;
-  final VoidCallback onAccept;
+  final bool canConfirm;
+  final VoidCallback onConfirm;
+  final VoidCallback? onReschedule;
+  final int itemId;
 
-  const _OfferBubble({
+  const _OfferCard({
     required this.offer,
     required this.isMyOffer,
     required this.isAccepted,
-    required this.canAccept,
-    required this.onAccept,
+    required this.canConfirm,
+    required this.onConfirm,
+    this.onReschedule,
+    required this.itemId,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final startStr = _formatDateSimple(offer.startDate);
-    final endStr = _formatDateSimple(offer.endDate);
+    final tt = Theme.of(context).textTheme;
+    final asyncDetail = ref.watch(itemDetailProvider(itemId));
 
-    return Align(
-      alignment: isMyOffer ? Alignment.centerRight : Alignment.centerLeft,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isAccepted ? cs.primaryContainer : cs.tertiaryContainer,
+          color: cs.surfaceContainerLow,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isAccepted ? cs.primary : cs.tertiary,
-            width: 1.5,
-          ),
+          border: Border.all(color: cs.outlineVariant),
         ),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.8,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.date_range,
-                  size: 16,
-                  color: isAccepted ? cs.primary : cs.onTertiaryContainer,
-                ),
-                const SizedBox(width: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: _buildThumbnail(asyncDetail, cs),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Text(
-                    'Angebot${isMyOffer ? ' (von dir)' : ''}',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: isAccepted ? cs.primary : cs.onTertiaryContainer,
-                    ),
+                    asyncDetail.value?.title ?? '',
+                    style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                if (isAccepted) ...[
-                  const Spacer(),
-                  Icon(Icons.check_circle, size: 16, color: cs.primary),
-                  const SizedBox(width: 4),
-                    Text(
-                      'Akzeptiert',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: cs.primary,
-                      ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'von ${_formatDateGerman(offer.startDate)}',
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                  Text(
+                    'bis ${_formatDateGerman(offer.endDate)}',
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                  if (isAccepted) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Icon(Icons.check_circle, color: cs.primary, size: 18),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Buchung akzeptiert',
+                          style: tt.bodyMedium?.copyWith(color: cs.primary),
+                        ),
+                      ],
                     ),
+                  ] else if (!isMyOffer) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: canConfirm ? onConfirm : null,
+                            child: const Text('Buchung bestätigen'),
+                          ),
+                        ),
+                        if (onReschedule != null) ...[
+                          const SizedBox(width: 8),
+                          TextButton(
+                            onPressed: onReschedule,
+                            child: const Text('Verschieben'),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
                 ],
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '$startStr – $endStr',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
               ),
             ),
-            if (canAccept) ...[
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: onAccept,
-                  icon: const Icon(Icons.thumb_up, size: 18),
-                  label: const Text('Akzeptieren'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: cs.primary,
-                    foregroundColor: cs.onPrimary,
-                  ),
-                ),
-              ),
-            ],
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildThumbnail(AsyncValue<ItemDetail> asyncDetail, ColorScheme cs) {
+    final detail = asyncDetail.value;
+    final uuids = detail?.imageUuids;
+    if (uuids != null && uuids.isNotEmpty) {
+      return Image.network(
+        '${AppConfig.apiBaseUrl}/images/${uuids.first}',
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _imagePlaceholder(cs),
+      );
+    }
+    return _imagePlaceholder(cs);
+  }
+
+  Widget _imagePlaceholder(ColorScheme cs) {
+    return Container(
+      color: cs.surfaceContainerHigh,
+      child: Icon(Icons.image, color: cs.onSurfaceVariant),
     );
   }
 }

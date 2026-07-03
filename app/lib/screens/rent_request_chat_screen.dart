@@ -586,6 +586,13 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
         onTap: () => showItemRatingDialog(context, ref, _requestId!, request),
       ));
     }
+    if (request != null && request.myUserRating != null) {
+      final revieweeName = isOwner ? request.requester.name : request.ownerName;
+      items.add(_ListEntry.rated('$revieweeName bewertet'));
+    }
+    if (request != null && request.myItemRating != null) {
+      items.add(_ListEntry.rated('${request.itemTitle} bewertet'));
+    }
 
     if (items.isEmpty && _requestId == null) {
       final cs = Theme.of(context).colorScheme;
@@ -651,6 +658,8 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
               subtitle: a.subtitle,
               onTap: a.onTap,
             );
+          case _ListEntryType.rated:
+            return _RatedStatus(text: entry.ratedText!);
         }
       },
     );
@@ -734,7 +743,7 @@ class _ChatItem {
         offer = null;
 }
 
-enum _ListEntryType { divider, chatItem, actionCard }
+enum _ListEntryType { divider, chatItem, actionCard, rated }
 
 class _ActionCardData {
   final IconData icon;
@@ -749,22 +758,54 @@ class _ListEntry {
   final DateTime? date;
   final _ChatItem? chatItem;
   final _ActionCardData? action;
+  final String? ratedText;
 
   _ListEntry.divider(this.date)
       : type = _ListEntryType.divider,
         chatItem = null,
-        action = null;
+        action = null,
+        ratedText = null;
 
   _ListEntry.chat(this.chatItem)
       : type = _ListEntryType.chatItem,
         date = null,
-        action = null;
+        action = null,
+        ratedText = null;
 
   _ListEntry.action(IconData icon, String title, {String? subtitle, required VoidCallback onTap})
       : type = _ListEntryType.actionCard,
         date = null,
         chatItem = null,
-        action = _ActionCardData(icon, title, subtitle: subtitle, onTap: onTap);
+        action = _ActionCardData(icon, title, subtitle: subtitle, onTap: onTap),
+        ratedText = null;
+
+  _ListEntry.rated(this.ratedText)
+      : type = _ListEntryType.rated,
+        date = null,
+        chatItem = null,
+        action = null;
+}
+
+class _RatedStatus extends StatelessWidget {
+  final String text;
+  const _RatedStatus({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check_circle, color: cs.primary, size: 18),
+          const SizedBox(width: 6),
+          Text(text, style: tt.bodyMedium?.copyWith(color: cs.primary)),
+        ],
+      ),
+    );
+  }
 }
 
 class _DateDivider extends StatelessWidget {

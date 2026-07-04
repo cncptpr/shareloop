@@ -7,6 +7,7 @@ import 'package:shareloop/screens/edit_item_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/screens/rent_request_chat_screen.dart';
 import 'package:shareloop/state/auth.dart' show authProvider;
+import 'package:shareloop/state/booked_dates.dart';
 import 'package:shareloop/state/item_detail.dart';
 import 'package:shareloop/state/items.dart' show featuredItemsProvider;
 
@@ -91,6 +92,7 @@ class ItemScreen extends ConsumerWidget {
       ),
       body: asyncItem.when(
         data: (item) => _Content(
+          itemId: itemId,
           item: item,
           userId: asyncUser.hasValue ? asyncUser.value?.id : null,
         ),
@@ -101,15 +103,22 @@ class ItemScreen extends ConsumerWidget {
   }
 }
 
-class _Content extends StatelessWidget {
+class _Content extends ConsumerWidget {
+  final int itemId;
   final ItemDetail item;
   final int? userId;
 
-  const _Content({required this.item, required this.userId});
+  const _Content({
+    required this.itemId,
+    required this.item,
+    required this.userId,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isOwnItem = userId != null && item.author.id == userId;
+    final asyncBooked = ref.watch(bookedDatesProvider(itemId));
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,6 +178,24 @@ class _Content extends StatelessWidget {
                     ),
                   ),
                 ],
+                const SizedBox(height: 24),
+                Text(
+                  'Verfügbarkeit',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                asyncBooked.when(
+                  data: (booked) => _AvailabilityCalendar(
+                    bookedRanges: booked,
+                  ),
+                  loading: () => const SizedBox(
+                    height: 300,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (_, __) => const Text(
+                    'Verfügbarkeit konnte nicht geladen werden',
+                  ),
+                ),
                 const SizedBox(height: 32),
                 const Divider(),
                 const SizedBox(height: 16),
@@ -179,6 +206,195 @@ class _Content extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _AvailabilityCalendar extends StatefulWidget {
+  final List<DateRange> bookedRanges;
+
+  const _AvailabilityCalendar({required this.bookedRanges});
+
+  @override
+  State<_AvailabilityCalendar> createState() => _AvailabilityCalendarState();
+}
+
+class _AvailabilityCalendarState extends State<_AvailabilityCalendar> {
+  late DateTime _currentMonth;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentMonth = DateTime.now();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            _MonthHeader(
+              currentMonth: _currentMonth,
+              onPrevious: _currentMonth.month == now.month &&
+                      _currentMonth.year == now.year
+                  ? null
+                  : () => setState(() {
+                        _currentMonth = DateTime(
+                          _currentMonth.year,
+                          _currentMonth.month - 1,
+                        );
+                      }),
+              onNext: () => setState(() {
+                _currentMonth = DateTime(
+                  _currentMonth.year,
+                  _currentMonth.month + 1,
+                );
+              }),
+            ),
+            _CalendarGrid(
+              currentMonth: _currentMonth,
+              bookedRanges: widget.bookedRanges,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MonthHeader extends StatelessWidget {
+  final DateTime currentMonth;
+  final VoidCallback? onPrevious;
+  final VoidCallback onNext;
+
+  const _MonthHeader({
+    required this.currentMonth,
+    required this.onPrevious,
+    required this.onNext,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = MaterialLocalizations.of(context);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: onPrevious,
+        ),
+        Text(
+          loc.formatMonthYear(currentMonth),
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        IconButton(
+          icon: const Icon(Icons.chevron_right),
+          onPressed: onNext,
+        ),
+      ],
+    );
+  }
+}
+
+class _CalendarGrid extends StatelessWidget {
+  final DateTime currentMonth;
+  final List<DateRange> bookedRanges;
+
+  const _CalendarGrid({
+    required this.currentMonth,
+    required this.bookedRanges,
+  });
+
+  bool _isBooked(DateTime day) {
+    for (final r in bookedRanges) {
+      final start = DateTime(r.startDate.year, r.startDate.month, r.startDate.day);
+      final end = DateTime(r.endDate.year, r.endDate.month, r.endDate.day);
+      if (!day.isBefore(start) && !day.isAfter(end)) return true;
+    }
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final loc = MaterialLocalizations.of(context);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final firstDayOfMonth = DateTime(currentMonth.year, currentMonth.month, 1);
+    final lastDayOfMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0);
+    final weekdayOffset = loc.firstDayOfWeekIndex;
+    final startWeekday = (firstDayOfMonth.weekday - weekdayOffset + 7) % 7;
+
+    final weekdays = List.generate(7, (i) {
+      return loc.narrowWeekdays[(i + weekdayOffset) % 7];
+    });
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: weekdays
+              .map((d) => SizedBox(
+                    width: 36,
+                    child: Text(
+                      d,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                  ))
+              .toList(),
+        ),
+        const SizedBox(height: 4),
+        ...List.generate(_totalWeeks(firstDayOfMonth, lastDayOfMonth, startWeekday), (weekIndex) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(7, (dayIndex) {
+              final dayNumber = weekIndex * 7 + dayIndex - startWeekday + 1;
+              if (dayNumber < 1 || dayNumber > lastDayOfMonth.day) {
+                return const SizedBox(width: 36, height: 36);
+              }
+              final date = DateTime(currentMonth.year, currentMonth.month, dayNumber);
+              final isPast = date.isBefore(today);
+              final booked = _isBooked(date);
+              final isToday = date == today;
+
+              return Container(
+                width: 36,
+                height: 36,
+                alignment: Alignment.center,
+                decoration: isToday
+                    ? BoxDecoration(
+                        color: cs.primary.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      )
+                    : null,
+                child: Text(
+                  '$dayNumber',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: booked || isPast
+                        ? cs.onSurface.withValues(alpha: 0.3)
+                        : cs.onSurface,
+                    fontWeight: isToday ? FontWeight.bold : null,
+                  ),
+                ),
+              );
+            }),
+          );
+        }),
+      ],
+    );
+  }
+
+  int _totalWeeks(DateTime first, DateTime last, int startWeekday) {
+    final totalDays = last.day + startWeekday;
+    return (totalDays / 7).ceil();
   }
 }
 

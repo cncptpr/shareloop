@@ -208,7 +208,20 @@ class _ProfileContent extends ConsumerWidget {
             ),
           if (isOwnProfile) ... [
             const SizedBox(height: 16),
-            Center(child: _SeedButton(context)),
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  await logout();
+                  ref.invalidate(authProvider);
+                },
+                icon: const Icon(Icons.logout),
+                label: const Text('Abmelden'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  foregroundColor: Theme.of(context).colorScheme.onError,
+                ),
+              ),
+            ),
           ],
         ],
       ),

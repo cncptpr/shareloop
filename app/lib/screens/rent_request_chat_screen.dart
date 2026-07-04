@@ -848,20 +848,29 @@ class _StatusBanner extends StatelessWidget {
     final icon = _statusIcon(request);
 
     final cs = Theme.of(context).colorScheme;
+    final color = _statusBannerColor(request, cs);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: cs.tertiaryContainer,
+      color: color.withValues(alpha: 0.15),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: cs.onTertiaryContainer),
+          Icon(icon, size: 20, color: color),
           const SizedBox(width: 8),
           Expanded(
-              child: Text(statusText, style: TextStyle(color: cs.onTertiaryContainer))),
+              child: Text(statusText, style: TextStyle(color: color))),
         ],
       ),
     );
   }
+}
+
+Color _statusBannerColor(RentRequestDetail req, ColorScheme cs) {
+  if (req.returnedAt != null) return const Color(0xFF2E7D32);
+  if (req.borrowConfirmedAt != null) return cs.secondary;
+  if (req.latestAcceptedOfferId != null) return cs.primary;
+  if (req.latestOpenOfferId != null) return cs.tertiary;
+  return cs.outline;
 }
 
 class _OfferCard extends ConsumerWidget {

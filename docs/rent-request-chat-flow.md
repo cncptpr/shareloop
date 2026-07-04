@@ -1,6 +1,6 @@
 # Rent Request & Chat Flow
 
-> This documention is mainly for ai, to avoid regressions when editing
+> This documentation is mainly for ai, to avoid regressions when editing
 
 ## State Machine
 
@@ -16,7 +16,7 @@ Each transition is enforced server-side: operations check the current state and 
 Users with a rent request can exchange messages. Each request has exactly two participants: the requester (wants to borrow) and the owner (lends the item).
 
 ### Offers
-Either participant can propose a date range for borrowing. The other party can accept the offer, which locks it in and advances the state. Only the latest offer can be accepted by a user. New offers can be made at any time, if e.g. wanting to change a detail. The last accepted offer stais the "valid" one, until the newest offer is accepted.
+Either participant can propose a date range for borrowing. The other party can accept the offer, which locks it in and advances the state. Only the latest offer can be accepted by a user. New offers can be made at any time, if e.g. wanting to change a detail. The last accepted offer stays the "valid" one, until the newest offer is accepted.
 
 ### Confirmation Flow
 1. **Borrow confirmed** — The owner marks the item as handed over

@@ -32,7 +32,7 @@ Lives in `app/lib/state/auth.dart`.
 
 ## API Client
 
-Use `AppConfig.apiClient` for all request. It is a preconfigured `ApiClient`, that automatically performs refreshes. 
+Use `AppConfig.apiClient` for all requests. It is a preconfigured `ApiClient` that automatically performs refreshes. 
 
 ## Development
 
@@ -49,7 +49,7 @@ In debug mode, the app pre-fills the login fields with these credentials.
 
 ### Debug display
 
-The profile screen shows for debug purposes the current auth state some infos.
+The profile screen shows debug info about the current auth state.
 
 ### CLI tool
 
@@ -81,7 +81,7 @@ All auth endpoints are defined in `api/shareloop.openapi.yaml` and generated int
 | POST   | `/auth/verify`     | `verify`      | Bearer token  | —                                                                  | `User`                        |
 | POST   | `/auth/logout`     | `logout`      | Bearer token  | —                                                                  | 204 No Content                |
 
-All return **401** on invalid credentials, expired tokens, or missing/auth headers.
+All return **401** on invalid credentials, expired tokens, or missing auth headers.
 
 ## Hashing
 

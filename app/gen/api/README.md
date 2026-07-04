@@ -72,7 +72,9 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**createOffer**](doc//DefaultApi.md#createoffer) | **POST** /rent-requests/{requestId}/offers | Make or counter an offer
 *DefaultApi* | [**createRentRequest**](doc//DefaultApi.md#createrentrequest) | **POST** /items/{itemId}/rent-requests | Create or get existing open rent request
 *DefaultApi* | [**declineSeed**](doc//DefaultApi.md#declineseed) | **POST** /seed/decline | Decline seeding prompt
+*DefaultApi* | [**deleteItem**](doc//DefaultApi.md#deleteitem) | **DELETE** /items/{itemId} | Delete an item
 *DefaultApi* | [**editItemImages**](doc//DefaultApi.md#edititemimages) | **PUT** /items/{itemId}/images | Edit item images (reorder / delete)
+*DefaultApi* | [**getBookedDates**](doc//DefaultApi.md#getbookeddates) | **GET** /items/{itemId}/booked-dates | Get booked date ranges for an item
 *DefaultApi* | [**getFeaturedItems**](doc//DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 *DefaultApi* | [**getImage**](doc//DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
 *DefaultApi* | [**getInfo**](doc//DefaultApi.md#getinfo) | **GET** /info | Get server info
@@ -100,6 +102,7 @@ Class | Method | HTTP request | Description
  - [CreateItemRequest](doc//CreateItemRequest.md)
  - [CreateItemResponse](doc//CreateItemResponse.md)
  - [CreateOfferRequest](doc//CreateOfferRequest.md)
+ - [DateRange](doc//DateRange.md)
  - [Distance](doc//Distance.md)
  - [EditItemImagesRequest](doc//EditItemImagesRequest.md)
  - [ItemDetail](doc//ItemDetail.md)

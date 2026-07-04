@@ -1,6 +1,6 @@
 # Item Create & Edit Flow
 
-> This documention is mainly for ai, to avoid regressions when editing
+> This documentation is mainly for ai, to avoid regressions when editing
 
 ## Principles
 

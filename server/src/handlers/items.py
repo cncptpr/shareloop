@@ -1,7 +1,7 @@
 import os
 import uuid as uuid_pkg
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from geoalchemy2 import Geography as GeoAlchemyGeography
 from geoalchemy2 import Geometry
 from sqlalchemy import func as sa_func
@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config import settings
 from src.database import get_db
-from src.db.models import Item, ItemImage, ItemRating, Profile
+from src.db.models import Item, ItemImage, ItemRating, Profile, RentOffer, RentRequest
 from src.dependencies import get_current_user
 from src.models.openapi import (
     CreateItemRequest,
@@ -158,6 +158,26 @@ async def api_get_item(item_id: int, db: AsyncSession = Depends(get_db)):
     )
 
 
+@router.get("/api/items/{item_id}/booked-dates")
+async def api_get_booked_dates(item_id: int, db: AsyncSession = Depends(get_db)):
+    item = await db.get(Item, item_id)
+    if item is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    result = await db.execute(
+        select(RentOffer.start_date, RentOffer.end_date)
+        .join(RentRequest, RentOffer.id == RentRequest.latest_accepted_offer_id)
+        .where(
+            RentRequest.item_id == item_id,
+            RentRequest.returned_at.is_(None),
+        )
+    )
+    return [
+        {"startDate": row.start_date.isoformat(), "endDate": row.end_date.isoformat()}
+        for row in result.all()
+    ]
+
+
 @router.put("/api/items/{item_id}")
 async def api_update_item(
     item_id: int,
@@ -187,6 +207,46 @@ async def api_update_item(
     )
     await db.commit()
     return CreateItemResponse(id=item.id)
+
+
+@router.delete("/api/items/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def api_delete_item(
+    item_id: int,
+    user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Item).where(Item.id == item_id))
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if item.author_id != user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    active = await db.execute(
+        select(RentRequest.id)
+        .where(
+            RentRequest.item_id == item_id,
+            RentRequest.borrow_confirmed_at.isnot(None),
+            RentRequest.returned_at.is_(None),
+        )
+        .limit(1)
+    )
+    if active.scalar_one_or_none() is not None:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+
+    img_result = await db.execute(
+        select(ItemImage).where(ItemImage.item_id == item_id)
+    )
+    for img in img_result.scalars().all():
+        ext = _detect_ext(img.original_name)
+        filepath = os.path.join(settings.uploads_dir, f"{img.id}.{ext}")
+        if os.path.exists(filepath):
+            os.remove(filepath)
+
+    await db.delete(item)
+    await db.commit()
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/api/items/{item_id}/edit")

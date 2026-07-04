@@ -133,6 +133,31 @@ paths:
           description: Item not found
         "500":
           description: Internal server error
+    delete:
+      summary: Delete an item
+      description: Delete an item listing. Only the owner can delete. Fails with 409 if the item has active rent requests.
+      operationId: deleteItem
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Item deleted
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not the owner
+        "404":
+          description: Item not found
+        "409":
+          description: Item has active rent requests
+        "500":
+          description: Internal server error
 
   /items/{itemId}/rent-requests:
     post:
@@ -445,6 +470,30 @@ paths:
           description: Rent request not found
         "409":
           description: Current user already rated this item for the rent request
+        "500":
+          description: Internal server error
+
+  /items/{itemId}/booked-dates:
+    get:
+      summary: Get booked date ranges for an item
+      operationId: getBookedDates
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of booked date ranges
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DateRange"
+        "404":
+          description: Item not found
         "500":
           description: Internal server error
 
@@ -1346,6 +1395,17 @@ components:
         comment:
           type: string
           nullable: true
+
+    DateRange:
+      type: object
+      required: [startDate, endDate]
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
 
     CreateOfferRequest:
       type: object

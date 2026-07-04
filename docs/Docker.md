@@ -21,3 +21,10 @@ build the project. Building takes ~100s on my machine.
 
 To only start individual services, list them like this:
 `$ docker compose up -d server db`
+
+## Rebuild
+
+If a change to the source code was made, docker will NOT automatically rebuild.
+Run `$ docker compose down` to stop whatever is running,
+and use `$ docker compose up --build` to force a rebuild.
+The `up --build` command still support starting only individual services.

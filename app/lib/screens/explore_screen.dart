@@ -613,11 +613,18 @@ class _FeaturedItemCard extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      item.title,
-                      style: tt.titleSmall,
+                    RichText(
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(text: item.title, style: tt.titleSmall),
+                          TextSpan(
+                            text: ' · von ${item.author.name}',
+                            style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -637,10 +644,24 @@ class _FeaturedItemCard extends ConsumerWidget {
                           Icon(Icons.location_on, size: 14, color: cs.onSurfaceVariant),
                           const SizedBox(width: 2),
                           Text(
-                            '${item.distance!.km.toStringAsFixed(1)} km',
+                            '${item.distance!.km.toStringAsFixed(0)} km',
                             style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
                           ),
                         ],
+                        if (item.distance != null && item.city != null)
+                          Text(
+                            ' · ',
+                            style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                          ),
+                        if (item.city != null)
+                          Flexible(
+                            child: Text(
+                              item.city!,
+                              style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                       ],
                     ),
                   ],

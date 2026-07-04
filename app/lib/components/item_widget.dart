@@ -49,11 +49,18 @@ class ItemWidget extends ConsumerWidget {
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       Expanded(
-                        child: Text(
-                          item.title,
-                          style: tt.titleMedium,
+                        child: RichText(
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(text: item.title, style: tt.titleMedium),
+                              TextSpan(
+                                text: ' · von ${item.author.name}',
+                                style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       // TODO: replace with item.price when API supports it
@@ -84,10 +91,24 @@ class ItemWidget extends ConsumerWidget {
                         Icon(Icons.location_on, size: 14, color: cs.onSurfaceVariant),
                         const SizedBox(width: 2),
                         Text(
-                          '${item.distance!.km.toStringAsFixed(1)} km',
+                          '${item.distance!.km.toStringAsFixed(0)} km',
                           style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
                         ),
                       ],
+                      if (item.distance != null && item.city != null)
+                        Text(
+                          ' · ',
+                          style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                        ),
+                      if (item.city != null)
+                        Expanded(
+                          child: Text(
+                            item.city!,
+                            style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                     ],
                   ),
                 ],

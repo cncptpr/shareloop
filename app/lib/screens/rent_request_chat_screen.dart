@@ -851,13 +851,13 @@ class _StatusBanner extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: cs.secondaryContainer,
+      color: cs.tertiaryContainer,
       child: Row(
         children: [
-          Icon(icon, size: 20, color: cs.onSecondaryContainer),
+          Icon(icon, size: 20, color: cs.onTertiaryContainer),
           const SizedBox(width: 8),
           Expanded(
-              child: Text(statusText, style: TextStyle(color: cs.onSecondaryContainer))),
+              child: Text(statusText, style: TextStyle(color: cs.onTertiaryContainer))),
         ],
       ),
     );
@@ -1107,39 +1107,41 @@ class _MessageBubble extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isMe ? cs.primary : cs.surfaceContainerHigh,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: Radius.circular(isMe ? 16 : 0),
-            bottomRight: Radius.circular(isMe ? 0 : 16),
-          ),
-        ),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.7,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
+      child: Column(
+        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: isMe ? cs.primary : cs.surfaceContainerHigh,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(16),
+                topRight: const Radius.circular(16),
+                bottomLeft: Radius.circular(isMe ? 16 : 0),
+                bottomRight: Radius.circular(isMe ? 0 : 16),
+              ),
+            ),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.7,
+            ),
+            child: Text(
               message.content,
               style: TextStyle(color: isMe ? cs.onPrimary : null),
             ),
-            const SizedBox(height: 4),
-            Text(
+          ),
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
               _formatMessageTime(message.createdAt),
               style: TextStyle(
                 fontSize: 11,
-                color: isMe ? cs.onPrimary.withValues(alpha: 0.6) : cs.onSurfaceVariant,
+                color: cs.onSurfaceVariant,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

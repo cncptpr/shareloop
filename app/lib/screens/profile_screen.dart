@@ -348,6 +348,12 @@ class _FollowButtonState extends ConsumerState<_FollowButton> {
   bool _loading = false;
 
   Future<void> _toggle() async {
+    final user = ref.read(authProvider).value;
+    if (user == null) {
+      if (!mounted) return;
+      await LoginScreen.push(context);
+      return;
+    }
     setState(() => _loading = true);
     try {
       if (widget.isFollowed == true) {

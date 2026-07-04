@@ -33,6 +33,8 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _addressController = TextEditingController();
   bool _loading = false;
   bool _initializedControllers = false;
 
@@ -54,6 +56,10 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
       _initializedControllers = true;
       _titleController.text = next.title;
       _descriptionController.text = next.description;
+      _addressController.text = next.address;
+      if (next.pricePerDay != null) {
+        _priceController.text = next.pricePerDay.toString();
+      }
     }
   }
 
@@ -68,6 +74,8 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
     }
     _titleController.addListener(_onTitleChanged);
     _descriptionController.addListener(_onDescriptionChanged);
+    _priceController.addListener(_onPriceChanged);
+    _addressController.addListener(_onAddressChanged);
   }
 
   void _onTitleChanged() {
@@ -82,12 +90,29 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
         .setDescription(_descriptionController.text);
   }
 
+  void _onPriceChanged() {
+    final text = _priceController.text.trim();
+    ref.read(editItemFormProvider(widget.itemId).notifier).setPricePerDay(
+      text.isEmpty ? null : double.tryParse(text),
+    );
+  }
+
+  void _onAddressChanged() {
+    ref.read(editItemFormProvider(widget.itemId).notifier).setAddress(
+      _addressController.text,
+    );
+  }
+
   @override
   void dispose() {
     _titleController.removeListener(_onTitleChanged);
     _descriptionController.removeListener(_onDescriptionChanged);
+    _priceController.removeListener(_onPriceChanged);
+    _addressController.removeListener(_onAddressChanged);
     _titleController.dispose();
     _descriptionController.dispose();
+    _priceController.dispose();
+    _addressController.dispose();
     super.dispose();
   }
 
@@ -172,6 +197,8 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
       postalCode: location.postalCode,
       lat: location.lat,
       lng: location.lng,
+      pricePerDay: state.pricePerDay,
+      address: state.address.isNotEmpty ? state.address : null,
     );
 
     final imagesRequest = EditItemImagesRequest(
@@ -208,6 +235,8 @@ class _EditItemScreenState extends ConsumerState<EditItemScreen>
         formKey: _formKey,
         titleController: _titleController,
         descriptionController: _descriptionController,
+        priceController: _priceController,
+        addressController: _addressController,
         category: formState.category,
         onCategoryChanged: (v) {
           ref.read(provider.notifier).setCategory(v);

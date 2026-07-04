@@ -45,7 +45,9 @@ async def search_items(db: AsyncSession, req: ItemSearchRequest) -> list[ItemOve
             Item.score,
             Item.city,
             Item.postal_code,
+            Item.address,
             Item.category,
+            Item.price_per_day,
             distance_expr.label("distance_km"),
             first_image.label("first_image_uuid"),
         )
@@ -93,9 +95,11 @@ async def search_items(db: AsyncSession, req: ItemSearchRequest) -> list[ItemOve
             distance={"km": row.distance_km},
             city=row.city,
             postal_code=row.postal_code,
+            address=row.address,
             score=row.score,
             image_uuid=str(row.first_image_uuid) if row.first_image_uuid else None,
             category=row.category,
+            price_per_day=row.price_per_day,
         )
         for row in rows
     ]

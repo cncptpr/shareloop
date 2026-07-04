@@ -86,7 +86,9 @@ class Item(Base):
     location: Mapped[str | None] = mapped_column(Geography("POINT", srid=4326), nullable=True)
     city: Mapped[str | None] = mapped_column(String, nullable=True)
     postal_code: Mapped[str | None] = mapped_column(String, nullable=True)
+    address: Mapped[str | None] = mapped_column(String, nullable=True)
     category: Mapped[str] = mapped_column(String, nullable=False, server_default="Sonstiges")
+    price_per_day: Mapped[float | None] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

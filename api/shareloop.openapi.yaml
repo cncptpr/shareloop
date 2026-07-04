@@ -762,6 +762,9 @@ components:
           type: string
         postalCode:
           type: string
+        address:
+          type: string
+          nullable: true
         score:
           type: number
           format: double
@@ -770,6 +773,9 @@ components:
           nullable: true
         category:
           type: string
+        pricePerDay:
+          type: number
+          format: double
 
     Person:
       type: object
@@ -874,6 +880,9 @@ components:
           type: string
         postalCode:
           type: string
+        address:
+          type: string
+          nullable: true
         lat:
           type: number
           format: double
@@ -882,6 +891,9 @@ components:
           format: double
         category:
           type: string
+        pricePerDay:
+          type: number
+          format: double
 
     CreateItemResponse:
       type: object
@@ -909,6 +921,9 @@ components:
           type: string
         postalCode:
           type: string
+        address:
+          type: string
+          nullable: true
         imageUuids:
           type: array
           items:
@@ -916,6 +931,9 @@ components:
             format: uuid
         category:
           type: string
+        pricePerDay:
+          type: number
+          format: double
         createdAt:
           type: string
           format: date-time
@@ -946,6 +964,9 @@ components:
           type: string
         postalCode:
           type: string
+        address:
+          type: string
+          nullable: true
         imageUuids:
           type: array
           items:
@@ -953,6 +974,9 @@ components:
             format: uuid
         category:
           type: string
+        pricePerDay:
+          type: number
+          format: double
         lat:
           type: number
           format: double
@@ -997,6 +1021,9 @@ components:
           type: string
         postalCode:
           type: string
+        address:
+          type: string
+          nullable: true
         lat:
           type: number
           format: double
@@ -1005,6 +1032,9 @@ components:
           format: double
         category:
           type: string
+        pricePerDay:
+          type: number
+          format: double
 
     ItemSearchRequest:
       type: object

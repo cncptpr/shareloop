@@ -50,7 +50,9 @@ async def _get_with_distance(db: AsyncSession, lat: float, lng: float) -> list[I
             Item.score,
             Item.city,
             Item.postal_code,
+            Item.address,
             Item.category,
+            Item.price_per_day,
             distance.label("distance_km"),
             _first_image_subquery().label("first_image_uuid"),
         )
@@ -74,7 +76,9 @@ async def _get_without_distance(db: AsyncSession) -> list[ItemOverview]:
             Item.score,
             Item.city,
             Item.postal_code,
+            Item.address,
             Item.category,
+            Item.price_per_day,
             _first_image_subquery().label("first_image_uuid"),
         )
         .select_from(Item)
@@ -96,7 +100,9 @@ def _row_to_overview(row, has_distance: bool) -> ItemOverview:
         distance=({"km": row.distance_km} if has_distance else None),
         city=row.city,
         postal_code=row.postal_code,
+        address=row.address,
         score=row.score,
         image_uuid=str(first_img) if first_img else None,
         category=row.category,
+        price_per_day=row.price_per_day,
     )

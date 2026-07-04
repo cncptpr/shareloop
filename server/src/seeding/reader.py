@@ -95,4 +95,29 @@ def load_and_validate(seeding_dir: str) -> dict[str, Any] | None:
             if not is_ref(read_ref) or get_ref_id(read_ref) not in user_ids:
                 return None
 
+    rent_request_ids = {r["id"] for r in requests}
+    item_ratings = data.get("item_ratings", [])
+    for rat in item_ratings:
+        if not isinstance(rat, dict) or "id" not in rat:
+            return None
+        for field in ("rent_request", "item", "reviewer"):
+            val = rat.get(field, "")
+            if not is_ref(val):
+                return None
+        rid = get_ref_id(rat["rent_request"])
+        if rid not in rent_request_ids:
+            return None
+        for ref_field in ("item", "reviewer"):
+            ref_id = get_ref_id(rat[ref_field])
+            expected = item_ids if ref_field == "item" else user_ids
+            if ref_id not in expected:
+                return None
+        for score in ("condition", "cleanliness"):
+            v = rat.get(score)
+            if not isinstance(v, int) or not (1 <= v <= 5):
+                return None
+        overall = rat.get("overall")
+        if not isinstance(overall, int | float) or not (1 <= overall <= 5):
+            return None
+
     return data

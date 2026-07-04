@@ -10,6 +10,8 @@ class ItemFormBody extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController titleController;
   final TextEditingController descriptionController;
+  final TextEditingController priceController;
+  final TextEditingController addressController;
   final String? category;
   final ValueChanged<String?> onCategoryChanged;
   final String? locationLabel;
@@ -27,6 +29,8 @@ class ItemFormBody extends StatefulWidget {
     required this.formKey,
     required this.titleController,
     required this.descriptionController,
+    required this.priceController,
+    required this.addressController,
     required this.category,
     required this.onCategoryChanged,
     required this.locationLabel,
@@ -109,6 +113,31 @@ class _ItemFormBodyState extends State<ItemFormBody> {
             validator: (v) {
               return (v == null || v.isEmpty) ? 'Erforderlich' : null;
             },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: widget.priceController,
+            decoration: const InputDecoration(
+              labelText: 'Preis pro Tag (€)',
+              suffixText: '€/Tag',
+            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            validator: (v) {
+              if (v != null && v.trim().isNotEmpty) {
+                if (double.tryParse(v.trim()) == null) {
+                  return 'Ungültige Zahl';
+                }
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: widget.addressController,
+            decoration: const InputDecoration(
+              labelText: 'Adresse',
+              hintText: 'Straße, Hausnummer',
+            ),
           ),
           const SizedBox(height: 16),
           InkWell(

@@ -84,6 +84,15 @@ class _Content extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text([item.postalCode, item.city].nonNulls.join(' ')),
                   ]),
+                if (item.address != null && item.address!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Row(children: [
+                      const Icon(Icons.home, size: 16),
+                      const SizedBox(width: 4),
+                      Text(item.address!),
+                    ]),
+                  ),
                 const SizedBox(height: 8),
                 Text(
                   item.category,

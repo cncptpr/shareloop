@@ -14,8 +14,9 @@ import 'package:shareloop/widgets/rating_stars.dart';
 
 class ProfileScreen extends ConsumerWidget {
   final int? userId;
+  final ValueNotifier<int>? resetNotifier;
 
-  const ProfileScreen({super.key, this.userId});
+  const ProfileScreen({super.key, this.userId, this.resetNotifier});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,6 +44,7 @@ class ProfileScreen extends ConsumerWidget {
         return _ProfileContent(
           userId: targetUserId,
           isOwnProfile: isOwnProfile,
+          resetNotifier: resetNotifier ?? ValueNotifier(0),
         );
       },
     );
@@ -90,20 +92,46 @@ class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-class _ProfileContent extends ConsumerWidget {
+class _ProfileContent extends ConsumerStatefulWidget {
   final int userId;
   final bool isOwnProfile;
+  final ValueNotifier<int> resetNotifier;
 
   const _ProfileContent({
     required this.userId,
     required this.isOwnProfile,
+    required this.resetNotifier,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final asyncProfile = ref.watch(userProfileProvider(userId));
-    final asyncItems = ref.watch(userItemsProvider(userId));
-    final asyncRatings = ref.watch(userRatingsProvider(userId));
+  ConsumerState<_ProfileContent> createState() => _ProfileContentState();
+}
+
+class _ProfileContentState extends ConsumerState<_ProfileContent> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    widget.resetNotifier.addListener(_onReset);
+  }
+
+  @override
+  void dispose() {
+    widget.resetNotifier.removeListener(_onReset);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onReset() {
+    _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final asyncProfile = ref.watch(userProfileProvider(widget.userId));
+    final asyncItems = ref.watch(userItemsProvider(widget.userId));
+    final asyncRatings = ref.watch(userRatingsProvider(widget.userId));
 
     return asyncProfile.when(
       data: (profile) {
@@ -127,17 +155,17 @@ class _ProfileContent extends ConsumerWidget {
       title: const Text('Profil'),
       centerTitle: false,
       actions: [
-        if (isOwnProfile && profile != null)
+        if (widget.isOwnProfile && profile != null)
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
               final result = await EditProfileScreen.push(context, profile);
               if (result == true) {
-                ref.invalidate(userProfileProvider(userId));
+                ref.invalidate(userProfileProvider(widget.userId));
               }
             },
           ),
-        if (isOwnProfile) ...[
+        if (widget.isOwnProfile) ...[
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => SettingsScreen.push(context),
@@ -170,6 +198,7 @@ class _ProfileContent extends ConsumerWidget {
     final months = _monthsSince(profile.createdAt);
 
     return SingleChildScrollView(
+      controller: _scrollController,
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,8 +207,8 @@ class _ProfileContent extends ConsumerWidget {
           const SizedBox(height: 16),
           _StatsRow(profile: profile, months: months),
           const SizedBox(height: 16),
-          if (!isOwnProfile) ... [
-            _FollowButton(userId: userId, isFollowed: profile.isFollowed),
+          if (!widget.isOwnProfile) ... [
+            _FollowButton(userId: widget.userId, isFollowed: profile.isFollowed),
             const SizedBox(height: 16),
           ],
           if (profile.bio != null && profile.bio!.isNotEmpty) ... [

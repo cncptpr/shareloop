@@ -14,7 +14,9 @@ import 'package:shareloop/state/location.dart';
 import 'package:shareloop/state/location_search.dart';
 
 class ExploreScreen extends ConsumerStatefulWidget {
-  const ExploreScreen({super.key});
+  final ValueNotifier<int> resetNotifier;
+
+  const ExploreScreen({super.key, required this.resetNotifier});
 
   @override
   ConsumerState<ExploreScreen> createState() => _ExploreScreenState();
@@ -22,7 +24,29 @@ class ExploreScreen extends ConsumerStatefulWidget {
 
 class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   final _searchController = TextEditingController();
+  final _scrollController = ScrollController();
   Timer? _debounceTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+    widget.resetNotifier.addListener(_onReset);
+  }
+
+  @override
+  void dispose() {
+    widget.resetNotifier.removeListener(_onReset);
+    _searchController.removeListener(_onSearchChanged);
+    _debounceTimer?.cancel();
+    _searchController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onReset() {
+    _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+  }
 
   String _locationLabel(WidgetRef ref) {
     final selected = ref.watch(selectedLocationProvider);
@@ -72,20 +96,6 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         f.sortBy != ItemSearchRequestSortByEnum.relevance;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(_onSearchChanged);
-  }
-
-  @override
-  void dispose() {
-    _debounceTimer?.cancel();
-    _searchController.removeListener(_onSearchChanged);
-    _searchController.dispose();
-    super.dispose();
-  }
-
   void _onSearchChanged() {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
@@ -133,6 +143,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           }
         },
         child: CustomScrollView(
+          controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(

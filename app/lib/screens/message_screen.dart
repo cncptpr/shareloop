@@ -10,15 +10,35 @@ import 'package:shareloop/state/item_detail.dart';
 import 'package:shareloop/state/renting.dart';
 
 class MessageScreen extends ConsumerStatefulWidget {
-  const MessageScreen({super.key});
+  final ValueNotifier<int> resetNotifier;
+
+  const MessageScreen({super.key, required this.resetNotifier});
 
   @override
   ConsumerState<MessageScreen> createState() => _MessageScreenState();
 }
 
 class _MessageScreenState extends ConsumerState<MessageScreen> {
+  final _scrollController = ScrollController();
   bool _showClosed = false;
   int _selectedTab = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.resetNotifier.addListener(_onReset);
+  }
+
+  @override
+  void dispose() {
+    widget.resetNotifier.removeListener(_onReset);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onReset() {
+    _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +105,7 @@ class _MessageScreenState extends ConsumerState<MessageScreen> {
               ref.invalidate(myRentRequestsProvider);
             },
             child: ListView(
+              controller: _scrollController,
               children: [
                 _TabBar(
                   selectedIndex: _selectedTab,

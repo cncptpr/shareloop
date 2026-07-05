@@ -401,10 +401,14 @@ class _CalendarGrid extends StatelessWidget {
                   '$dayNumber',
                   style: TextStyle(
                     fontSize: 14,
-                    color: booked || isPast
-                        ? cs.onSurface.withValues(alpha: 0.3)
-                        : cs.onSurface,
+                    color: booked
+                        ? cs.error
+                        : isPast
+                            ? cs.onSurface.withValues(alpha: 0.3)
+                            : cs.onSurface,
                     fontWeight: isToday ? FontWeight.bold : null,
+                    decoration: booked ? TextDecoration.lineThrough : null,
+                    decorationColor: booked ? cs.error : null,
                   ),
                 ),
               );

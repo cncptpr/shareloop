@@ -67,7 +67,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     return f.query.isNotEmpty ||
         f.categories.isNotEmpty ||
         f.maxDistanceKm != null ||
-        f.minScore != null;
+        f.minScore != null ||
+        f.sortBy != ItemSearchRequestSortByEnum.relevance;
   }
 
   @override
@@ -287,44 +288,59 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                       onSelected: (v) {
                         ref.read(searchFiltersProvider.notifier).setSortBy(v);
                       },
-                      itemBuilder: (_) => [
-                        const PopupMenuItem(
-                          value: ItemSearchRequestSortByEnum.relevance,
-                          child: ListTile(
-                            leading: Icon(Icons.trending_up, size: 20),
-                            title: Text('Beste Treffer'),
-                            dense: true,
-                            contentPadding: EdgeInsets.zero,
+                      itemBuilder: (_) {
+                        final cur = filters.sortBy;
+                        return [
+                          PopupMenuItem(
+                            value: ItemSearchRequestSortByEnum.relevance,
+                            child: ListTile(
+                              leading: const Icon(Icons.trending_up, size: 20),
+                              title: const Text('Beste Treffer'),
+                              trailing: cur == ItemSearchRequestSortByEnum.relevance
+                                  ? const Icon(Icons.check, size: 18)
+                                  : null,
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
                           ),
-                        ),
-                        const PopupMenuItem(
-                          value: ItemSearchRequestSortByEnum.score,
-                          child: ListTile(
-                            leading: Icon(Icons.star, size: 20, color: Colors.amber),
-                            title: Text('Bewertung'),
-                            dense: true,
-                            contentPadding: EdgeInsets.zero,
+                          PopupMenuItem(
+                            value: ItemSearchRequestSortByEnum.score,
+                            child: ListTile(
+                              leading: const Icon(Icons.star, size: 20, color: Colors.amber),
+                              title: const Text('Bewertung'),
+                              trailing: cur == ItemSearchRequestSortByEnum.score
+                                  ? const Icon(Icons.check, size: 18)
+                                  : null,
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
                           ),
-                        ),
-                        const PopupMenuItem(
-                          value: ItemSearchRequestSortByEnum.distance,
-                          child: ListTile(
-                            leading: Icon(Icons.near_me, size: 20),
-                            title: Text('Entfernung'),
-                            dense: true,
-                            contentPadding: EdgeInsets.zero,
+                          PopupMenuItem(
+                            value: ItemSearchRequestSortByEnum.distance,
+                            child: ListTile(
+                              leading: const Icon(Icons.near_me, size: 20),
+                              title: const Text('Entfernung'),
+                              trailing: cur == ItemSearchRequestSortByEnum.distance
+                                  ? const Icon(Icons.check, size: 18)
+                                  : null,
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
                           ),
-                        ),
-                        const PopupMenuItem(
-                          value: ItemSearchRequestSortByEnum.newest,
-                          child: ListTile(
-                            leading: Icon(Icons.schedule, size: 20),
-                            title: Text('Neueste'),
-                            dense: true,
-                            contentPadding: EdgeInsets.zero,
+                          PopupMenuItem(
+                            value: ItemSearchRequestSortByEnum.newest,
+                            child: ListTile(
+                              leading: const Icon(Icons.schedule, size: 20),
+                              title: const Text('Neueste'),
+                              trailing: cur == ItemSearchRequestSortByEnum.newest
+                                  ? const Icon(Icons.check, size: 18)
+                                  : null,
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
                           ),
-                        ),
-                      ],
+                        ];
+                      },
                       child: Chip(
                         label: Text(_sortLabel(filters.sortBy)),
                         avatar: const Icon(Icons.sort, size: 16),

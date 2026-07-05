@@ -1,7 +1,7 @@
 from geoalchemy2 import Geography
-from sqlalchemy import case, select
 from sqlalchemy import cast as sa_cast
 from sqlalchemy import func as sa_func
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.models import Item, ItemImage, Profile
@@ -75,12 +75,14 @@ async def search_items(db: AsyncSession, req: ItemSearchRequest) -> list[ItemOve
     if conditions:
         stmt = stmt.where(*conditions)
 
-    order_col = case(
-        (sort_by_enum == SortBy.distance, distance_expr),
-        (sort_by_enum == SortBy.score, -Item.score),
-        (sort_by_enum == SortBy.newest, -sa_func.extract("epoch", Item.created_at)),
-        else_=Item.score,
-    ).desc() if sort_by_enum else Item.score.desc()
+    if sort_by_enum == SortBy.distance:
+        order_col = distance_expr.asc()
+    elif sort_by_enum == SortBy.score:
+        order_col = Item.score.desc()
+    elif sort_by_enum == SortBy.newest:
+        order_col = Item.created_at.desc()
+    else:
+        order_col = Item.score.desc()
 
     stmt = stmt.order_by(order_col)
 

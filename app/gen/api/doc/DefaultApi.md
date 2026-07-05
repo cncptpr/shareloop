@@ -17,7 +17,9 @@ Method | HTTP request | Description
 [**createRentRequest**](DefaultApi.md#createrentrequest) | **POST** /items/{itemId}/rent-requests | Create or get existing open rent request
 [**declineSeed**](DefaultApi.md#declineseed) | **POST** /seed/decline | Decline seeding prompt
 [**deleteItem**](DefaultApi.md#deleteitem) | **DELETE** /items/{itemId} | Delete an item
+[**deleteUserAvatar**](DefaultApi.md#deleteuseravatar) | **DELETE** /users/{userId}/avatar | Remove avatar image
 [**editItemImages**](DefaultApi.md#edititemimages) | **PUT** /items/{itemId}/images | Edit item images (reorder / delete)
+[**followUser**](DefaultApi.md#followuser) | **POST** /users/{userId}/follow | Follow a user
 [**getBookedDates**](DefaultApi.md#getbookeddates) | **GET** /items/{itemId}/booked-dates | Get booked date ranges for an item
 [**getFeaturedItems**](DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 [**getImage**](DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
@@ -26,6 +28,9 @@ Method | HTTP request | Description
 [**getItemEdit**](DefaultApi.md#getitemedit) | **GET** /items/{itemId}/edit | Get item edit details (owner only)
 [**getRentRequest**](DefaultApi.md#getrentrequest) | **GET** /rent-requests/{requestId} | Get a single rent request with messages and offers
 [**getRentRequests**](DefaultApi.md#getrentrequests) | **GET** /rent-requests | List rent requests for current user
+[**getUserItems**](DefaultApi.md#getuseritems) | **GET** /users/{userId}/items | Get user's items
+[**getUserProfile**](DefaultApi.md#getuserprofile) | **GET** /users/{userId}/profile | Get user profile
+[**getUserRatings**](DefaultApi.md#getuserratings) | **GET** /users/{userId}/ratings | Get user ratings
 [**login**](DefaultApi.md#login) | **POST** /auth/login | Login
 [**logout**](DefaultApi.md#logout) | **POST** /auth/logout | Logout
 [**markRentRequestRead**](DefaultApi.md#markrentrequestread) | **POST** /rent-requests/{requestId}/mark-read | Mark a rent request as read
@@ -36,8 +41,11 @@ Method | HTTP request | Description
 [**sendMessage**](DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
 [**submitItemRating**](DefaultApi.md#submititemrating) | **POST** /rent-requests/{requestId}/item-rating | Rate the borrowed item after return
 [**submitUserRating**](DefaultApi.md#submituserrating) | **POST** /rent-requests/{requestId}/user-rating | Rate the other participant after return
+[**unfollowUser**](DefaultApi.md#unfollowuser) | **DELETE** /users/{userId}/follow | Unfollow a user
 [**updateItem**](DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
+[**updateUserProfile**](DefaultApi.md#updateuserprofile) | **PATCH** /users/{userId}/profile | Update own profile
 [**uploadItemImage**](DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
+[**uploadUserAvatar**](DefaultApi.md#uploaduseravatar) | **POST** /users/{userId}/avatar | Upload avatar image
 [**verify**](DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
 
 
@@ -414,6 +422,54 @@ void (empty response body)
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **deleteUserAvatar**
+> deleteUserAvatar(userId)
+
+Remove avatar image
+
+Delete the avatar image for the authenticated user's profile
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    api_instance.deleteUserAvatar(userId);
+} catch (e) {
+    print('Exception when calling DefaultApi->deleteUserAvatar: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **editItemImages**
 > editItemImages(itemId, editItemImagesRequest)
 
@@ -458,6 +514,54 @@ void (empty response body)
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **followUser**
+> followUser(userId)
+
+Follow a user
+
+Follow the specified user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    api_instance.followUser(userId);
+} catch (e) {
+    print('Exception when calling DefaultApi->followUser: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -800,6 +904,135 @@ This endpoint does not need any parameter.
 ### Authorization
 
 [bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getUserItems**
+> List<ItemOverview> getUserItems(userId)
+
+Get user's items
+
+Returns all items belonging to the specified user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    final result = api_instance.getUserItems(userId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getUserItems: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+[**List<ItemOverview>**](ItemOverview.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getUserProfile**
+> UserProfile getUserProfile(userId)
+
+Get user profile
+
+Returns public profile information for a user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    final result = api_instance.getUserProfile(userId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getUserProfile: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+[**UserProfile**](UserProfile.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getUserRatings**
+> List<UserRatingDetail> getUserRatings(userId)
+
+Get user ratings
+
+Returns all user ratings received by the specified user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    final result = api_instance.getUserRatings(userId);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getUserRatings: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+[**List<UserRatingDetail>**](UserRatingDetail.md)
+
+### Authorization
+
+No authorization required
 
 ### HTTP request headers
 
@@ -1248,6 +1481,54 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **unfollowUser**
+> unfollowUser(userId)
+
+Unfollow a user
+
+Unfollow the specified user
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+
+try {
+    api_instance.unfollowUser(userId);
+} catch (e) {
+    print('Exception when calling DefaultApi->unfollowUser: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **updateItem**
 > CreateItemResponse updateItem(itemId, updateItemRequest)
 
@@ -1297,6 +1578,57 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **updateUserProfile**
+> UserProfile updateUserProfile(userId, updateUserProfileRequest)
+
+Update own profile
+
+Update name and/or bio for the authenticated user's profile
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+final updateUserProfileRequest = UpdateUserProfileRequest(); // UpdateUserProfileRequest | 
+
+try {
+    final result = api_instance.updateUserProfile(userId, updateUserProfileRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->updateUserProfile: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
+ **updateUserProfileRequest** | [**UpdateUserProfileRequest**](UpdateUserProfileRequest.md)|  | 
+
+### Return type
+
+[**UserProfile**](UserProfile.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **uploadItemImage**
 > UploadItemImageResponse uploadItemImage(itemId, uploadItemImageRequest)
 
@@ -1329,6 +1661,57 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **itemId** | **int**|  | 
+ **uploadItemImageRequest** | [**UploadItemImageRequest**](UploadItemImageRequest.md)|  | 
+
+### Return type
+
+[**UploadItemImageResponse**](UploadItemImageResponse.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **uploadUserAvatar**
+> UploadItemImageResponse uploadUserAvatar(userId, uploadItemImageRequest)
+
+Upload avatar image
+
+Upload a new avatar image for the authenticated user's profile. Replaces any existing avatar.
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+// TODO Configure HTTP Bearer authorization: bearerAuth
+// Case 1. Use String Token
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken('YOUR_ACCESS_TOKEN');
+// Case 2. Use Function which generate token.
+// String yourTokenGeneratorFunction() { ... }
+//defaultApiClient.getAuthentication<HttpBearerAuth>('bearerAuth').setAccessToken(yourTokenGeneratorFunction);
+
+final api_instance = DefaultApi();
+final userId = 56; // int | 
+final uploadItemImageRequest = UploadItemImageRequest(); // UploadItemImageRequest | 
+
+try {
+    final result = api_instance.uploadUserAvatar(userId, uploadItemImageRequest);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->uploadUserAvatar: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **userId** | **int**|  | 
  **uploadItemImageRequest** | [**UploadItemImageRequest**](UploadItemImageRequest.md)|  | 
 
 ### Return type

@@ -565,6 +565,21 @@ rent_requests:
         accepted_at: "-12d 09:15"
     borrow_confirmed_at: "-12d 10:00"
     returned_at: "-11d 20:00"
+    user_ratings:
+      - reviewer: ref(user_lisa)
+        friendliness: 5
+        punctuality: 4
+        reliability: 5
+        communication: 4
+        carefulHandling: 5
+        comment: "Hat alles super geklappt!"
+        created_at: "-11d 21:00"
+    item_ratings:
+      - reviewer: ref(user_dev)
+        condition: 4
+        cleanliness: 5
+        comment: "Auto war in einem Top-Zustand"
+        created_at: "-11d 21:00"
     read_at: "-11d 21:00"
     mark_read:
       - ref(user_dev)
@@ -815,6 +830,19 @@ rent_requests:
         accepted_at: "-14d 11:20"
     borrow_confirmed_at: "-14d 12:00"
     returned_at: "-13d 17:00"
+    user_ratings:
+      - reviewer: ref(user_dev)
+        friendliness: 5
+        punctuality: 5
+        reliability: 5
+        comment: "Sehr zuverlässig!"
+        created_at: "-13d 18:00"
+    item_ratings:
+      - reviewer: ref(user_lisa)
+        condition: 5
+        cleanliness: 4
+        comment: "Tolles Gerät, gerne wieder!"
+        created_at: "-13d 18:00"
     read_at: "-13d 17:30"
     mark_read:
       - ref(user_anna)
@@ -934,284 +962,6 @@ rent_requests:
       - ref(user_dev)
       - ref(user_emma)
 
-  # I: Timon -> Zelt (Luca) -- ACTIVE, 1 offer, not returned
-  - id: req_i
-    item: ref(item_zelt)
-    requester: ref(user_timon)
-    borrow_confirmed: true
-    messages:
-      - author: ref(user_timon)
-        content: Hey, kann ich dein Zelt für einen Camping-Trip ausleihen?
-        created_at: "-3d 10:00"
-      - author: ref(user_luca)
-        content: Klar, für wann denn?
-        created_at: "-3d 10:30"
-      - author: ref(user_timon)
-        content: Nächste Woche, von Mo bis So, eine Woche etwa
-        created_at: "-3d 11:00"
-      - author: ref(user_luca)
-        content: Passt, ich schick dir ein Angebot!
-        created_at: "-3d 11:30"
-    offers:
-      - sender: ref(user_luca)
-        start_date: "+6d"
-        end_date: "+13d"
-        accepted: true
-        created_at: "-3d 12:00"
-    borrow_confirmed_at: "-2d 10:00"
-    read_at: "-2d 11:00"
-    mark_read:
-      - ref(user_timon)
-      - ref(user_luca)
-
-  # J: Dev -> Fahrrad (Lisa) -- ACTIVE, 1 offer, not returned
-  - id: req_j
-    item: ref(item_fahrrad)
-    requester: ref(user_dev)
-    borrow_confirmed: true
-    messages:
-      - author: ref(user_dev)
-        content: Hallo, ist das Fahrrad Mitte Juli verfügbar?
-        created_at: "-3d 09:00"
-      - author: ref(user_lisa)
-        content: Ja, für ein paar Tage bestimmt!
-        created_at: "-3d 09:30"
-      - author: ref(user_dev)
-        content: Perfekt, ich bräuchte es von Mo bis Do
-        created_at: "-3d 10:00"
-      - author: ref(user_lisa)
-        content: Alles klar, Angebot ist raus!
-        created_at: "-3d 10:30"
-    offers:
-      - sender: ref(user_lisa)
-        start_date: "+10d"
-        end_date: "+14d"
-        accepted: true
-        created_at: "-3d 11:00"
-    borrow_confirmed_at: "-2d 08:00"
-    read_at: "-2d 09:00"
-    mark_read:
-      - ref(user_dev)
-      - ref(user_lisa)
-
-  # K: Timon -> Bohrmaschine (Luca) -- ACTIVE, 1 offer, not returned
-  - id: req_k
-    item: ref(item_bohrmaschine)
-    requester: ref(user_timon)
-    borrow_confirmed: true
-    messages:
-      - author: ref(user_timon)
-        content: Moin, kann ich die Bohrmaschine für ein Regalprojekt leihen?
-        created_at: "-5d 14:00"
-      - author: ref(user_luca)
-        content: Ja, wann hättest du Zeit?
-        created_at: "-5d 14:30"
-      - author: ref(user_timon)
-        content: In ca. drei Wochen, ein paar Tage sollte reichen
-        created_at: "-5d 15:00"
-      - author: ref(user_luca)
-        content: Klingt gut, Angebot ist raus!
-        created_at: "-5d 15:30"
-    offers:
-      - sender: ref(user_luca)
-        start_date: "+17d"
-        end_date: "+20d"
-        accepted: true
-        created_at: "-5d 16:00"
-    borrow_confirmed_at: "-4d 09:00"
-    read_at: "-4d 10:00"
-    mark_read:
-      - ref(user_timon)
-      - ref(user_luca)
-
-  # P: Timon -> Auto (Lisa) -- COMPLETED (zurück)
-  - id: req_p
-    item: ref(item_auto)
-    requester: ref(user_timon)
-    borrow_confirmed: true
-    returned: true
-    messages:
-      - author: ref(user_timon)
-        content: Hi Lisa, brauch den Golf fürs Wochenende, will meine Möbel von Ikea holen.
-        created_at: "-20d 09:00"
-      - author: ref(user_lisa)
-        content: Klar, Samstag bis Sonntag? Volltank und sauber zurück, dann passts.
-        created_at: "-20d 09:30"
-      - author: ref(user_timon)
-        content: Ja genau, Samstag 10 Uhr bis Sonntag 18 Uhr. Passt perfekt!
-        created_at: "-20d 10:00"
-      - author: ref(user_lisa)
-        content: Okay, ich schick dir gleich das Angebot. Adresse wie immer.
-        created_at: "-20d 10:15"
-      - author: ref(user_timon)
-        content: Danke Lisa, lief alles super. Steht vollgetankt bei dir.
-        created_at: "-19d 18:00"
-      - author: ref(user_lisa)
-        content: Top, alles okay! Gerne wieder.
-        created_at: "-19d 18:30"
-    offers:
-      - sender: ref(user_lisa)
-        start_date: "-20d"
-        end_date: "-19d"
-        accepted: true
-        created_at: "-20d 10:15"
-        accepted_at: "-20d 10:15"
-    borrow_confirmed_at: "-20d 11:00"
-    returned_at: "-19d 18:00"
-    read_at: "-19d 19:00"
-    mark_read:
-      - ref(user_timon)
-      - ref(user_lisa)
-
-  # Q: Anna -> Dev (Hammer) -- COMPLETED (zurück)
-  - id: req_q
-    item: ref(item_hammer)
-    requester: ref(user_anna)
-    borrow_confirmed: true
-    returned: true
-    messages:
-      - author: ref(user_anna)
-        content: Hast du den Hammer noch da? Will mein Hochbeet reparieren.
-        created_at: "-14d 11:00"
-      - author: ref(user_dev)
-        content: Ja klar, liegt in der Werkstatt. Kannst vorbeikommen und mitnehmen.
-        created_at: "-14d 11:20"
-      - author: ref(user_anna)
-        content: Perfekt, komm gleich rum. Danke!
-        created_at: "-14d 11:30"
-      - author: ref(user_anna)
-        content: Hat super funktioniert, Hammer ist zurück. Danke dir!
-        created_at: "-13d 17:00"
-      - author: ref(user_dev)
-        content: Gerne, jederzeit!
-        created_at: "-13d 17:10"
-    offers:
-      - sender: ref(user_dev)
-        start_date: "-14d"
-        end_date: "-13d"
-        accepted: true
-        created_at: "-14d 11:20"
-        accepted_at: "-14d 11:20"
-    borrow_confirmed_at: "-14d 12:00"
-    returned_at: "-13d 17:00"
-    read_at: "-13d 17:30"
-    mark_read:
-      - ref(user_anna)
-      - ref(user_dev)
-
-  # R: Sven -> Dev (Heckenschere) -- COMPLETED (zurück)
-  - id: req_r
-    item: ref(item_heckenschere)
-    requester: ref(user_sven)
-    borrow_confirmed: true
-    returned: true
-    messages:
-      - author: ref(user_sven)
-        content: Hey Dev, kann ich deine Heckenschere für meinen Garten ausleihen? Bei mir in Prüfening wucherts.
-        created_at: "-9d 08:00"
-      - author: ref(user_dev)
-        content: Klar, hol sie dir einfach ab. Roritzerstraße 12, steht im Schuppen.
-        created_at: "-9d 08:30"
-      - author: ref(user_sven)
-        content: Super, komm nachher vorbei. Danke!
-        created_at: "-9d 09:00"
-      - author: ref(user_sven)
-        content: Heckenschere ist zurück, hat alles gut geklappt!
-        created_at: "-8d 16:00"
-      - author: ref(user_dev)
-        content: Passt, gern wieder!
-        created_at: "-8d 16:15"
-    offers:
-      - sender: ref(user_dev)
-        start_date: "-9d"
-        end_date: "-8d"
-        accepted: true
-        created_at: "-9d 08:30"
-        accepted_at: "-9d 08:30"
-    borrow_confirmed_at: "-9d 10:00"
-    returned_at: "-8d 16:00"
-    read_at: "-8d 17:00"
-    mark_read:
-      - ref(user_sven)
-      - ref(user_dev)
-
-  # S: Luca -> Finn (Beamer) -- COMPLETED (zurück)
-  - id: req_s
-    item: ref(item_beamer)
-    requester: ref(user_luca)
-    borrow_confirmed: true
-    returned: true
-    messages:
-      - author: ref(user_luca)
-        content: Hi Finn, kann ich den Beamer für ne Filmnacht im Garten ausleihen?
-        created_at: "-6d 14:00"
-      - author: ref(user_finn)
-        content: Klar! Am Wochenende? Der Beamer lohnt sich im Dunkeln am meisten.
-        created_at: "-6d 14:20"
-      - author: ref(user_luca)
-        content: Genau, Samstagabend. Würd ihn Samstag Mittag holen und Sonntag zurückbringen.
-        created_at: "-6d 14:45"
-      - author: ref(user_finn)
-        content: Passt, kommt bei mir vorbei. Königswiesener Straße 20.
-        created_at: "-6d 15:00"
-      - author: ref(user_luca)
-        content: Danke Finn, war der Hammer! Die Leinwand haben wir gleich im Garten aufgebaut.
-        created_at: "-5d 12:00"
-      - author: ref(user_finn)
-        content: Haha, cool! Freut mich dass alles geklappt hat.
-        created_at: "-5d 12:30"
-    offers:
-      - sender: ref(user_finn)
-        start_date: "-6d"
-        end_date: "-5d"
-        accepted: true
-        created_at: "-6d 15:00"
-        accepted_at: "-6d 15:00"
-    borrow_confirmed_at: "-6d 16:00"
-    returned_at: "-5d 12:00"
-    read_at: "-5d 13:00"
-    mark_read:
-      - ref(user_luca)
-      - ref(user_finn)
-
-  # T: Dev -> Emma (Espresso) -- COMPLETED (zurück)
-  - id: req_t
-    item: ref(item_espresso)
-    requester: ref(user_dev)
-    borrow_confirmed: true
-    returned: true
-    messages:
-      - author: ref(user_dev)
-        content: Emma, kann ich deine Siebträger-Maschine für ne Geburtstagsfeier ausleihen? Will allen Latte Macchiato machen.
-        created_at: "-4d 10:00"
-      - author: ref(user_emma)
-        content: Oh ja, die Maschine rockt! Klar, kannst sie haben. Aber bitte vorsichtig mit dem Milchaufschäumer.
-        created_at: "-4d 10:30"
-      - author: ref(user_dev)
-        content: Versprochen! Hol sie Samstag Mittag, geb sie Sonntag Abend zurück.
-        created_at: "-4d 10:45"
-      - author: ref(user_emma)
-        content: Perfekt. Am Brücktor 3, klingeln. Ich zeig dir kurz wie die Entkalkung läuft.
-        created_at: "-4d 11:00"
-      - author: ref(user_dev)
-        content: War ein voller Erfolg! Maschine ist sauber und entkalkt zurück. Danke dir!
-        created_at: "-3d 20:00"
-      - author: ref(user_emma)
-        content: Freut mich! Und danke fürs Entkalken, sehr korrekt! :)
-        created_at: "-3d 20:30"
-    offers:
-      - sender: ref(user_emma)
-        start_date: "-4d"
-        end_date: "-3d"
-        accepted: true
-        created_at: "-4d 11:00"
-        accepted_at: "-4d 11:00"
-    borrow_confirmed_at: "-4d 12:00"
-    returned_at: "-3d 20:00"
-    read_at: "-3d 21:00"
-    mark_read:
-      - ref(user_dev)
-      - ref(user_emma)
 
 item_ratings:
   - id: rating_auto_1
@@ -1233,7 +983,7 @@ item_ratings:
     comment: "Hammer war in top Zustand, hat super geholfen. Danke Dev!"
     created_at: "-6d 19:00"
   - id: rating_auto_2
-    rent_request: ref(req_p)
+    rent_request: ref(req_i)
     item: ref(item_auto)
     reviewer: ref(user_timon)
     condition: 3
@@ -1242,7 +992,7 @@ item_ratings:
     comment: "Auto war okay, aber die Kupplung kommt langsam. Für den Umzug hats gereicht."
     created_at: "-19d 19:00"
   - id: rating_hammer_2
-    rent_request: ref(req_q)
+    rent_request: ref(req_j)
     item: ref(item_hammer)
     reviewer: ref(user_anna)
     condition: 5
@@ -1251,7 +1001,7 @@ item_ratings:
     comment: "Perfekt für meine Hochbeet-Reparatur. Hammer in Top-Zustand!"
     created_at: "-13d 18:00"
   - id: rating_heckenschere_1
-    rent_request: ref(req_r)
+    rent_request: ref(req_k)
     item: ref(item_heckenschere)
     reviewer: ref(user_sven)
     condition: 4
@@ -1260,7 +1010,7 @@ item_ratings:
     comment: "Hat gut geschnitten, aber das Kabel war etwas kurz. Sonst sehr zufrieden."
     created_at: "-8d 17:00"
   - id: rating_beamer_1
-    rent_request: ref(req_s)
+    rent_request: ref(req_l)
     item: ref(item_beamer)
     reviewer: ref(user_luca)
     condition: 5
@@ -1269,7 +1019,7 @@ item_ratings:
     comment: "Riesige Leinwand, top Bildqualität. Die Filmnacht war ein voller Erfolg!"
     created_at: "-5d 13:30"
   - id: rating_espresso_1
-    rent_request: ref(req_t)
+    rent_request: ref(req_m)
     item: ref(item_espresso)
     reviewer: ref(user_dev)
     condition: 4

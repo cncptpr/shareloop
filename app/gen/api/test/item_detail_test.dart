@@ -66,6 +66,16 @@ void main() {
       // TODO
     });
 
+    // int itemRatingCount
+    test('to test the property `itemRatingCount`', () async {
+      // TODO
+    });
+
+    // List<ItemRating> itemRatings (default value: const [])
+    test('to test the property `itemRatings`', () async {
+      // TODO
+    });
+
 
   });
 

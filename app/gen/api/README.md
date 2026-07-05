@@ -73,7 +73,9 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**createRentRequest**](doc//DefaultApi.md#createrentrequest) | **POST** /items/{itemId}/rent-requests | Create or get existing open rent request
 *DefaultApi* | [**declineSeed**](doc//DefaultApi.md#declineseed) | **POST** /seed/decline | Decline seeding prompt
 *DefaultApi* | [**deleteItem**](doc//DefaultApi.md#deleteitem) | **DELETE** /items/{itemId} | Delete an item
+*DefaultApi* | [**deleteUserAvatar**](doc//DefaultApi.md#deleteuseravatar) | **DELETE** /users/{userId}/avatar | Remove avatar image
 *DefaultApi* | [**editItemImages**](doc//DefaultApi.md#edititemimages) | **PUT** /items/{itemId}/images | Edit item images (reorder / delete)
+*DefaultApi* | [**followUser**](doc//DefaultApi.md#followuser) | **POST** /users/{userId}/follow | Follow a user
 *DefaultApi* | [**getBookedDates**](doc//DefaultApi.md#getbookeddates) | **GET** /items/{itemId}/booked-dates | Get booked date ranges for an item
 *DefaultApi* | [**getFeaturedItems**](doc//DefaultApi.md#getfeatureditems) | **POST** /featured-items | Get featured items
 *DefaultApi* | [**getImage**](doc//DefaultApi.md#getimage) | **GET** /images/{imageId} | Get raw image data
@@ -82,6 +84,9 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**getItemEdit**](doc//DefaultApi.md#getitemedit) | **GET** /items/{itemId}/edit | Get item edit details (owner only)
 *DefaultApi* | [**getRentRequest**](doc//DefaultApi.md#getrentrequest) | **GET** /rent-requests/{requestId} | Get a single rent request with messages and offers
 *DefaultApi* | [**getRentRequests**](doc//DefaultApi.md#getrentrequests) | **GET** /rent-requests | List rent requests for current user
+*DefaultApi* | [**getUserItems**](doc//DefaultApi.md#getuseritems) | **GET** /users/{userId}/items | Get user's items
+*DefaultApi* | [**getUserProfile**](doc//DefaultApi.md#getuserprofile) | **GET** /users/{userId}/profile | Get user profile
+*DefaultApi* | [**getUserRatings**](doc//DefaultApi.md#getuserratings) | **GET** /users/{userId}/ratings | Get user ratings
 *DefaultApi* | [**login**](doc//DefaultApi.md#login) | **POST** /auth/login | Login
 *DefaultApi* | [**logout**](doc//DefaultApi.md#logout) | **POST** /auth/logout | Logout
 *DefaultApi* | [**markRentRequestRead**](doc//DefaultApi.md#markrentrequestread) | **POST** /rent-requests/{requestId}/mark-read | Mark a rent request as read
@@ -92,8 +97,11 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**sendMessage**](doc//DefaultApi.md#sendmessage) | **POST** /rent-requests/{requestId}/messages | Send a message in a rent request chat
 *DefaultApi* | [**submitItemRating**](doc//DefaultApi.md#submititemrating) | **POST** /rent-requests/{requestId}/item-rating | Rate the borrowed item after return
 *DefaultApi* | [**submitUserRating**](doc//DefaultApi.md#submituserrating) | **POST** /rent-requests/{requestId}/user-rating | Rate the other participant after return
+*DefaultApi* | [**unfollowUser**](doc//DefaultApi.md#unfollowuser) | **DELETE** /users/{userId}/follow | Unfollow a user
 *DefaultApi* | [**updateItem**](doc//DefaultApi.md#updateitem) | **PUT** /items/{itemId} | Update an item
+*DefaultApi* | [**updateUserProfile**](doc//DefaultApi.md#updateuserprofile) | **PATCH** /users/{userId}/profile | Update own profile
 *DefaultApi* | [**uploadItemImage**](doc//DefaultApi.md#uploaditemimage) | **POST** /items/{itemId}/images | Upload an image for an item
+*DefaultApi* | [**uploadUserAvatar**](doc//DefaultApi.md#uploaduseravatar) | **POST** /users/{userId}/avatar | Upload avatar image
 *DefaultApi* | [**verify**](doc//DefaultApi.md#verify) | **POST** /auth/verify | Verify access token
 
 
@@ -127,10 +135,13 @@ Class | Method | HTTP request | Description
  - [SubmitItemRatingRequest](doc//SubmitItemRatingRequest.md)
  - [SubmitUserRatingRequest](doc//SubmitUserRatingRequest.md)
  - [UpdateItemRequest](doc//UpdateItemRequest.md)
+ - [UpdateUserProfileRequest](doc//UpdateUserProfileRequest.md)
  - [UploadItemImageRequest](doc//UploadItemImageRequest.md)
  - [UploadItemImageResponse](doc//UploadItemImageResponse.md)
  - [User](doc//User.md)
+ - [UserProfile](doc//UserProfile.md)
  - [UserRating](doc//UserRating.md)
+ - [UserRatingDetail](doc//UserRatingDetail.md)
 
 
 ## Documentation For Authorization

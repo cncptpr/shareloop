@@ -446,6 +446,56 @@ class DefaultApi {
     }
   }
 
+  /// Remove avatar image
+  ///
+  /// Delete the avatar image for the authenticated user's profile
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> deleteUserAvatarWithHttpInfo(int userId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/avatar'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'DELETE',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Remove avatar image
+  ///
+  /// Delete the avatar image for the authenticated user's profile
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<void> deleteUserAvatar(int userId, { Future<void>? abortTrigger, }) async {
+    final response = await deleteUserAvatarWithHttpInfo(userId, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
   /// Edit item images (reorder / delete)
   ///
   /// Note: This method returns the HTTP [Response].
@@ -491,6 +541,56 @@ class DefaultApi {
   /// * [EditItemImagesRequest] editItemImagesRequest (required):
   Future<void> editItemImages(int itemId, EditItemImagesRequest editItemImagesRequest, { Future<void>? abortTrigger, }) async {
     final response = await editItemImagesWithHttpInfo(itemId, editItemImagesRequest, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
+  /// Follow a user
+  ///
+  /// Follow the specified user
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> followUserWithHttpInfo(int userId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/follow'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Follow a user
+  ///
+  /// Follow the specified user
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<void> followUser(int userId, { Future<void>? abortTrigger, }) async {
+    final response = await followUserWithHttpInfo(userId, abortTrigger: abortTrigger,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -928,6 +1028,186 @@ class DefaultApi {
       final responseBody = await _decodeBodyBytes(response);
       return (await apiClient.deserializeAsync(responseBody, 'List<RentRequestOverview>') as List)
         .cast<RentRequestOverview>()
+        .toList(growable: false);
+
+    }
+    return null;
+  }
+
+  /// Get user's items
+  ///
+  /// Returns all items belonging to the specified user
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> getUserItemsWithHttpInfo(int userId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/items'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Get user's items
+  ///
+  /// Returns all items belonging to the specified user
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<List<ItemOverview>?> getUserItems(int userId, { Future<void>? abortTrigger, }) async {
+    final response = await getUserItemsWithHttpInfo(userId, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      final responseBody = await _decodeBodyBytes(response);
+      return (await apiClient.deserializeAsync(responseBody, 'List<ItemOverview>') as List)
+        .cast<ItemOverview>()
+        .toList(growable: false);
+
+    }
+    return null;
+  }
+
+  /// Get user profile
+  ///
+  /// Returns public profile information for a user
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> getUserProfileWithHttpInfo(int userId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/profile'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Get user profile
+  ///
+  /// Returns public profile information for a user
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<UserProfile?> getUserProfile(int userId, { Future<void>? abortTrigger, }) async {
+    final response = await getUserProfileWithHttpInfo(userId, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UserProfile',) as UserProfile;
+    
+    }
+    return null;
+  }
+
+  /// Get user ratings
+  ///
+  /// Returns all user ratings received by the specified user
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> getUserRatingsWithHttpInfo(int userId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/ratings'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Get user ratings
+  ///
+  /// Returns all user ratings received by the specified user
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<List<UserRatingDetail>?> getUserRatings(int userId, { Future<void>? abortTrigger, }) async {
+    final response = await getUserRatingsWithHttpInfo(userId, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      final responseBody = await _decodeBodyBytes(response);
+      return (await apiClient.deserializeAsync(responseBody, 'List<UserRatingDetail>') as List)
+        .cast<UserRatingDetail>()
         .toList(growable: false);
 
     }
@@ -1459,6 +1739,56 @@ class DefaultApi {
     return null;
   }
 
+  /// Unfollow a user
+  ///
+  /// Unfollow the specified user
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<Response> unfollowUserWithHttpInfo(int userId, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/follow'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'DELETE',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Unfollow a user
+  ///
+  /// Unfollow the specified user
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  Future<void> unfollowUser(int userId, { Future<void>? abortTrigger, }) async {
+    final response = await unfollowUserWithHttpInfo(userId, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
   /// Update an item
   ///
   /// Note: This method returns the HTTP [Response].
@@ -1517,6 +1847,68 @@ class DefaultApi {
     return null;
   }
 
+  /// Update own profile
+  ///
+  /// Update name and/or bio for the authenticated user's profile
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  ///
+  /// * [UpdateUserProfileRequest] updateUserProfileRequest (required):
+  Future<Response> updateUserProfileWithHttpInfo(int userId, UpdateUserProfileRequest updateUserProfileRequest, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/profile'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody = updateUserProfileRequest;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'PATCH',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Update own profile
+  ///
+  /// Update name and/or bio for the authenticated user's profile
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  ///
+  /// * [UpdateUserProfileRequest] updateUserProfileRequest (required):
+  Future<UserProfile?> updateUserProfile(int userId, UpdateUserProfileRequest updateUserProfileRequest, { Future<void>? abortTrigger, }) async {
+    final response = await updateUserProfileWithHttpInfo(userId, updateUserProfileRequest, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UserProfile',) as UserProfile;
+    
+    }
+    return null;
+  }
+
   /// Upload an image for an item
   ///
   /// Note: This method returns the HTTP [Response].
@@ -1562,6 +1954,68 @@ class DefaultApi {
   /// * [UploadItemImageRequest] uploadItemImageRequest (required):
   Future<UploadItemImageResponse?> uploadItemImage(int itemId, UploadItemImageRequest uploadItemImageRequest, { Future<void>? abortTrigger, }) async {
     final response = await uploadItemImageWithHttpInfo(itemId, uploadItemImageRequest, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'UploadItemImageResponse',) as UploadItemImageResponse;
+    
+    }
+    return null;
+  }
+
+  /// Upload avatar image
+  ///
+  /// Upload a new avatar image for the authenticated user's profile. Replaces any existing avatar.
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  ///
+  /// * [UploadItemImageRequest] uploadItemImageRequest (required):
+  Future<Response> uploadUserAvatarWithHttpInfo(int userId, UploadItemImageRequest uploadItemImageRequest, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/users/{userId}/avatar'
+      .replaceAll('{userId}', userId.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody = uploadItemImageRequest;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Upload avatar image
+  ///
+  /// Upload a new avatar image for the authenticated user's profile. Replaces any existing avatar.
+  ///
+  /// Parameters:
+  ///
+  /// * [int] userId (required):
+  ///
+  /// * [UploadItemImageRequest] uploadItemImageRequest (required):
+  Future<UploadItemImageResponse?> uploadUserAvatar(int userId, UploadItemImageRequest uploadItemImageRequest, { Future<void>? abortTrigger, }) async {
+    final response = await uploadUserAvatarWithHttpInfo(userId, uploadItemImageRequest, abortTrigger: abortTrigger,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }

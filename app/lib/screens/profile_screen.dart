@@ -5,6 +5,7 @@ import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/edit_profile_screen.dart';
 import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
+import 'package:shareloop/screens/settings_screen.dart';
 import 'package:shareloop/state/auth.dart';
 import 'package:shareloop/state/profile.dart';
 import 'package:shareloop/state/seeding.dart';

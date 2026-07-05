@@ -8,6 +8,7 @@ import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/state/auth.dart';
 import 'package:shareloop/state/profile.dart';
 import 'package:shareloop/state/seeding.dart';
+import 'package:shareloop/widgets/rating_stars.dart';
 
 class ProfileScreen extends ConsumerWidget {
   final int? userId;
@@ -80,7 +81,7 @@ class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(title: const Text('Profile'));
+    return AppBar(title: const Text('Profile'), centerTitle: false);
   }
 
   @override
@@ -122,6 +123,7 @@ class _ProfileContent extends ConsumerWidget {
   PreferredSizeWidget _appBar(BuildContext context, WidgetRef ref, UserProfile? profile) {
     return AppBar(
       title: const Text('Profile'),
+      centerTitle: false,
       actions: [
         if (isOwnProfile && profile != null)
           IconButton(
@@ -482,9 +484,16 @@ class _ItemCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  '${item.score.toStringAsFixed(1)} \u2605',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      item.score.toStringAsFixed(1),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(Icons.star, size: 14, color: Colors.amber[700]),
+                  ],
                 ),
               ],
             ),
@@ -518,7 +527,7 @@ class _RatingCard extends StatelessWidget {
                   rating.reviewer.name,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
-                Text('${overall.toStringAsFixed(1)} / 5'),
+                ReadOnlyStars(value: overall),
               ],
             ),
             const SizedBox(height: 8),

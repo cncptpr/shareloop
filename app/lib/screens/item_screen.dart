@@ -10,6 +10,7 @@ import 'package:shareloop/screens/rent_request_chat_screen.dart';
 import 'package:shareloop/state/auth.dart' show authProvider;
 import 'package:shareloop/state/booked_dates.dart';
 import 'package:shareloop/state/item_detail.dart';
+import 'package:shareloop/widgets/rating_stars.dart';
 import 'package:shareloop/state/items.dart' show featuredItemsProvider;
 
 class ItemScreen extends ConsumerWidget {
@@ -504,7 +505,7 @@ class _ItemRatingEntry extends StatelessWidget {
                 ],
               ),
             ),
-            _ReadOnlyStars(value: rating.overall),
+            ReadOnlyStars(value: rating.overall),
           ],
         ),
         const SizedBox(height: 14),
@@ -512,8 +513,8 @@ class _ItemRatingEntry extends StatelessWidget {
           spacing: 16,
           runSpacing: 8,
           children: [
-            _RatingMetric(label: 'Zustand', value: rating.condition),
-            _RatingMetric(
+            RatingMetric(label: 'Zustand', value: rating.condition),
+            RatingMetric(
               label: 'Sauberkeit',
               value: rating.cleanliness,
             ),
@@ -523,47 +524,6 @@ class _ItemRatingEntry extends StatelessWidget {
           const SizedBox(height: 14),
           Text(comment),
         ],
-      ],
-    );
-  }
-}
-
-class _ReadOnlyStars extends StatelessWidget {
-  final double value;
-
-  const _ReadOnlyStars({required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var star = 1; star <= 5; star++)
-          Icon(
-            star <= value.round() ? Icons.star : Icons.star_border,
-            size: 18,
-            color: Colors.amber[700],
-          ),
-      ],
-    );
-  }
-}
-
-class _RatingMetric extends StatelessWidget {
-  final String label;
-  final int value;
-
-  const _RatingMetric({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text('$label: '),
-        Icon(Icons.star, size: 16, color: Colors.amber[700]),
-        const SizedBox(width: 2),
-        Text('$value'),
       ],
     );
   }

@@ -215,6 +215,21 @@ rent_requests:
         accepted_at: "-2d 10:00"
     borrow_confirmed_at: "-1d 08:00"
     returned_at: "-1d 20:00"
+    user_ratings:
+      - reviewer: ref(user_lisa)
+        friendliness: 5
+        punctuality: 4
+        reliability: 5
+        communication: 4
+        carefulHandling: 5
+        comment: "Hat alles super geklappt!"
+        created_at: "-1d 21:00"
+    item_ratings:
+      - reviewer: ref(user_dev)
+        condition: 4
+        cleanliness: 5
+        comment: "Auto war in einem Top-Zustand"
+        created_at: "-1d 21:00"
     read_at: "-1d 20:30"
     mark_read:
       - ref(user_dev)
@@ -423,6 +438,19 @@ rent_requests:
         accepted_at: "-14d 10:30"
     borrow_confirmed_at: "-11d 17:00"
     returned_at: "-10d 17:00"
+    user_ratings:
+      - reviewer: ref(user_dev)
+        friendliness: 5
+        punctuality: 5
+        reliability: 5
+        comment: "Sehr zuverlässig!"
+        created_at: "-10d 18:00"
+    item_ratings:
+      - reviewer: ref(user_lisa)
+        condition: 5
+        cleanliness: 4
+        comment: "Tolles Gerät, gerne wieder!"
+        created_at: "-10d 18:00"
     read_at: "-10d 18:30"
     mark_read:
       - ref(user_dev)

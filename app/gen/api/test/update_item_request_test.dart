@@ -46,6 +46,11 @@ void main() {
       // TODO
     });
 
+    // String category
+    test('to test the property `category`', () async {
+      // TODO
+    });
+
 
   });
 

@@ -11,18 +11,18 @@
 import 'package:openapi/api.dart';
 import 'package:test/test.dart';
 
-// tests for Person
+// tests for UpdateUserProfileRequest
 void main() {
-  // final instance = Person();
+  // final instance = UpdateUserProfileRequest();
 
-  group('test Person', () {
-    // int id
-    test('to test the property `id`', () async {
+  group('test UpdateUserProfileRequest', () {
+    // String name
+    test('to test the property `name`', () async {
       // TODO
     });
 
-    // String name
-    test('to test the property `name`', () async {
+    // String bio
+    test('to test the property `bio`', () async {
       // TODO
     });
 

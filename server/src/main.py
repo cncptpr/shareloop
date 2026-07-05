@@ -15,6 +15,7 @@ from src.database import async_session_factory
 from src.db.models import SeedMeta, User
 from src.handlers import auth, images, items, ratings, renting
 from src.handlers.seeding import router as seeding_router
+from src.handlers.users import router as users_router
 from src.notifications.registry import registry
 from src.seeding.reader import load_and_validate
 from src.seeding.state import set_seeding_available
@@ -51,6 +52,7 @@ app.include_router(ratings.router)
 app.include_router(renting.router)
 app.include_router(images.router)
 app.include_router(seeding_router)
+app.include_router(users_router)
 
 
 @app.on_event("startup")

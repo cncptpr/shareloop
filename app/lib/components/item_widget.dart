@@ -29,7 +29,7 @@ class ItemWidget extends ConsumerWidget {
                 height: 300,
                 child: item.imageUuid != null
                     ? Image.network(
-                        '${AppConfig.apiBaseUrl}/images/${item.imageUuid}',
+                        AppConfig.imageUrl(item.imageUuid!),
                         fit: BoxFit.cover,
                       )
                     : Image.asset(

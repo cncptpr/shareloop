@@ -91,6 +91,16 @@ void main() {
       // TODO
     });
 
+    // UserRating myUserRating
+    test('to test the property `myUserRating`', () async {
+      // TODO
+    });
+
+    // ItemRating myItemRating
+    test('to test the property `myItemRating`', () async {
+      // TODO
+    });
+
 
   });
 

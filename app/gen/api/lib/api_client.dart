@@ -239,14 +239,20 @@ class ApiClient {
           return SubmitUserRatingRequest.fromJson(value);
         case 'UpdateItemRequest':
           return UpdateItemRequest.fromJson(value);
+        case 'UpdateUserProfileRequest':
+          return UpdateUserProfileRequest.fromJson(value);
         case 'UploadItemImageRequest':
           return UploadItemImageRequest.fromJson(value);
         case 'UploadItemImageResponse':
           return UploadItemImageResponse.fromJson(value);
         case 'User':
           return User.fromJson(value);
+        case 'UserProfile':
+          return UserProfile.fromJson(value);
         case 'UserRating':
           return UserRating.fromJson(value);
+        case 'UserRatingDetail':
+          return UserRatingDetail.fromJson(value);
         default:
           dynamic match;
           if (value is List && (match = _regList.firstMatch(targetType)?.group(1)) != null) {

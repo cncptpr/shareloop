@@ -50,7 +50,6 @@ dir = "server"
 
 [tasks."server:check"]
 description = "Run lint and typecheck"
-run = "uv run ruff check src/ && uv run mypy src/"
 dir = "server"
 depends = ["server:lint", "server:typecheck"]
 

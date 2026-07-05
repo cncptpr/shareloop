@@ -5,6 +5,7 @@ import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/edit_item_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
+import 'package:shareloop/screens/profile_screen.dart';
 import 'package:shareloop/screens/rent_request_chat_screen.dart';
 import 'package:shareloop/state/auth.dart' show authProvider;
 import 'package:shareloop/state/booked_dates.dart';
@@ -599,7 +600,7 @@ class _ImageGallery extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                '${AppConfig.apiBaseUrl}/images/$uuid',
+                AppConfig.imageUrl(uuid),
                 height: 284,
                 width: 284,
                 fit: BoxFit.cover,
@@ -673,7 +674,7 @@ class _FullscreenGalleryState extends State<_FullscreenGallery> {
           return InteractiveViewer(
             child: Center(
               child: Image.network(
-                '${AppConfig.apiBaseUrl}/images/$uuid',
+                AppConfig.imageUrl(uuid),
                 fit: BoxFit.contain,
                 loadingBuilder: (_, child, progress) {
                   if (progress == null) return child;
@@ -710,6 +711,15 @@ class _ProfileCard extends StatelessWidget {
               Text(author.name.isNotEmpty ? author.name[0].toUpperCase() : '?'),
         ),
         title: Text(author.name),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ProfileScreen(userId: author.id),
+            ),
+          );
+        },
       ),
     );
   }

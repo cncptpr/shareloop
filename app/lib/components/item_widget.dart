@@ -27,17 +27,23 @@ class ItemWidget extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AspectRatio(
-              aspectRatio: 1.52,
-              child: item.imageUuid != null
-                  ? Image.network(
-                      '${AppConfig.apiBaseUrl}/images/${item.imageUuid}',
-                      fit: BoxFit.cover,
-                    )
-                  : Image.asset(
-                      "assets/images/placeholder_image.jpg",
-                      fit: BoxFit.cover,
-                    ),
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(15),
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                height: 300,
+                child: item.imageUuid != null
+                    ? Image.network(
+                        AppConfig.imageUrl(item.imageUuid!),
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        "assets/images/placeholder_image.jpg",
+                        fit: BoxFit.cover,
+                      ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),

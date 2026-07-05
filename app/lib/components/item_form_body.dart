@@ -299,7 +299,7 @@ class _ItemFormImageTile extends StatelessWidget {
     if (image is ServerItemImage) {
       final srv = image as ServerItemImage;
       imageWidget = Image.network(
-        AppConfig.imageUrl(srv.uuid),
+        AppConfig.imageUrl(srv.uuid.toString()),
         height: 120,
         width: 120,
         fit: BoxFit.cover,

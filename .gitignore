@@ -3,3 +3,4 @@ data/db.dart_tool
 .dart_tool
 __pycache__/
 openapi_generator_config.json
+.idea/

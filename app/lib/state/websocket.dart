@@ -20,6 +20,7 @@ class WebSocketService {
   StreamSubscription? _subscription;
   Timer? _reconnectTimer;
   bool _disposed = false;
+  int _reconnectAttempts = 0;
 
   int? currentChatRequestId;
 
@@ -30,6 +31,7 @@ class WebSocketService {
   void _setupAuthListener() {
     _ref.listen(authProvider, (previous, next) {
       final user = next.value;
+      _reconnectAttempts = 0;
       if (user != null) {
         _connect();
       } else {
@@ -40,11 +42,22 @@ class WebSocketService {
 
   String get _wsBaseUrl {
     const restBase = AppConfig.apiBaseUrl;
-    final wsBase = restBase
-        .replaceFirst('http://', 'ws://')
-        .replaceFirst('https://', 'wss://')
-        .replaceAll('/api', '');
-    return '$wsBase/ws';
+    if (restBase.startsWith('http://') || restBase.startsWith('https://')) {
+      final uri = Uri.parse(restBase);
+      return Uri(
+        scheme: uri.scheme == 'https' ? 'wss' : 'ws',
+        host: uri.host,
+        port: uri.port,
+        path: '/ws',
+      ).toString();
+    }
+    final page = Uri.base;
+    return Uri(
+      scheme: page.scheme == 'https' ? 'wss' : 'ws',
+      host: page.host,
+      port: page.port,
+      path: '/ws',
+    ).toString();
   }
 
   void _connect() {
@@ -55,11 +68,18 @@ class WebSocketService {
       _channel = WebSocketChannel.connect(Uri.parse(_wsBaseUrl));
       _subscription = _channel!.stream.listen(
         _onMessage,
-        onError: (_) => _scheduleReconnect(),
-        onDone: () => _scheduleReconnect(),
+        onError: (e) {
+          debugPrint('[ws] stream error: $e');
+          _scheduleReconnect();
+        },
+        onDone: () {
+          debugPrint('[ws] stream closed');
+          _scheduleReconnect();
+        },
       );
-      _sendAuth();
-    } catch (_) {
+      Future.delayed(const Duration(milliseconds: 100), _sendAuth);
+    } catch (e) {
+      debugPrint('[ws] connect error: $e');
       _scheduleReconnect();
     }
   }
@@ -76,6 +96,7 @@ class WebSocketService {
   }
 
   void _onMessage(dynamic raw) {
+    _reconnectAttempts = 0;
     try {
       final msg = jsonDecode(raw as String) as Map<String, dynamic>;
       final type = msg['type'] as String?;
@@ -99,15 +120,24 @@ class WebSocketService {
       if (requestId != currentChatId) {
         _showNotification(type);
       }
-    } catch (_) {
-      // Ignore malformed messages
+    } catch (e) {
+      debugPrint('[ws] malformed message: $e');
     }
   }
 
   void _scheduleReconnect() {
     if (_disposed) return;
+    _reconnectAttempts++;
+    const maxAttempts = 10;
+    if (_reconnectAttempts > maxAttempts) {
+      debugPrint('[ws] max reconnect attempts ($maxAttempts) reached, giving up');
+      return;
+    }
     _reconnectTimer?.cancel();
-    _reconnectTimer = Timer(const Duration(seconds: 3), _connect);
+    final raw = 1000 * (1 << (_reconnectAttempts - 1));
+    final ms = raw < 30000 ? raw : 30000;
+    debugPrint('[ws] reconnect $_reconnectAttempts/$maxAttempts in ${ms}ms');
+    _reconnectTimer = Timer(Duration(milliseconds: ms), _connect);
   }
 
   void _disconnect() {

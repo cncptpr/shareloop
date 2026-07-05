@@ -61,6 +61,26 @@ void main() {
       // TODO
     });
 
+    // int shareCount
+    test('to test the property `shareCount`', () async {
+      // TODO
+    });
+
+    // String avatarUuid
+    test('to test the property `avatarUuid`', () async {
+      // TODO
+    });
+
+    // int followerCount
+    test('to test the property `followerCount`', () async {
+      // TODO
+    });
+
+    // bool isFollowed
+    test('to test the property `isFollowed`', () async {
+      // TODO
+    });
+
 
   });
 

@@ -5,6 +5,7 @@ import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/edit_profile_screen.dart';
 import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
+import 'package:shareloop/screens/settings_screen.dart';
 import 'package:shareloop/state/auth.dart';
 import 'package:shareloop/state/profile.dart';
 import 'package:shareloop/state/seeding.dart';
@@ -135,11 +136,8 @@ class _ProfileContent extends ConsumerWidget {
           ),
         if (isOwnProfile)
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await logout();
-              ref.invalidate(authProvider);
-            },
+            icon: const Icon(Icons.settings),
+            onPressed: () => SettingsScreen.push(context),
           ),
       ],
     );
@@ -206,23 +204,7 @@ class _ProfileContent extends ConsumerWidget {
               padding: EdgeInsets.only(bottom: 16),
               child: Text('Keine Bewertungen'),
             ),
-          if (isOwnProfile) ... [
-            const SizedBox(height: 16),
-            Center(
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  await logout();
-                  ref.invalidate(authProvider);
-                },
-                icon: const Icon(Icons.logout),
-                label: const Text('Abmelden'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  foregroundColor: Theme.of(context).colorScheme.onError,
-                ),
-              ),
-            ),
-          ],
+
         ],
       ),
     );

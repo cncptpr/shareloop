@@ -1,4 +1,4 @@
-users:
+﻿users:
   - id: user_dev
     email: dev@example.com
     password: dev
@@ -9,7 +9,7 @@ users:
     email: lisa@example.com
     password: lisa
     name: Lisa
-    bio: Auto-Liebhaberin und Gärtnerin aus dem Westen
+    bio: Auto-Liebhaberin und GÃ¤rtnerin aus dem Westen
     rating: 4.3
   - id: user_luca
     email: luca@example.com
@@ -27,51 +27,50 @@ users:
     email: anna@example.com
     password: anna
     name: Anna
-    bio: Gärtnerin mit grünem Daumen aus dem Süden
+    bio: GÃ¤rtnerin mit grÃ¼nem Daumen aus dem SÃ¼den
     rating: 4.7
   - id: user_michi
     email: michi@example.com
     password: michi
     name: Michi
-    bio: Heimwerker aus Kumpfmühl
+    bio: Heimwerker aus KumpfmÃ¼hl
     rating: 4.6
   - id: user_sven
     email: sven@example.com
     password: sven
     name: Sven
-    bio: Angler und Gärtner aus Prüfening
+    bio: Angler und GÃ¤rtner aus PrÃ¼fening
     rating: 4.4
   - id: user_emma
     email: emma@example.com
     password: emma
     name: Emma
-    bio: Kreative Näherin und Barista aus Stadtamhof
+    bio: Kreative NÃ¤herin und Barista aus Stadtamhof
     rating: 4.7
   - id: user_finn
     email: finn@example.com
     password: finn
     name: Finn
-    bio: Filmabend-Veranstalter aus der Königswiese
+    bio: Filmabend-Veranstalter aus der KÃ¶nigswiese
     rating: 4.2
   - id: user_lea
     email: lea@example.com
     password: lea
     name: Lea
-    bio: Putzwütige Wanderfreundin aus dem Inneren Westen
+    bio: PutzwÃ¼tige Wanderfreundin aus dem Inneren Westen
     rating: 4.1
 
 items:
   # --- Dev (Altstadt, 93047) ---
   - id: item_schlafsack
-    title: Schlafsack (Mummie -5°C)
-    description: Hochwertiger Mumienschlafsack für Temperaturen bis -5°C. Kompakt verpackbar, Innenfutter aus weichem Baumwoll-Mix. Ideal für Campingausflüge und Festivalbesuche.
+    title: Schlafsack (Mummie -5Â°C)
+    description: Hochwertiger Mumienschlafsack fÃ¼r Temperaturen bis -5Â°C. Kompakt verpackbar, Innenfutter aus weichem Baumwoll-Mix. Ideal fÃ¼r CampingausflÃ¼ge und Festivalbesuche.
     author: ref(user_dev)
     score: 0
     lng: 12.0983
     lat: 49.0185
     city: Regensburg
     postalCode: "93047"
-    address: Weißgerbergraben 8
     category: Sport
     pricePerDay: 5
     images:
@@ -82,14 +81,13 @@ items:
 
   - id: item_heckenschere
     title: Heckenschere (elektrisch)
-    description: Elektro-Heckenschere von Bosch, 600W, 60cm Messerlänge. Kabelgebunden, Schneidbereich 30mm. Ideal für mittlere bis große Hecken. Inklusive Verlängerungskabel.
+    description: Elektro-Heckenschere von Bosch, 600W, 60cm MesserlÃ¤nge. Kabelgebunden, Schneidbereich 30mm. Ideal fÃ¼r mittlere bis groÃŸe Hecken. Inklusive VerlÃ¤ngerungskabel.
     author: ref(user_dev)
     score: 4.6
     lng: 12.0975
     lat: 49.0192
     city: Regensburg
     postalCode: "93047"
-    address: Roritzerstraße 12
     category: Garten
     pricePerDay: 12
     images:
@@ -100,14 +98,13 @@ items:
 
   - id: item_hammer
     title: Hammer + Nagelset
-    description: Klassischer Schlosserhammer 500g mit rutschfestem Griff. Dazu 100 Nägel in verschiedenen Größen (20-80mm) im Sortimentskästchen. Für jedes Heimwerk-Projekt.
+    description: Klassischer Schlosserhammer 500g mit rutschfestem Griff. Dazu 100 NÃ¤gel in verschiedenen GrÃ¶ÃŸen (20-80mm) im SortimentskÃ¤stchen. FÃ¼r jedes Heimwerk-Projekt.
     author: ref(user_dev)
     score: 4.9
     lng: 12.0991
     lat: 49.0188
     city: Regensburg
     postalCode: "93047"
-    address: Keplerstraße 7
     category: Werkzeug
     pricePerDay: 2
     images:
@@ -118,15 +115,14 @@ items:
 
   # --- Lisa (West, 93049) ---
   - id: item_auto
-    title: VW Golf (5-Türer)
-    description: VW Golf VII, 1.6 TDI, 5-Türer, Baujahr 2018. Volltank, Klimaanlage, Navi, Bluetooth. Perfekt für Umzüge oder Ausflüge. Nur an erfahrene Fahrer ab 25 Jahren.
+    title: VW Golf (5-TÃ¼rer)
+    description: VW Golf VII, 1.6 TDI, 5-TÃ¼rer, Baujahr 2018. Volltank, Klimaanlage, Navi, Bluetooth. Perfekt fÃ¼r UmzÃ¼ge oder AusflÃ¼ge. Nur an erfahrene Fahrer ab 25 Jahren.
     author: ref(user_lisa)
     score: 4.3
     lng: 12.0832
     lat: 49.0175
     city: Regensburg
     postalCode: "93049"
-    address: Puricellistraße 24
     category: Sonstiges
     pricePerDay: 80
     images:
@@ -137,14 +133,13 @@ items:
 
   - id: item_fahrrad
     title: Trekkingrad (28", 21-Gang)
-    description: Trekkingrad in dunkelblau, 28 Zoll, 21-Gang Kettenschaltung, hydraulische Scheibenbremsen, Gepäckträger und Schutzbleche. Ideal für Touren entlang der Donau.
+    description: Trekkingrad in dunkelblau, 28 Zoll, 21-Gang Kettenschaltung, hydraulische Scheibenbremsen, GepÃ¤cktrÃ¤ger und Schutzbleche. Ideal fÃ¼r Touren entlang der Donau.
     author: ref(user_lisa)
     score: 0
     lng: 12.0818
     lat: 49.0168
     city: Regensburg
     postalCode: "93049"
-    address: Adolf-Schmetzer-Straße 15
     category: Sport
     pricePerDay: 8
     images:
@@ -154,15 +149,14 @@ items:
         sort_order: 1
 
   - id: item_hochdruckreiniger
-    title: Hochdruckreiniger (Kärcher K2)
-    description: Kärcher K2 Classic Hochdruckreiniger, 140 bar, inkl. Hochdruckschlauch 6m, Flächenreiniger und Schaumdüse. Für Terrassen, Autos, Gartenmöbel und Fassaden.
+    title: Hochdruckreiniger (KÃ¤rcher K2)
+    description: KÃ¤rcher K2 Classic Hochdruckreiniger, 140 bar, inkl. Hochdruckschlauch 6m, FlÃ¤chenreiniger und SchaumdÃ¼se. FÃ¼r Terrassen, Autos, GartenmÃ¶bel und Fassaden.
     author: ref(user_lisa)
     score: 0
     lng: 12.0825
     lat: 49.0182
     city: Regensburg
     postalCode: "93049"
-    address: Prüfeninger Straße 42
     category: Garten
     pricePerDay: 15
     images:
@@ -171,17 +165,16 @@ items:
       - path: images/item_hochdruckreiniger_1.jpg
         sort_order: 1
 
-  # --- Anna (Süden, 93051) ---
+  # --- Anna (SÃ¼den, 93051) ---
   - id: item_rasenmaeher
-    title: Rasenmäher (elektrisch)
-    description: Elektro-Rasenmäher von Gardena, 1400W, Schnittbreite 44cm, 6-fache Schnitthöhenverstellung 25-70mm, 50L Fangkorb. Perfekt für mittelgroße Gärten.
+    title: RasenmÃ¤her (elektrisch)
+    description: Elektro-RasenmÃ¤her von Gardena, 1400W, Schnittbreite 44cm, 6-fache SchnitthÃ¶henverstellung 25-70mm, 50L Fangkorb. Perfekt fÃ¼r mittelgroÃŸe GÃ¤rten.
     author: ref(user_anna)
     score: 0
     lng: 12.0812
     lat: 49.0012
     city: Regensburg
     postalCode: "93051"
-    address: Kumpfmühler Straße 56
     category: Garten
     pricePerDay: 10
     images:
@@ -191,15 +184,14 @@ items:
         sort_order: 1
 
   - id: item_teppichreiniger
-    title: Teppich-Reinigungsgerät
-    description: Kärcher Puzzi 8/1 Sprühextraktionsgerät für Polster und Teppiche. Ideal für Auto-Innenreinigung, Sofas und Teppichböden. Inklusive Reinigungsmittel 0,5L.
+    title: Teppich-ReinigungsgerÃ¤t
+    description: KÃ¤rcher Puzzi 8/1 SprÃ¼hextraktionsgerÃ¤t fÃ¼r Polster und Teppiche. Ideal fÃ¼r Auto-Innenreinigung, Sofas und TeppichbÃ¶den. Inklusive Reinigungsmittel 0,5L.
     author: ref(user_anna)
     score: 0
     lng: 12.0800
     lat: 49.0035
     city: Regensburg
     postalCode: "93051"
-    address: Ziegetsdorfer Straße 21
     category: Haushalt
     pricePerDay: 9
     images:
@@ -210,14 +202,13 @@ items:
 
   - id: item_hochbeet
     title: Hochbeet-Bausatz (2x1m)
-    description: Hochbeet aus lasiertem Lärchenholz, 200x100x50cm, inkl. Erde und Pflanzplan. Ideal für Gemüse, Kräuter und Blumen. Einfach zu montieren, zerlegbar.
+    description: Hochbeet aus lasiertem LÃ¤rchenholz, 200x100x50cm, inkl. Erde und Pflanzplan. Ideal fÃ¼r GemÃ¼se, KrÃ¤uter und Blumen. Einfach zu montieren, zerlegbar.
     author: ref(user_anna)
     score: 0
     lng: 12.0795
     lat: 49.0018
     city: Regensburg
     postalCode: "93051"
-    address: Landshuter Straße 33
     category: Garten
     pricePerDay: 7
     images:
@@ -229,14 +220,13 @@ items:
   # --- Luca (Osten, 93053) ---
   - id: item_zelt
     title: 4-Personen-Zelt (Wurfzelt)
-    description: Wurfzelt von Quechua für bis zu 4 Personen, wasserdicht (2000mm), inklusive Heringe und Abspannleinen. Aufbau in 2 Minuten. Ideal für Camping und Festivals.
+    description: Wurfzelt von Quechua fÃ¼r bis zu 4 Personen, wasserdicht (2000mm), inklusive Heringe und Abspannleinen. Aufbau in 2 Minuten. Ideal fÃ¼r Camping und Festivals.
     author: ref(user_luca)
     score: 0
     lng: 12.1267
     lat: 49.0156
     city: Regensburg
     postalCode: "93053"
-    address: Ostengasse 18
     category: Sport
     pricePerDay: 20
     images:
@@ -247,14 +237,13 @@ items:
 
   - id: item_bohrmaschine
     title: Bohrmaschine (Akku, 18V)
-    description: "Bosch Akku-Schlagbohrmaschine 18V, 2-Gang, inkl. 2x Akku (4Ah) und Ladegerät. 13mm Bohrfutter, Bohrleistung: Holz 30mm, Stahl 10mm. Mit 10 Bohrer-Set."
+    description: "Bosch Akku-Schlagbohrmaschine 18V, 2-Gang, inkl. 2x Akku (4Ah) und LadegerÃ¤t. 13mm Bohrfutter, Bohrleistung: Holz 30mm, Stahl 10mm. Mit 10 Bohrer-Set."
     author: ref(user_luca)
     score: 0
     lng: 12.1280
     lat: 49.0148
     city: Regensburg
     postalCode: "93053"
-    address: Donaustaufer Straße 9
     category: Werkzeug
     pricePerDay: 10
     images:
@@ -272,7 +261,6 @@ items:
     lat: 49.0162
     city: Regensburg
     postalCode: "93053"
-    address: Wutzlhofen 5
     category: Sport
     pricePerDay: 12
     images:
@@ -283,15 +271,14 @@ items:
 
   # --- Timon (Norden, 93055) ---
   - id: item_ski
-    title: Ski-Ausrüstung (Alpin 175cm)
-    description: "Komplette Alpin-Ski-Ausrüstung: Ski 175cm mit Bindungen (Atomic Redster), Skischuhe Gr. 43, Stöcke 125cm. Gepflegt und frisch gewachst. Für fortgeschrittene Fahrer."
+    title: Ski-AusrÃ¼stung (Alpin 175cm)
+    description: "Komplette Alpin-Ski-AusrÃ¼stung: Ski 175cm mit Bindungen (Atomic Redster), Skischuhe Gr. 43, StÃ¶cke 125cm. Gepflegt und frisch gewachst. FÃ¼r fortgeschrittene Fahrer."
     author: ref(user_timon)
     score: 0
     lng: 12.0835
     lat: 49.0343
     city: Regensburg
     postalCode: "93055"
-    address: Frankenstraße 27
     category: Sport
     pricePerDay: 25
     images:
@@ -301,15 +288,14 @@ items:
         sort_order: 1
 
   - id: item_kuehlbox
-    title: Kühlbox (elektrisch, 40L)
-    description: Elektrische Kühlbox von Mobicool, 40L Fassungsvermögen, kühlt bis 18°C unter Umgebungstemperatur. Für 12V (Auto) und 230V (Steckdose). Ideal für Camping und Reisen.
+    title: KÃ¼hlbox (elektrisch, 40L)
+    description: Elektrische KÃ¼hlbox von Mobicool, 40L FassungsvermÃ¶gen, kÃ¼hlt bis 18Â°C unter Umgebungstemperatur. FÃ¼r 12V (Auto) und 230V (Steckdose). Ideal fÃ¼r Camping und Reisen.
     author: ref(user_timon)
     score: 0
     lng: 12.0840
     lat: 49.0338
     city: Regensburg
     postalCode: "93055"
-    address: Isarstraße 12
     category: Sonstiges
     pricePerDay: 7
     images:
@@ -320,14 +306,13 @@ items:
 
   - id: item_leiter
     title: Klappleiter (4m, Alu)
-    description: Alu-Klappleiter, 4m Arbeitshöhe, 12 Stufen, rutschfeste Gummifüße, klappbar auf 1,2m Transportmaß. Tragfähigkeit 150kg. Ideal für Maler-, Reinigungs- und Montagearbeiten.
+    description: Alu-Klappleiter, 4m ArbeitshÃ¶he, 12 Stufen, rutschfeste GummifÃ¼ÃŸe, klappbar auf 1,2m TransportmaÃŸ. TragfÃ¤higkeit 150kg. Ideal fÃ¼r Maler-, Reinigungs- und Montagearbeiten.
     author: ref(user_timon)
     score: 0
     lng: 12.0828
     lat: 49.0349
     city: Regensburg
     postalCode: "93055"
-    address: Nürnberger Straße 44
     category: Werkzeug
     pricePerDay: 6
     images:
@@ -336,17 +321,16 @@ items:
       - path: images/item_leiter_1.jpg
         sort_order: 1
 
-  # --- Michi (Kumpfmühl, 93051) ---
+  # --- Michi (KumpfmÃ¼hl, 93051) ---
   - id: item_stichsaege
-    title: Stichsäge (Bosch PST 700)
-    description: Bosch PST 700 Stichsäge, 500W, Hubzahl 500-3100/min, Werkzeugloser Sägeblattwechsel, inkl. 5 Sägeblätter für Holz und Metall. Ideal für präzise Kurvenschnitte.
+    title: StichsÃ¤ge (Bosch PST 700)
+    description: Bosch PST 700 StichsÃ¤ge, 500W, Hubzahl 500-3100/min, Werkzeugloser SÃ¤geblattwechsel, inkl. 5 SÃ¤geblÃ¤tter fÃ¼r Holz und Metall. Ideal fÃ¼r prÃ¤zise Kurvenschnitte.
     author: ref(user_michi)
     score: 0
     lng: 12.0770
     lat: 49.0080
     city: Regensburg
     postalCode: "93051"
-    address: Kumpfmühler Straße 81
     category: Werkzeug
     pricePerDay: 6
     images:
@@ -357,14 +341,13 @@ items:
 
   - id: item_campingkocher
     title: Campingkocher (2-Flammen)
-    description: Camping-Gaskocher mit 2 Flammen, 2000W pro Brenner, inkl. 2x Gaskartusche (300g). Stabil und kompakt, passt in jede Campingbox. Für unterwegs und den Garten.
+    description: Camping-Gaskocher mit 2 Flammen, 2000W pro Brenner, inkl. 2x Gaskartusche (300g). Stabil und kompakt, passt in jede Campingbox. FÃ¼r unterwegs und den Garten.
     author: ref(user_michi)
     score: 0
     lng: 12.0765
     lat: 49.0085
     city: Regensburg
     postalCode: "93051"
-    address: Puricellistraße 5
     category: Sport
     pricePerDay: 4
     images:
@@ -373,17 +356,16 @@ items:
       - path: images/item_campingkocher_1.jpg
         sort_order: 1
 
-  # --- Sven (Prüfening, 93049) ---
+  # --- Sven (PrÃ¼fening, 93049) ---
   - id: item_angelset
-    title: Angelset (Rute + Rolle + Köder)
-    description: "Komplettes Angelset für Fried- und Raubfische: 3,6m Karbonrute mit Stationärrolle, geflochtene Schnur 30m, inkl. 10 Haken, Posen, Bleie und Kunstköder. Angelkarte nicht enthalten."
+    title: Angelset (Rute + Rolle + KÃ¶der)
+    description: "Komplettes Angelset fÃ¼r Fried- und Raubfische: 3,6m Karbonrute mit StationÃ¤rrolle, geflochtene Schnur 30m, inkl. 10 Haken, Posen, Bleie und KunstkÃ¶der. Angelkarte nicht enthalten."
     author: ref(user_sven)
     score: 0
     lng: 12.0580
     lat: 49.0210
     city: Regensburg
     postalCode: "93049"
-    address: Prüfeninger Straße 112
     category: Sport
     pricePerDay: 8
     images:
@@ -394,14 +376,13 @@ items:
 
   - id: item_freischneider
     title: Freischneider (Benzin)
-    description: Stihl Freischneider FS 55, 2-Takt Benzinmotor, 0,75kW, mit 2-Faden-Fadenkopf und Messer. Für dichtes Gestrüpp, Brombeeren und hohes Gras. Inkl. Schutzbrille und Handschuhe.
+    description: Stihl Freischneider FS 55, 2-Takt Benzinmotor, 0,75kW, mit 2-Faden-Fadenkopf und Messer. FÃ¼r dichtes GestrÃ¼pp, Brombeeren und hohes Gras. Inkl. Schutzbrille und Handschuhe.
     author: ref(user_sven)
     score: 0
     lng: 12.0565
     lat: 49.0225
     city: Regensburg
     postalCode: "93049"
-    address: Am Fröhlichen Feld 10
     category: Garten
     pricePerDay: 14
     images:
@@ -412,15 +393,14 @@ items:
 
   # --- Emma (Stadtamhof, 93047) ---
   - id: item_naehmaschine
-    title: Nähmaschine (W6 N1235)
-    description: Mechanische Nähmaschine von W6 mit 35 Stichprogrammen, 4-Stufen-Knopflochautomatik, Nadeleinfädler und Freiarm. Ideal für Anfänger und Fortgeschrittene. Inkl. Zubehörbox.
+    title: NÃ¤hmaschine (W6 N1235)
+    description: Mechanische NÃ¤hmaschine von W6 mit 35 Stichprogrammen, 4-Stufen-Knopflochautomatik, NadeleinfÃ¤dler und Freiarm. Ideal fÃ¼r AnfÃ¤nger und Fortgeschrittene. Inkl. ZubehÃ¶rbox.
     author: ref(user_emma)
     score: 0
     lng: 12.0990
     lat: 49.0230
     city: Regensburg
     postalCode: "93047"
-    address: Am Brücktor 3
     category: Haushalt
     pricePerDay: 8
     images:
@@ -430,15 +410,14 @@ items:
         sort_order: 1
 
   - id: item_espresso
-    title: Espresso-Maschine (Siebträger)
-    description: Siebträger-Espressomaschine von De'Longhi, 15 Bar Pumpendruck, inkl. Milchaufschäumer, 1L Wassertank. Für perfekten Espresso, Cappuccino und Latte Macchiato inkl. 3 Tassen.
+    title: Espresso-Maschine (SiebtrÃ¤ger)
+    description: SiebtrÃ¤ger-Espressomaschine von De'Longhi, 15 Bar Pumpendruck, inkl. MilchaufschÃ¤umer, 1L Wassertank. FÃ¼r perfekten Espresso, Cappuccino und Latte Macchiato inkl. 3 Tassen.
     author: ref(user_emma)
     score: 4.6
     lng: 12.0995
     lat: 49.0225
     city: Regensburg
     postalCode: "93047"
-    address: An der Schergenbreite 6
     category: Haushalt
     pricePerDay: 10
     images:
@@ -447,17 +426,16 @@ items:
       - path: images/item_espresso_1.jpg
         sort_order: 1
 
-  # --- Finn (Königswiese, 93057) ---
+  # --- Finn (KÃ¶nigswiese, 93057) ---
   - id: item_beamer
     title: Full-HD Beamer (Epson)
-    description: Epson EH-TW650 Full-HD Beamer, 3100 Lumen, 1080p, integrierter Lautsprecher. Perfekt für Filmabende, Präsentationen und Gaming im Garten. Inkl. Leinwand 200cm und HDMI-Kabel 5m.
+    description: Epson EH-TW650 Full-HD Beamer, 3100 Lumen, 1080p, integrierter Lautsprecher. Perfekt fÃ¼r Filmabende, PrÃ¤sentationen und Gaming im Garten. Inkl. Leinwand 200cm und HDMI-Kabel 5m.
     author: ref(user_finn)
     score: 4.1
     lng: 12.0510
     lat: 49.0280
     city: Regensburg
     postalCode: "93057"
-    address: Königswiesener Straße 20
     category: Elektronik
     pricePerDay: 15
     images:
@@ -467,15 +445,14 @@ items:
         sort_order: 1
 
   - id: item_wanderstoecke
-    title: Wanderstöcke (Paar, verstellbar)
-    description: Teleskop-Wanderstöcke aus Aluminium (Paar), verstellbar 65-135cm, mit Korkgriff und Neopren-Schlaufen. Inkl. 2er-Pack Aufsätze (Schnee/Teller, Korb und Gummipuffer).
+    title: WanderstÃ¶cke (Paar, verstellbar)
+    description: Teleskop-WanderstÃ¶cke aus Aluminium (Paar), verstellbar 65-135cm, mit Korkgriff und Neopren-Schlaufen. Inkl. 2er-Pack AufsÃ¤tze (Schnee/Teller, Korb und Gummipuffer).
     author: ref(user_finn)
     score: 0
     lng: 12.0500
     lat: 49.0285
     city: Regensburg
     postalCode: "93057"
-    address: Hermann-Roth-Straße 8
     category: Sport
     pricePerDay: 3
     images:
@@ -487,14 +464,13 @@ items:
   # --- Lea (Innerer Westen, 93047) ---
   - id: item_dampfreiniger
     title: Dampfreiniger (handlich)
-    description: Hand-Dampfreiniger von Kärcher SC 1, 900W, 3 bar Dampfdruck, inkl. Aufsätze für Fenster, Fugen, Polster und Böden. Chemiefreie Reinigung für das ganze Haus.
+    description: Hand-Dampfreiniger von KÃ¤rcher SC 1, 900W, 3 bar Dampfdruck, inkl. AufsÃ¤tze fÃ¼r Fenster, Fugen, Polster und BÃ¶den. Chemiefreie Reinigung fÃ¼r das ganze Haus.
     author: ref(user_lea)
     score: 0
     lng: 12.0720
     lat: 49.0180
     city: Regensburg
     postalCode: "93047"
-    address: Äußere Münchener Straße 17
     category: Haushalt
     pricePerDay: 9
     images:
@@ -505,14 +481,13 @@ items:
 
   - id: item_zeltofen
     title: Zeltofen (klappbar, Edelstahl)
-    description: Klappbarer Zeltofen aus Edelstahl, 3,5kW, inkl. 2m Rauchrohr und Funkenfänger. Ideal für Wintercamping im Zelt oder als Outdoor-Kamin. Mit zusammenklappbaren Füßen 5kg.
+    description: Klappbarer Zeltofen aus Edelstahl, 3,5kW, inkl. 2m Rauchrohr und FunkenfÃ¤nger. Ideal fÃ¼r Wintercamping im Zelt oder als Outdoor-Kamin. Mit zusammenklappbaren FÃ¼ÃŸen 5kg.
     author: ref(user_lea)
     score: 0
     lng: 12.0715
     lat: 49.0185
     city: Regensburg
     postalCode: "93047"
-    address: Pixenteichstraße 5
     category: Sport
     pricePerDay: 8
     images:
@@ -522,28 +497,28 @@ items:
         sort_order: 1
 
 rent_requests:
-  # req_a: Dev -> Luca (Zelt) — OFFEN, 1 Angebot
+  # req_a: Dev -> Luca (Zelt) â€” OFFEN, 1 Angebot
   - id: req_a
     item: ref(item_zelt)
     requester: ref(user_dev)
     messages:
       - author: ref(user_dev)
-        content: Hey Luca, ist das Zelt noch frei fürs Wochenende 12.–14. Juli? Will mit meiner Freundin an den Bäff see.
+        content: Hey Luca, ist das Zelt noch frei fÃ¼rs Wochenende 12.â€“14. Juli? Will mit meiner Freundin an den BÃ¤ff see.
         created_at: "-5d 18:30"
       - author: ref(user_luca)
-        content: "Klar, 4 Personen oder nur zu zweit? Das Wurfzelt ist ja geräumig."
+        content: "Klar, 4 Personen oder nur zu zweit? Das Wurfzelt ist ja gerÃ¤umig."
         created_at: "-5d 19:00"
       - author: ref(user_dev)
-        content: "Nur zu zweit, aber das Wurfzelt ist perfekt – schnell aufgebaut und viel Platz."
+        content: "Nur zu zweit, aber das Wurfzelt ist perfekt â€“ schnell aufgebaut und viel Platz."
         created_at: "-5d 19:15"
       - author: ref(user_luca)
         content: "Stimmt. Samstag bis Sonntag reicht dir, oder schon Freitag?"
         created_at: "-5d 19:30"
       - author: ref(user_dev)
-        content: "Von Samstag 10 Uhr bis Sonntag 18 Uhr wär ideal."
+        content: "Von Samstag 10 Uhr bis Sonntag 18 Uhr wÃ¤r ideal."
         created_at: "-5d 19:45"
       - author: ref(user_luca)
-        content: "Passt! Ich schick dir ein Angebot rüber."
+        content: "Passt! Ich schick dir ein Angebot rÃ¼ber."
         created_at: "-5d 20:00"
     offers:
       - sender: ref(user_luca)
@@ -556,7 +531,7 @@ rent_requests:
       - ref(user_dev)
       - ref(user_luca)
 
-  # req_b: Dev -> Lisa (Auto) — ABGESCHLOSSEN (zurück)
+  # req_b: Dev -> Lisa (Auto) â€” ABGESCHLOSSEN (zurÃ¼ck)
   - id: req_b
     item: ref(item_auto)
     requester: ref(user_dev)
@@ -564,19 +539,19 @@ rent_requests:
     returned: true
     messages:
       - author: ref(user_dev)
-        content: "Moin Lisa, kann ich den Golf am 1. Juli für den Umzug leihen? Brauch ihn nur für den Vormittag."
+        content: "Moin Lisa, kann ich den Golf am 1. Juli fÃ¼r den Umzug leihen? Brauch ihn nur fÃ¼r den Vormittag."
         created_at: "-12d 08:00"
       - author: ref(user_lisa)
         content: "Klar! Ein Tag sollte reichen? Hab ihn eh ab 8 Uhr frei."
         created_at: "-12d 08:30"
       - author: ref(user_dev)
-        content: "Ja, ein Tag ist perfekt. Bis 20 Uhr geb ich ihn zurück, vollgetankt."
+        content: "Ja, ein Tag ist perfekt. Bis 20 Uhr geb ich ihn zurÃ¼ck, vollgetankt."
         created_at: "-12d 09:00"
       - author: ref(user_lisa)
-        content: "Super, denk an die Zulassungsbescheinigung – liegt im Handschuhfach. Viel Erfolg beim Umzug!"
+        content: "Super, denk an die Zulassungsbescheinigung â€“ liegt im Handschuhfach. Viel Erfolg beim Umzug!"
         created_at: "-12d 09:15"
       - author: ref(user_dev)
-        content: "Danke, hat alles geklappt! Auto steht sauber und vollgetankt bei dir. Schlüssel im Briefkasten."
+        content: "Danke, hat alles geklappt! Auto steht sauber und vollgetankt bei dir. SchlÃ¼ssel im Briefkasten."
         created_at: "-11d 20:00"
       - author: ref(user_lisa)
         content: "Perfekt, alles in Ordnung! Gern wieder :)"
@@ -595,28 +570,28 @@ rent_requests:
       - ref(user_dev)
       - ref(user_lisa)
 
-  # req_c: Lisa -> Timon (Ski) — OFFEN, 2 Angebote
+  # req_c: Lisa -> Timon (Ski) â€” OFFEN, 2 Angebote
   - id: req_c
     item: ref(item_ski)
     requester: ref(user_lisa)
     messages:
       - author: ref(user_lisa)
-        content: "Hey Timon, hast du die Ski noch? Wollte mit Freunden fürs Wochenende nach Österreich in die Alpen."
+        content: "Hey Timon, hast du die Ski noch? Wollte mit Freunden fÃ¼rs Wochenende nach Ã–sterreich in die Alpen."
         created_at: "-10d 11:00"
       - author: ref(user_timon)
-        content: "Klar! Wann genau? Die 175er Länge – wie groß bist du? Die passen so ab ~170-180cm."
+        content: "Klar! Wann genau? Die 175er LÃ¤nge â€“ wie groÃŸ bist du? Die passen so ab ~170-180cm."
         created_at: "-10d 11:30"
       - author: ref(user_lisa)
-        content: "Bin 175cm, die passen perfekt. Wollt Freitag bis Sonntag, 10.–12. Januar."
+        content: "Bin 175cm, die passen perfekt. Wollt Freitag bis Sonntag, 10.â€“12. Januar."
         created_at: "-10d 12:00"
       - author: ref(user_timon)
-        content: "Hmm, Freitag hab ich leider keine Zeit zum Rüberbringen. Geht Samstag früh?"
+        content: "Hmm, Freitag hab ich leider keine Zeit zum RÃ¼berbringen. Geht Samstag frÃ¼h?"
         created_at: "-10d 12:30"
       - author: ref(user_lisa)
-        content: "Samstag 8 Uhr wär spät – ich will um 9 los. Geht auch Freitagabend, so 18 Uhr?"
+        content: "Samstag 8 Uhr wÃ¤r spÃ¤t â€“ ich will um 9 los. Geht auch Freitagabend, so 18 Uhr?"
         created_at: "-10d 12:45"
       - author: ref(user_timon)
-        content: "Okay, Freitag 18 Uhr holen, Sonntag 20 Uhr zurück? Dann schick ich dir ein neues Angebot."
+        content: "Okay, Freitag 18 Uhr holen, Sonntag 20 Uhr zurÃ¼ck? Dann schick ich dir ein neues Angebot."
         created_at: "-10d 13:00"
       - author: ref(user_lisa)
         content: "Perfekt, passt! Danke dir!"
@@ -637,7 +612,7 @@ rent_requests:
       - ref(user_lisa)
       - ref(user_timon)
 
-  # req_d: Timon -> Lisa (Fahrrad) — OFFEN, kein Angebot
+  # req_d: Timon -> Lisa (Fahrrad) â€” OFFEN, kein Angebot
   - id: req_d
     item: ref(item_fahrrad)
     requester: ref(user_timon)
@@ -649,10 +624,10 @@ rent_requests:
         content: "Ja, ist frei! Wann hast du vor?"
         created_at: "-3d 10:15"
       - author: ref(user_timon)
-        content: "Am Samstag, so 10–17 Uhr? Einmal runter nach Donaustauf und zurück."
+        content: "Am Samstag, so 10â€“17 Uhr? Einmal runter nach Donaustauf und zurÃ¼ck."
         created_at: "-3d 10:30"
       - author: ref(user_lisa)
-        content: "Samstag geht klar, Adresse ist Puricellistraße 24. Komm einfach vorbei."
+        content: "Samstag geht klar, Adresse ist PuricellistraÃŸe 24. Komm einfach vorbei."
         created_at: "-3d 10:45"
       - author: ref(user_timon)
         content: "Super, danke! Bin gegen 10 da. Bis Samstag!"
@@ -662,7 +637,7 @@ rent_requests:
       - ref(user_timon)
       - ref(user_lisa)
 
-  # req_e: Luca -> Dev (Heckenschere) — OFFEN, 1 Angebot
+  # req_e: Luca -> Dev (Heckenschere) â€” OFFEN, 1 Angebot
   - id: req_e
     item: ref(item_heckenschere)
     requester: ref(user_luca)
@@ -671,13 +646,13 @@ rent_requests:
         content: "Hey Dev, kann ich deine Heckenschere ausleihen? Meine ist kaputt und die Hecke bei mir im Osten verwildert total."
         created_at: "-4d 16:00"
       - author: ref(user_dev)
-        content: "Klar, für wann brauchst du sie?"
+        content: "Klar, fÃ¼r wann brauchst du sie?"
         created_at: "-4d 16:30"
       - author: ref(user_luca)
-        content: "Würd sie gern diesen Samstag holen, Sonntag zurückbringen. Reicht mir für meine Hecke."
+        content: "WÃ¼rd sie gern diesen Samstag holen, Sonntag zurÃ¼ckbringen. Reicht mir fÃ¼r meine Hecke."
         created_at: "-4d 16:45"
       - author: ref(user_dev)
-        content: "Samstag Mittag passt. Ab 14 Uhr bin ich da – Roritzerstraße 12, klingeln."
+        content: "Samstag Mittag passt. Ab 14 Uhr bin ich da â€“ RoritzerstraÃŸe 12, klingeln."
         created_at: "-4d 17:00"
       - author: ref(user_luca)
         content: "Komm gegen 15 Uhr vorbei. Danke dir!"
@@ -693,13 +668,13 @@ rent_requests:
       - ref(user_luca)
       - ref(user_dev)
 
-  # req_f: Dev -> Luca (Bohrmaschine) — OFFEN, kein Angebot
+  # req_f: Dev -> Luca (Bohrmaschine) â€” OFFEN, kein Angebot
   - id: req_f
     item: ref(item_bohrmaschine)
     requester: ref(user_dev)
     messages:
       - author: ref(user_dev)
-        content: "Hey Luca, brauch kurz die Bohrmaschine für ein Regal im Keller. Reicht mir Samstag für paar Stunden."
+        content: "Hey Luca, brauch kurz die Bohrmaschine fÃ¼r ein Regal im Keller. Reicht mir Samstag fÃ¼r paar Stunden."
         created_at: "-2d 13:00"
       - author: ref(user_luca)
         content: "Klar, hol sie dir einfach ab. Ist eh geladen. Akkus sind beide voll."
@@ -712,7 +687,7 @@ rent_requests:
       - ref(user_dev)
       - ref(user_luca)
 
-  # req_g: Lisa -> Dev (Hammer) — ABGESCHLOSSEN (zurück)
+  # req_g: Lisa -> Dev (Hammer) â€” ABGESCHLOSSEN (zurÃ¼ck)
   - id: req_g
     item: ref(item_hammer)
     requester: ref(user_lisa)
@@ -720,19 +695,19 @@ rent_requests:
     returned: true
     messages:
       - author: ref(user_lisa)
-        content: "Hey Dev, haste kurz nen Hammer für mich? Will n Bild im Wohnzimmer aufhängen."
+        content: "Hey Dev, haste kurz nen Hammer fÃ¼r mich? Will n Bild im Wohnzimmer aufhÃ¤ngen."
         created_at: "-7d 15:00"
       - author: ref(user_dev)
-        content: "Ja klar, kannst gleich mitnehmen. Mit Nägel? Hab das Set da."
+        content: "Ja klar, kannst gleich mitnehmen. Mit NÃ¤gel? Hab das Set da."
         created_at: "-7d 15:15"
       - author: ref(user_lisa)
-        content: "Ja, wenn du welche übrig hast! Zwei reichen."
+        content: "Ja, wenn du welche Ã¼brig hast! Zwei reichen."
         created_at: "-7d 15:20"
       - author: ref(user_dev)
         content: "Komm vorbei, liegt bereit."
         created_at: "-7d 15:30"
       - author: ref(user_lisa)
-        content: "Danke, hat super geklappt! Hier ist der Hammer zurück."
+        content: "Danke, hat super geklappt! Hier ist der Hammer zurÃ¼ck."
         created_at: "-6d 18:00"
       - author: ref(user_dev)
         content: "Alles gut, gern wieder!"
@@ -751,16 +726,16 @@ rent_requests:
       - ref(user_lisa)
       - ref(user_dev)
 
-  # req_h: Timon -> Dev (Schlafsack) — OFFEN, kein Angebot
+  # req_h: Timon -> Dev (Schlafsack) â€” OFFEN, kein Angebot
   - id: req_h
     item: ref(item_schlafsack)
     requester: ref(user_timon)
     messages:
       - author: ref(user_timon)
-        content: "Hey Dev, haste n Schlafsack den ich mir für morgen Nacht leihen kann? Will im Garten unterm Sternenhimmel pennen. :D"
+        content: "Hey Dev, haste n Schlafsack den ich mir fÃ¼r morgen Nacht leihen kann? Will im Garten unterm Sternenhimmel pennen. :D"
         created_at: "-1d 14:00"
       - author: ref(user_dev)
-        content: "Haha, nice! Ja, der -5°C Mummie liegt im Keller. Kannst ihn heute abholen, Weißgerbergraben 8."
+        content: "Haha, nice! Ja, der -5Â°C Mummie liegt im Keller. Kannst ihn heute abholen, WeiÃŸgerbergraben 8."
         created_at: "-1d 14:20"
       - author: ref(user_timon)
         content: "Perfekt, komm in ner Stunde vorbei. Danke dir!"
@@ -770,7 +745,7 @@ rent_requests:
       - ref(user_timon)
       - ref(user_dev)
 
-  # req_i: Timon -> Lisa (Auto) — ABGESCHLOSSEN
+  # req_i: Timon -> Lisa (Auto) â€” ABGESCHLOSSEN
   - id: req_i
     item: ref(item_auto)
     requester: ref(user_timon)
@@ -778,10 +753,10 @@ rent_requests:
     returned: true
     messages:
       - author: ref(user_timon)
-        content: "Hi Lisa, brauch den Golf fürs Wochenende, will meine Möbel von Ikea holen."
+        content: "Hi Lisa, brauch den Golf fÃ¼rs Wochenende, will meine MÃ¶bel von Ikea holen."
         created_at: "-20d 09:00"
       - author: ref(user_lisa)
-        content: "Klar, Samstag bis Sonntag? Volltank und sauber zurück, dann passts."
+        content: "Klar, Samstag bis Sonntag? Volltank und sauber zurÃ¼ck, dann passts."
         created_at: "-20d 09:30"
       - author: ref(user_timon)
         content: "Ja genau, Samstag 10 Uhr bis Sonntag 18 Uhr. Passt perfekt!"
@@ -809,7 +784,7 @@ rent_requests:
       - ref(user_timon)
       - ref(user_lisa)
 
-  # req_j: Anna -> Dev (Hammer) — ABGESCHLOSSEN
+  # req_j: Anna -> Dev (Hammer) â€” ABGESCHLOSSEN
   - id: req_j
     item: ref(item_hammer)
     requester: ref(user_anna)
@@ -826,7 +801,7 @@ rent_requests:
         content: "Perfekt, komm gleich rum. Danke!"
         created_at: "-14d 11:30"
       - author: ref(user_anna)
-        content: "Hat super funktioniert, Hammer ist zurück. Danke dir!"
+        content: "Hat super funktioniert, Hammer ist zurÃ¼ck. Danke dir!"
         created_at: "-13d 17:00"
       - author: ref(user_dev)
         content: "Gerne, jederzeit!"
@@ -845,7 +820,7 @@ rent_requests:
       - ref(user_anna)
       - ref(user_dev)
 
-  # req_k: Sven -> Dev (Heckenschere) — ABGESCHLOSSEN
+  # req_k: Sven -> Dev (Heckenschere) â€” ABGESCHLOSSEN
   - id: req_k
     item: ref(item_heckenschere)
     requester: ref(user_sven)
@@ -853,16 +828,16 @@ rent_requests:
     returned: true
     messages:
       - author: ref(user_sven)
-        content: "Hey Dev, kann ich deine Heckenschere für meinen Garten ausleihen? Bei mir in Prüfening wucherts."
+        content: "Hey Dev, kann ich deine Heckenschere fÃ¼r meinen Garten ausleihen? Bei mir in PrÃ¼fening wucherts."
         created_at: "-9d 08:00"
       - author: ref(user_dev)
-        content: "Klar, hol sie dir einfach ab. Roritzerstraße 12, steht im Schuppen."
+        content: "Klar, hol sie dir einfach ab. RoritzerstraÃŸe 12, steht im Schuppen."
         created_at: "-9d 08:30"
       - author: ref(user_sven)
         content: "Super, komm nachher vorbei. Danke!"
         created_at: "-9d 09:00"
       - author: ref(user_sven)
-        content: "Heckenschere ist zurück, hat alles gut geklappt!"
+        content: "Heckenschere ist zurÃ¼ck, hat alles gut geklappt!"
         created_at: "-8d 16:00"
       - author: ref(user_dev)
         content: "Passt, gern wieder!"
@@ -881,7 +856,7 @@ rent_requests:
       - ref(user_sven)
       - ref(user_dev)
 
-  # req_l: Luca -> Finn (Beamer) — ABGESCHLOSSEN
+  # req_l: Luca -> Finn (Beamer) â€” ABGESCHLOSSEN
   - id: req_l
     item: ref(item_beamer)
     requester: ref(user_luca)
@@ -889,16 +864,16 @@ rent_requests:
     returned: true
     messages:
       - author: ref(user_luca)
-        content: "Hi Finn, kann ich den Beamer für ne Filmnacht im Garten ausleihen?"
+        content: "Hi Finn, kann ich den Beamer fÃ¼r ne Filmnacht im Garten ausleihen?"
         created_at: "-6d 14:00"
       - author: ref(user_finn)
         content: "Klar! Am Wochenende? Der Beamer lohnt sich im Dunkeln am meisten."
         created_at: "-6d 14:20"
       - author: ref(user_luca)
-        content: "Genau, Samstagabend. Würd ihn Samstag Mittag holen und Sonntag zurückbringen."
+        content: "Genau, Samstagabend. WÃ¼rd ihn Samstag Mittag holen und Sonntag zurÃ¼ckbringen."
         created_at: "-6d 14:45"
       - author: ref(user_finn)
-        content: "Passt, kommt bei mir vorbei. Königswiesener Straße 20."
+        content: "Passt, kommt bei mir vorbei. KÃ¶nigswiesener StraÃŸe 20."
         created_at: "-6d 15:00"
       - author: ref(user_luca)
         content: "Danke Finn, war der Hammer! Die Leinwand haben wir gleich im Garten aufgebaut."
@@ -920,7 +895,7 @@ rent_requests:
       - ref(user_luca)
       - ref(user_finn)
 
-  # req_m: Dev -> Emma (Espresso) — ABGESCHLOSSEN
+  # req_m: Dev -> Emma (Espresso) â€” ABGESCHLOSSEN
   - id: req_m
     item: ref(item_espresso)
     requester: ref(user_dev)
@@ -928,22 +903,22 @@ rent_requests:
     returned: true
     messages:
       - author: ref(user_dev)
-        content: "Emma, kann ich deine Siebträger-Maschine für ne Geburtstagsfeier ausleihen? Will allen Latte Macchiato machen."
+        content: "Emma, kann ich deine SiebtrÃ¤ger-Maschine fÃ¼r ne Geburtstagsfeier ausleihen? Will allen Latte Macchiato machen."
         created_at: "-4d 10:00"
       - author: ref(user_emma)
-        content: "Oh ja, die Maschine rockt! Klar, kannst sie haben. Aber bitte vorsichtig mit dem Milchaufschäumer."
+        content: "Oh ja, die Maschine rockt! Klar, kannst sie haben. Aber bitte vorsichtig mit dem MilchaufschÃ¤umer."
         created_at: "-4d 10:30"
       - author: ref(user_dev)
-        content: "Versprochen! Hol sie Samstag Mittag, geb sie Sonntag Abend zurück."
+        content: "Versprochen! Hol sie Samstag Mittag, geb sie Sonntag Abend zurÃ¼ck."
         created_at: "-4d 10:45"
       - author: ref(user_emma)
-        content: "Perfekt. Am Brücktor 3, klingeln. Ich zeig dir kurz wie die Entkalkung läuft."
+        content: "Perfekt. Am BrÃ¼cktor 3, klingeln. Ich zeig dir kurz wie die Entkalkung lÃ¤uft."
         created_at: "-4d 11:00"
       - author: ref(user_dev)
-        content: "War ein voller Erfolg! Maschine ist sauber und entkalkt zurück. Danke dir!"
+        content: "War ein voller Erfolg! Maschine ist sauber und entkalkt zurÃ¼ck. Danke dir!"
         created_at: "-3d 20:00"
       - author: ref(user_emma)
-        content: "Freut mich! Und danke fürs Entkalken, sehr korrekt! :)"
+        content: "Freut mich! Und danke fÃ¼rs Entkalken, sehr korrekt! :)"
         created_at: "-3d 20:30"
     offers:
       - sender: ref(user_emma)
@@ -966,13 +941,13 @@ rent_requests:
     borrow_confirmed: true
     messages:
       - author: ref(user_timon)
-        content: Hey, kann ich dein Zelt für einen Camping-Trip ausleihen?
+        content: Hey, kann ich dein Zelt fÃ¼r einen Camping-Trip ausleihen?
         created_at: "-3d 10:00"
       - author: ref(user_luca)
-        content: Klar, für wann denn?
+        content: Klar, fÃ¼r wann denn?
         created_at: "-3d 10:30"
       - author: ref(user_timon)
-        content: Nächste Woche, von Mo bis So, eine Woche etwa
+        content: NÃ¤chste Woche, von Mo bis So, eine Woche etwa
         created_at: "-3d 11:00"
       - author: ref(user_luca)
         content: Passt, ich schick dir ein Angebot!
@@ -996,13 +971,13 @@ rent_requests:
     borrow_confirmed: true
     messages:
       - author: ref(user_dev)
-        content: Hallo, ist das Fahrrad Mitte Juli verfügbar?
+        content: Hallo, ist das Fahrrad Mitte Juli verfÃ¼gbar?
         created_at: "-3d 09:00"
       - author: ref(user_lisa)
-        content: Ja, für ein paar Tage bestimmt!
+        content: Ja, fÃ¼r ein paar Tage bestimmt!
         created_at: "-3d 09:30"
       - author: ref(user_dev)
-        content: Perfekt, ich bräuchte es von Mo bis Do
+        content: Perfekt, ich brÃ¤uchte es von Mo bis Do
         created_at: "-3d 10:00"
       - author: ref(user_lisa)
         content: Alles klar, Angebot ist raus!
@@ -1026,10 +1001,10 @@ rent_requests:
     borrow_confirmed: true
     messages:
       - author: ref(user_timon)
-        content: Moin, kann ich die Bohrmaschine für ein Regalprojekt leihen?
+        content: Moin, kann ich die Bohrmaschine fÃ¼r ein Regalprojekt leihen?
         created_at: "-5d 14:00"
       - author: ref(user_luca)
-        content: Ja, wann hättest du Zeit?
+        content: Ja, wann hÃ¤ttest du Zeit?
         created_at: "-5d 14:30"
       - author: ref(user_timon)
         content: In ca. drei Wochen, ein paar Tage sollte reichen
@@ -1049,7 +1024,7 @@ rent_requests:
       - ref(user_timon)
       - ref(user_luca)
 
-  # P: Timon -> Auto (Lisa) -- COMPLETED (zurück)
+  # P: Timon -> Auto (Lisa) -- COMPLETED (zurÃ¼ck)
   - id: req_p
     item: ref(item_auto)
     requester: ref(user_timon)
@@ -1057,10 +1032,10 @@ rent_requests:
     returned: true
     messages:
       - author: ref(user_timon)
-        content: Hi Lisa, brauch den Golf fürs Wochenende, will meine Möbel von Ikea holen.
+        content: Hi Lisa, brauch den Golf fÃ¼rs Wochenende, will meine MÃ¶bel von Ikea holen.
         created_at: "-20d 09:00"
       - author: ref(user_lisa)
-        content: Klar, Samstag bis Sonntag? Volltank und sauber zurück, dann passts.
+        content: Klar, Samstag bis Sonntag? Volltank und sauber zurÃ¼ck, dann passts.
         created_at: "-20d 09:30"
       - author: ref(user_timon)
         content: Ja genau, Samstag 10 Uhr bis Sonntag 18 Uhr. Passt perfekt!
@@ -1088,7 +1063,7 @@ rent_requests:
       - ref(user_timon)
       - ref(user_lisa)
 
-  # Q: Anna -> Dev (Hammer) -- COMPLETED (zurück)
+  # Q: Anna -> Dev (Hammer) -- COMPLETED (zurÃ¼ck)
   - id: req_q
     item: ref(item_hammer)
     requester: ref(user_anna)
@@ -1105,7 +1080,7 @@ rent_requests:
         content: Perfekt, komm gleich rum. Danke!
         created_at: "-14d 11:30"
       - author: ref(user_anna)
-        content: Hat super funktioniert, Hammer ist zurück. Danke dir!
+        content: Hat super funktioniert, Hammer ist zurÃ¼ck. Danke dir!
         created_at: "-13d 17:00"
       - author: ref(user_dev)
         content: Gerne, jederzeit!
@@ -1124,7 +1099,7 @@ rent_requests:
       - ref(user_anna)
       - ref(user_dev)
 
-  # R: Sven -> Dev (Heckenschere) -- COMPLETED (zurück)
+  # R: Sven -> Dev (Heckenschere) -- COMPLETED (zurÃ¼ck)
   - id: req_r
     item: ref(item_heckenschere)
     requester: ref(user_sven)
@@ -1132,16 +1107,16 @@ rent_requests:
     returned: true
     messages:
       - author: ref(user_sven)
-        content: Hey Dev, kann ich deine Heckenschere für meinen Garten ausleihen? Bei mir in Prüfening wucherts.
+        content: Hey Dev, kann ich deine Heckenschere fÃ¼r meinen Garten ausleihen? Bei mir in PrÃ¼fening wucherts.
         created_at: "-9d 08:00"
       - author: ref(user_dev)
-        content: Klar, hol sie dir einfach ab. Roritzerstraße 12, steht im Schuppen.
+        content: Klar, hol sie dir einfach ab. RoritzerstraÃŸe 12, steht im Schuppen.
         created_at: "-9d 08:30"
       - author: ref(user_sven)
         content: Super, komm nachher vorbei. Danke!
         created_at: "-9d 09:00"
       - author: ref(user_sven)
-        content: Heckenschere ist zurück, hat alles gut geklappt!
+        content: Heckenschere ist zurÃ¼ck, hat alles gut geklappt!
         created_at: "-8d 16:00"
       - author: ref(user_dev)
         content: Passt, gern wieder!
@@ -1160,7 +1135,7 @@ rent_requests:
       - ref(user_sven)
       - ref(user_dev)
 
-  # S: Luca -> Finn (Beamer) -- COMPLETED (zurück)
+  # S: Luca -> Finn (Beamer) -- COMPLETED (zurÃ¼ck)
   - id: req_s
     item: ref(item_beamer)
     requester: ref(user_luca)
@@ -1168,16 +1143,16 @@ rent_requests:
     returned: true
     messages:
       - author: ref(user_luca)
-        content: Hi Finn, kann ich den Beamer für ne Filmnacht im Garten ausleihen?
+        content: Hi Finn, kann ich den Beamer fÃ¼r ne Filmnacht im Garten ausleihen?
         created_at: "-6d 14:00"
       - author: ref(user_finn)
         content: Klar! Am Wochenende? Der Beamer lohnt sich im Dunkeln am meisten.
         created_at: "-6d 14:20"
       - author: ref(user_luca)
-        content: Genau, Samstagabend. Würd ihn Samstag Mittag holen und Sonntag zurückbringen.
+        content: Genau, Samstagabend. WÃ¼rd ihn Samstag Mittag holen und Sonntag zurÃ¼ckbringen.
         created_at: "-6d 14:45"
       - author: ref(user_finn)
-        content: Passt, kommt bei mir vorbei. Königswiesener Straße 20.
+        content: Passt, kommt bei mir vorbei. KÃ¶nigswiesener StraÃŸe 20.
         created_at: "-6d 15:00"
       - author: ref(user_luca)
         content: Danke Finn, war der Hammer! Die Leinwand haben wir gleich im Garten aufgebaut.
@@ -1199,7 +1174,7 @@ rent_requests:
       - ref(user_luca)
       - ref(user_finn)
 
-  # T: Dev -> Emma (Espresso) -- COMPLETED (zurück)
+  # T: Dev -> Emma (Espresso) -- COMPLETED (zurÃ¼ck)
   - id: req_t
     item: ref(item_espresso)
     requester: ref(user_dev)
@@ -1207,22 +1182,22 @@ rent_requests:
     returned: true
     messages:
       - author: ref(user_dev)
-        content: Emma, kann ich deine Siebträger-Maschine für ne Geburtstagsfeier ausleihen? Will allen Latte Macchiato machen.
+        content: Emma, kann ich deine SiebtrÃ¤ger-Maschine fÃ¼r ne Geburtstagsfeier ausleihen? Will allen Latte Macchiato machen.
         created_at: "-4d 10:00"
       - author: ref(user_emma)
-        content: Oh ja, die Maschine rockt! Klar, kannst sie haben. Aber bitte vorsichtig mit dem Milchaufschäumer.
+        content: Oh ja, die Maschine rockt! Klar, kannst sie haben. Aber bitte vorsichtig mit dem MilchaufschÃ¤umer.
         created_at: "-4d 10:30"
       - author: ref(user_dev)
-        content: Versprochen! Hol sie Samstag Mittag, geb sie Sonntag Abend zurück.
+        content: Versprochen! Hol sie Samstag Mittag, geb sie Sonntag Abend zurÃ¼ck.
         created_at: "-4d 10:45"
       - author: ref(user_emma)
-        content: Perfekt. Am Brücktor 3, klingeln. Ich zeig dir kurz wie die Entkalkung läuft.
+        content: Perfekt. Am BrÃ¼cktor 3, klingeln. Ich zeig dir kurz wie die Entkalkung lÃ¤uft.
         created_at: "-4d 11:00"
       - author: ref(user_dev)
-        content: War ein voller Erfolg! Maschine ist sauber und entkalkt zurück. Danke dir!
+        content: War ein voller Erfolg! Maschine ist sauber und entkalkt zurÃ¼ck. Danke dir!
         created_at: "-3d 20:00"
       - author: ref(user_emma)
-        content: Freut mich! Und danke fürs Entkalken, sehr korrekt! :)
+        content: Freut mich! Und danke fÃ¼rs Entkalken, sehr korrekt! :)
         created_at: "-3d 20:30"
     offers:
       - sender: ref(user_emma)
@@ -1246,7 +1221,7 @@ item_ratings:
     condition: 4
     cleanliness: 5
     overall: 4.5
-    comment: "Auto lief einwandfrei, vollgetankt zurückgegeben. Lisa war sehr unkompliziert!"
+    comment: "Auto lief einwandfrei, vollgetankt zurÃ¼ckgegeben. Lisa war sehr unkompliziert!"
     created_at: "-11d 21:30"
   - id: rating_hammer_1
     rent_request: ref(req_g)
@@ -1264,7 +1239,7 @@ item_ratings:
     condition: 3
     cleanliness: 4
     overall: 3.5
-    comment: "Auto war okay, aber die Kupplung kommt langsam. Für den Umzug hats gereicht."
+    comment: "Auto war okay, aber die Kupplung kommt langsam. FÃ¼r den Umzug hats gereicht."
     created_at: "-19d 19:00"
   - id: rating_hammer_2
     rent_request: ref(req_q)
@@ -1273,7 +1248,7 @@ item_ratings:
     condition: 5
     cleanliness: 5
     overall: 5.0
-    comment: "Perfekt für meine Hochbeet-Reparatur. Hammer in Top-Zustand!"
+    comment: "Perfekt fÃ¼r meine Hochbeet-Reparatur. Hammer in Top-Zustand!"
     created_at: "-13d 18:00"
   - id: rating_heckenschere_1
     rent_request: ref(req_r)
@@ -1291,7 +1266,7 @@ item_ratings:
     condition: 5
     cleanliness: 4
     overall: 4.5
-    comment: "Riesige Leinwand, top Bildqualität. Die Filmnacht war ein voller Erfolg!"
+    comment: "Riesige Leinwand, top BildqualitÃ¤t. Die Filmnacht war ein voller Erfolg!"
     created_at: "-5d 13:30"
   - id: rating_espresso_1
     rent_request: ref(req_t)
@@ -1300,5 +1275,5 @@ item_ratings:
     condition: 4
     cleanliness: 5
     overall: 4.5
-    comment: "Hammer Maschine! Alle Gäste waren begeistert vom Cappuccino."
+    comment: "Hammer Maschine! Alle GÃ¤ste waren begeistert vom Cappuccino."
     created_at: "-3d 21:00"

@@ -119,7 +119,6 @@ async def run_seed(db: AsyncSession) -> None:
             ).cast(GeoAlchemyGeography(srid=4326)),
             city=item_data["city"],
             postal_code=item_data.get("postalCode"),
-            address=item_data.get("address"),
             category=item_data.get("category", "Sonstiges"),
             price_per_day=item_data.get("pricePerDay"),
         )

@@ -20,13 +20,12 @@ class ItemEditDetail {
     required this.score,
     this.city,
     this.postalCode,
-    this.address,
     this.imageUuids = const [],
     required this.category,
     required this.lat,
     required this.lng,
     required this.createdAt,
-    this.pricePerDay,
+    required this.pricePerDay,
   });
 
   int id;
@@ -55,8 +54,6 @@ class ItemEditDetail {
   ///
   String? postalCode;
 
-  String? address;
-
   List<String> imageUuids;
 
   String category;
@@ -67,7 +64,7 @@ class ItemEditDetail {
 
   DateTime createdAt;
 
-  double? pricePerDay;
+  double pricePerDay;
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is ItemEditDetail &&
@@ -78,7 +75,6 @@ class ItemEditDetail {
     other.score == score &&
     other.city == city &&
     other.postalCode == postalCode &&
-    other.address == address &&
     _deepEquality.equals(other.imageUuids, imageUuids) &&
     other.category == category &&
     other.lat == lat &&
@@ -96,16 +92,15 @@ class ItemEditDetail {
     (score.hashCode) +
     (city == null ? 0 : city!.hashCode) +
     (postalCode == null ? 0 : postalCode!.hashCode) +
-    (address == null ? 0 : address!.hashCode) +
     (imageUuids.hashCode) +
     (category.hashCode) +
     (lat.hashCode) +
     (lng.hashCode) +
     (createdAt.hashCode) +
-    (pricePerDay == null ? 0 : pricePerDay!.hashCode);
+    (pricePerDay.hashCode);
 
   @override
-  String toString() => 'ItemEditDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, address=$address, imageUuids=$imageUuids, category=$category, lat=$lat, lng=$lng, createdAt=$createdAt, pricePerDay=$pricePerDay]';
+  String toString() => 'ItemEditDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, lat=$lat, lng=$lng, createdAt=$createdAt, pricePerDay=$pricePerDay]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -124,21 +119,12 @@ class ItemEditDetail {
     } else {
       json[r'postalCode'] = null;
     }
-    if (this.address != null) {
-      json[r'address'] = this.address;
-    } else {
-      json[r'address'] = null;
-    }
       json[r'imageUuids'] = this.imageUuids;
       json[r'category'] = this.category;
       json[r'lat'] = this.lat;
       json[r'lng'] = this.lng;
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
-    if (this.pricePerDay != null) {
       json[r'pricePerDay'] = this.pricePerDay;
-    } else {
-      json[r'pricePerDay'] = null;
-    }
     return json;
   }
 
@@ -173,6 +159,8 @@ class ItemEditDetail {
         assert(json[r'lng'] != null, 'Required key "ItemEditDetail[lng]" has a null value in JSON.');
         assert(json.containsKey(r'createdAt'), 'Required key "ItemEditDetail[createdAt]" is missing from JSON.');
         assert(json[r'createdAt'] != null, 'Required key "ItemEditDetail[createdAt]" has a null value in JSON.');
+        assert(json.containsKey(r'pricePerDay'), 'Required key "ItemEditDetail[pricePerDay]" is missing from JSON.');
+        assert(json[r'pricePerDay'] != null, 'Required key "ItemEditDetail[pricePerDay]" has a null value in JSON.');
         return true;
       }());
 
@@ -184,7 +172,6 @@ class ItemEditDetail {
         score: mapValueOfType<double>(json, r'score')!,
         city: mapValueOfType<String>(json, r'city'),
         postalCode: mapValueOfType<String>(json, r'postalCode'),
-        address: mapValueOfType<String>(json, r'address'),
         imageUuids: json[r'imageUuids'] is Iterable
             ? (json[r'imageUuids'] as Iterable).cast<String>().toList(growable: false)
             : const [],
@@ -192,7 +179,7 @@ class ItemEditDetail {
         lat: mapValueOfType<double>(json, r'lat')!,
         lng: mapValueOfType<double>(json, r'lng')!,
         createdAt: mapDateTime(json, r'createdAt', r'')!,
-        pricePerDay: mapValueOfType<double>(json, r'pricePerDay'),
+        pricePerDay: mapValueOfType<double>(json, r'pricePerDay')!,
       );
     }
     return null;
@@ -250,5 +237,6 @@ class ItemEditDetail {
     'lat',
     'lng',
     'createdAt',
+    'pricePerDay',
   };
 }

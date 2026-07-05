@@ -20,11 +20,10 @@ class ItemOverview {
     this.distance,
     this.city,
     this.postalCode,
-    this.address,
     required this.score,
     this.imageUuid,
     required this.category,
-    this.pricePerDay,
+    required this.pricePerDay,
   });
 
   int id;
@@ -59,15 +58,13 @@ class ItemOverview {
   ///
   String? postalCode;
 
-  String? address;
-
   double score;
 
   String? imageUuid;
 
   String category;
 
-  double? pricePerDay;
+  double pricePerDay;
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is ItemOverview &&
@@ -78,7 +75,6 @@ class ItemOverview {
     other.distance == distance &&
     other.city == city &&
     other.postalCode == postalCode &&
-    other.address == address &&
     other.score == score &&
     other.imageUuid == imageUuid &&
     other.category == category &&
@@ -94,14 +90,13 @@ class ItemOverview {
     (distance == null ? 0 : distance!.hashCode) +
     (city == null ? 0 : city!.hashCode) +
     (postalCode == null ? 0 : postalCode!.hashCode) +
-    (address == null ? 0 : address!.hashCode) +
     (score.hashCode) +
     (imageUuid == null ? 0 : imageUuid!.hashCode) +
     (category.hashCode) +
-    (pricePerDay == null ? 0 : pricePerDay!.hashCode);
+    (pricePerDay.hashCode);
 
   @override
-  String toString() => 'ItemOverview[id=$id, title=$title, description=$description, author=$author, distance=$distance, city=$city, postalCode=$postalCode, address=$address, score=$score, imageUuid=$imageUuid, category=$category, pricePerDay=$pricePerDay]';
+  String toString() => 'ItemOverview[id=$id, title=$title, description=$description, author=$author, distance=$distance, city=$city, postalCode=$postalCode, score=$score, imageUuid=$imageUuid, category=$category, pricePerDay=$pricePerDay]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -124,11 +119,6 @@ class ItemOverview {
     } else {
       json[r'postalCode'] = null;
     }
-    if (this.address != null) {
-      json[r'address'] = this.address;
-    } else {
-      json[r'address'] = null;
-    }
       json[r'score'] = this.score;
     if (this.imageUuid != null) {
       json[r'imageUuid'] = this.imageUuid;
@@ -136,11 +126,7 @@ class ItemOverview {
       json[r'imageUuid'] = null;
     }
       json[r'category'] = this.category;
-    if (this.pricePerDay != null) {
       json[r'pricePerDay'] = this.pricePerDay;
-    } else {
-      json[r'pricePerDay'] = null;
-    }
     return json;
   }
 
@@ -167,6 +153,8 @@ class ItemOverview {
         assert(json[r'score'] != null, 'Required key "ItemOverview[score]" has a null value in JSON.');
         assert(json.containsKey(r'category'), 'Required key "ItemOverview[category]" is missing from JSON.');
         assert(json[r'category'] != null, 'Required key "ItemOverview[category]" has a null value in JSON.');
+        assert(json.containsKey(r'pricePerDay'), 'Required key "ItemOverview[pricePerDay]" is missing from JSON.');
+        assert(json[r'pricePerDay'] != null, 'Required key "ItemOverview[pricePerDay]" has a null value in JSON.');
         return true;
       }());
 
@@ -178,11 +166,10 @@ class ItemOverview {
         distance: Distance.fromJson(json[r'distance']),
         city: mapValueOfType<String>(json, r'city'),
         postalCode: mapValueOfType<String>(json, r'postalCode'),
-        address: mapValueOfType<String>(json, r'address'),
         score: mapValueOfType<double>(json, r'score')!,
         imageUuid: mapValueOfType<String>(json, r'imageUuid'),
         category: mapValueOfType<String>(json, r'category')!,
-        pricePerDay: mapValueOfType<double>(json, r'pricePerDay'),
+        pricePerDay: mapValueOfType<double>(json, r'pricePerDay')!,
       );
     }
     return null;
@@ -236,5 +223,6 @@ class ItemOverview {
     'author',
     'score',
     'category',
+    'pricePerDay',
   };
 }

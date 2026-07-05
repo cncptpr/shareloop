@@ -135,20 +135,18 @@ class _Content extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(item.description),
-                if (item.pricePerDay != null) ...[
-                  const SizedBox(height: 8),
-                  Row(children: [
-                    Icon(Icons.euro, size: 16, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${item.pricePerDay!.toStringAsFixed(0)} €/Tag',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ]),
-                ],
+                const SizedBox(height: 8),
+                Row(children: [
+                  Icon(Icons.euro, size: 16, color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${item.pricePerDay.toStringAsFixed(0)} €/Tag',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ]),
                 const SizedBox(height: 16),
                 _ProfileCard(author: item.author),
                 const SizedBox(height: 16),
@@ -158,15 +156,6 @@ class _Content extends ConsumerWidget {
                     const SizedBox(width: 4),
                     Text([item.postalCode, item.city].nonNulls.join(' ')),
                   ]),
-                if (item.address != null && item.address!.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Row(children: [
-                      const Icon(Icons.home, size: 16),
-                      const SizedBox(width: 4),
-                      Text(item.address!),
-                    ]),
-                  ),
                 const SizedBox(height: 8),
                 Text(
                   item.category,

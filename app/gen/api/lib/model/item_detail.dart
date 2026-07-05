@@ -20,13 +20,12 @@ class ItemDetail {
     required this.score,
     this.city,
     this.postalCode,
-    this.address,
     this.imageUuids = const [],
     required this.category,
     required this.createdAt,
     required this.itemRatingCount,
     this.itemRatings = const [],
-    this.pricePerDay,
+    required this.pricePerDay,
   });
 
   int id;
@@ -55,8 +54,6 @@ class ItemDetail {
   ///
   String? postalCode;
 
-  String? address;
-
   List<String> imageUuids;
 
   String category;
@@ -68,7 +65,7 @@ class ItemDetail {
 
   List<ItemRating> itemRatings;
 
-  double? pricePerDay;
+  double pricePerDay;
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is ItemDetail &&
@@ -79,7 +76,6 @@ class ItemDetail {
     other.score == score &&
     other.city == city &&
     other.postalCode == postalCode &&
-    other.address == address &&
     _deepEquality.equals(other.imageUuids, imageUuids) &&
     other.category == category &&
     other.createdAt == createdAt &&
@@ -97,16 +93,15 @@ class ItemDetail {
     (score.hashCode) +
     (city == null ? 0 : city!.hashCode) +
     (postalCode == null ? 0 : postalCode!.hashCode) +
-    (address == null ? 0 : address!.hashCode) +
     (imageUuids.hashCode) +
     (category.hashCode) +
     (createdAt.hashCode) +
     (itemRatingCount.hashCode) +
     (itemRatings.hashCode) +
-    (pricePerDay == null ? 0 : pricePerDay!.hashCode);
+    (pricePerDay.hashCode);
 
   @override
-  String toString() => 'ItemDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, address=$address, imageUuids=$imageUuids, category=$category, createdAt=$createdAt, itemRatingCount=$itemRatingCount, itemRatings=$itemRatings, pricePerDay=$pricePerDay]';
+  String toString() => 'ItemDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, createdAt=$createdAt, itemRatingCount=$itemRatingCount, itemRatings=$itemRatings, pricePerDay=$pricePerDay]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -125,21 +120,12 @@ class ItemDetail {
     } else {
       json[r'postalCode'] = null;
     }
-    if (this.address != null) {
-      json[r'address'] = this.address;
-    } else {
-      json[r'address'] = null;
-    }
       json[r'imageUuids'] = this.imageUuids;
       json[r'category'] = this.category;
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
       json[r'itemRatingCount'] = this.itemRatingCount;
       json[r'itemRatings'] = this.itemRatings;
-    if (this.pricePerDay != null) {
       json[r'pricePerDay'] = this.pricePerDay;
-    } else {
-      json[r'pricePerDay'] = null;
-    }
     return json;
   }
 
@@ -174,6 +160,8 @@ class ItemDetail {
         assert(json[r'itemRatingCount'] != null, 'Required key "ItemDetail[itemRatingCount]" has a null value in JSON.');
         assert(json.containsKey(r'itemRatings'), 'Required key "ItemDetail[itemRatings]" is missing from JSON.');
         assert(json[r'itemRatings'] != null, 'Required key "ItemDetail[itemRatings]" has a null value in JSON.');
+        assert(json.containsKey(r'pricePerDay'), 'Required key "ItemDetail[pricePerDay]" is missing from JSON.');
+        assert(json[r'pricePerDay'] != null, 'Required key "ItemDetail[pricePerDay]" has a null value in JSON.');
         return true;
       }());
 
@@ -185,7 +173,6 @@ class ItemDetail {
         score: mapValueOfType<double>(json, r'score')!,
         city: mapValueOfType<String>(json, r'city'),
         postalCode: mapValueOfType<String>(json, r'postalCode'),
-        address: mapValueOfType<String>(json, r'address'),
         imageUuids: json[r'imageUuids'] is Iterable
             ? (json[r'imageUuids'] as Iterable).cast<String>().toList(growable: false)
             : const [],
@@ -193,7 +180,7 @@ class ItemDetail {
         createdAt: mapDateTime(json, r'createdAt', r'')!,
         itemRatingCount: mapValueOfType<int>(json, r'itemRatingCount')!,
         itemRatings: ItemRating.listFromJson(json[r'itemRatings']),
-        pricePerDay: mapValueOfType<double>(json, r'pricePerDay'),
+        pricePerDay: mapValueOfType<double>(json, r'pricePerDay')!,
       );
     }
     return null;
@@ -251,5 +238,6 @@ class ItemDetail {
     'createdAt',
     'itemRatingCount',
     'itemRatings',
+    'pricePerDay',
   };
 }

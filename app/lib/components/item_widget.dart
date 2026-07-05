@@ -64,9 +64,7 @@ class ItemWidget extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        item.pricePerDay != null
-                            ? '${item.pricePerDay!.toStringAsFixed(0)}€/Tag'
-                            : '',
+                        '${item.pricePerDay.toStringAsFixed(0)}€/Tag',
                         style: tt.labelMedium?.copyWith(
                           color: cs.primary,
                           fontWeight: FontWeight.bold,
@@ -110,19 +108,6 @@ class ItemWidget extends ConsumerWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      if (item.address != null && item.address!.isNotEmpty) ...[
-                        const SizedBox(width: 4),
-                        Icon(Icons.home, size: 14, color: cs.onSurfaceVariant),
-                        const SizedBox(width: 2),
-                        Flexible(
-                          child: Text(
-                            item.address!,
-                            style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ],

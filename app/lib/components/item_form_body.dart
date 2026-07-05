@@ -11,7 +11,6 @@ class ItemFormBody extends StatefulWidget {
   final TextEditingController titleController;
   final TextEditingController descriptionController;
   final TextEditingController priceController;
-  final TextEditingController addressController;
   final String? category;
   final ValueChanged<String?> onCategoryChanged;
   final String? locationLabel;
@@ -30,7 +29,6 @@ class ItemFormBody extends StatefulWidget {
     required this.titleController,
     required this.descriptionController,
     required this.priceController,
-    required this.addressController,
     required this.category,
     required this.onCategoryChanged,
     required this.locationLabel,
@@ -123,21 +121,10 @@ class _ItemFormBodyState extends State<ItemFormBody> {
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             validator: (v) {
-              if (v != null && v.trim().isNotEmpty) {
-                if (double.tryParse(v.trim()) == null) {
-                  return 'Ungültige Zahl';
-                }
-              }
+              if (v == null || v.trim().isEmpty) return 'Erforderlich';
+              if (double.tryParse(v.trim()) == null) return 'Ungültige Zahl';
               return null;
             },
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: widget.addressController,
-            decoration: const InputDecoration(
-              labelText: 'Adresse',
-              hintText: 'Straße, Hausnummer',
-            ),
           ),
           const SizedBox(height: 16),
           InkWell(

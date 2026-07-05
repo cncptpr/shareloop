@@ -794,7 +794,7 @@ components:
 
     ItemOverview:
       type: object
-      required: [id, title, description, author, score, category]
+      required: [id, title, description, author, score, category, pricePerDay]
       properties:
         id:
           type: integer
@@ -811,9 +811,6 @@ components:
           type: string
         postalCode:
           type: string
-        address:
-          type: string
-          nullable: true
         score:
           type: number
           format: double
@@ -919,7 +916,7 @@ components:
 
     CreateItemRequest:
       type: object
-      required: [title, description, city, postalCode, lat, lng, category]
+      required: [title, description, city, postalCode, lat, lng, category, pricePerDay]
       properties:
         title:
           type: string
@@ -929,9 +926,6 @@ components:
           type: string
         postalCode:
           type: string
-        address:
-          type: string
-          nullable: true
         lat:
           type: number
           format: double
@@ -953,7 +947,7 @@ components:
 
     ItemDetail:
       type: object
-      required: [id, title, description, author, score, createdAt, imageUuids, category, itemRatingCount, itemRatings]
+      required: [id, title, description, author, score, createdAt, imageUuids, category, itemRatingCount, itemRatings, pricePerDay]
       properties:
         id:
           type: integer
@@ -970,9 +964,6 @@ components:
           type: string
         postalCode:
           type: string
-        address:
-          type: string
-          nullable: true
         imageUuids:
           type: array
           items:
@@ -996,7 +987,7 @@ components:
 
     ItemEditDetail:
       type: object
-      required: [id, title, description, author, score, createdAt, imageUuids, lat, lng, category]
+      required: [id, title, description, author, score, createdAt, imageUuids, lat, lng, category, pricePerDay]
       properties:
         id:
           type: integer
@@ -1013,9 +1004,6 @@ components:
           type: string
         postalCode:
           type: string
-        address:
-          type: string
-          nullable: true
         imageUuids:
           type: array
           items:
@@ -1060,7 +1048,7 @@ components:
 
     UpdateItemRequest:
       type: object
-      required: [title, description, city, postalCode, lat, lng, category]
+      required: [title, description, city, postalCode, lat, lng, category, pricePerDay]
       properties:
         title:
           type: string
@@ -1070,9 +1058,6 @@ components:
           type: string
         postalCode:
           type: string
-        address:
-          type: string
-          nullable: true
         lat:
           type: number
           format: double

@@ -33,7 +33,6 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
-  final _addressController = TextEditingController();
   bool _loading = false;
   bool _redirectedToLoginScreen = false;
 
@@ -54,14 +53,12 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
     final saved = ref.read(createItemFormProvider);
     _titleController.text = saved.title;
     _descriptionController.text = saved.description;
-    _addressController.text = saved.address;
     if (saved.pricePerDay != null) {
       _priceController.text = saved.pricePerDay.toString();
     }
     _titleController.addListener(_onTitleChanged);
     _descriptionController.addListener(_onDescriptionChanged);
     _priceController.addListener(_onPriceChanged);
-    _addressController.addListener(_onAddressChanged);
     if (saved.selectedLocation == null || saved.selectedLocation is! SearchedLocation) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _initLocation());
     }
@@ -108,22 +105,14 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
     );
   }
 
-  void _onAddressChanged() {
-    ref.read(createItemFormProvider.notifier).setAddress(
-      _addressController.text,
-    );
-  }
-
   @override
   void dispose() {
     _titleController.removeListener(_onTitleChanged);
     _descriptionController.removeListener(_onDescriptionChanged);
     _priceController.removeListener(_onPriceChanged);
-    _addressController.removeListener(_onAddressChanged);
     _titleController.dispose();
     _descriptionController.dispose();
     _priceController.dispose();
-    _addressController.dispose();
     super.dispose();
   }
 
@@ -165,8 +154,7 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
         postalCode: selected.postalCode,
         lat: selected.lat,
         lng: selected.lng,
-        pricePerDay: formState.pricePerDay,
-        address: formState.address.isNotEmpty ? formState.address : null,
+        pricePerDay: formState.pricePerDay!,
       );
 
       debugPrint('[createItem] Creating item...');
@@ -281,7 +269,6 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
             titleController: _titleController,
             descriptionController: _descriptionController,
             priceController: _priceController,
-            addressController: _addressController,
             category: formState.category,
             onCategoryChanged: (v) {
               ref.read(createItemFormProvider.notifier).setCategory(v);

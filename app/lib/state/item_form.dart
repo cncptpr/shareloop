@@ -37,7 +37,6 @@ class ItemFormState {
   final String description;
   final String category;
   final double? pricePerDay;
-  final String address;
   final List<ItemImage> images;
   final List<UuidValue> deletedServerImages;
   final SelectedLocation? selectedLocation;
@@ -47,7 +46,6 @@ class ItemFormState {
     this.description = '',
     this.category = '',
     this.pricePerDay,
-    this.address = '',
     this.images = const [],
     this.deletedServerImages = const [],
     this.selectedLocation,
@@ -58,7 +56,6 @@ class ItemFormState {
     String? description,
     String? category,
     double? pricePerDay,
-    String? address,
     List<ItemImage>? images,
     List<UuidValue>? deletedServerImages,
     SelectedLocation? selectedLocation,
@@ -68,7 +65,6 @@ class ItemFormState {
       description: description ?? this.description,
       category: category ?? this.category,
       pricePerDay: pricePerDay ?? this.pricePerDay,
-      address: address ?? this.address,
       images: images ?? this.images,
       deletedServerImages: deletedServerImages ?? this.deletedServerImages,
       selectedLocation: selectedLocation ?? this.selectedLocation,
@@ -84,7 +80,6 @@ class ItemFormNotifier extends Notifier<ItemFormState> {
   void setDescription(String v) => state = state.copyWith(description: v);
   void setCategory(String? v) => state = state.copyWith(category: v);
   void setPricePerDay(double? v) => state = state.copyWith(pricePerDay: v);
-  void setAddress(String v) => state = state.copyWith(address: v);
   void setSelectedLocation(SelectedLocation? v) =>
       state = state.copyWith(selectedLocation: v);
   void addImage(XFile img) {
@@ -159,7 +154,6 @@ class EditItemFormNotifier extends ItemFormNotifier {
         description: item.description,
         category: item.category,
         pricePerDay: item.pricePerDay,
-        address: item.address ?? '',
         images: item.imageUuids
             .map((uuid) => ServerItemImage(uuid: UuidValue.fromString(uuid)))
             .toList(),

@@ -29,7 +29,7 @@ class ProfileScreen extends ConsumerWidget {
       ),
       error: (_, __) => const Scaffold(
         appBar: _ProfileAppBar(),
-        body: Center(child: Text('Auth failed')),
+        body: Center(child: Text('Authentifizierung fehlgeschlagen')),
       ),
       data: (user) {
         if (user == null && userId == null) {
@@ -61,11 +61,11 @@ class ProfileScreen extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Not logged in'),
+            const Text('Nicht angemeldet'),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => LoginScreen.push(ctx),
-              child: const Text('Log in'),
+              child: const Text('Anmelden'),
             ),
             if (seedingAvailable) ...[
               const SizedBox(height: 24),
@@ -83,7 +83,7 @@ class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(title: const Text('Profile'), centerTitle: false);
+    return AppBar(title: const Text('Profil'), centerTitle: false);
   }
 
   @override
@@ -124,7 +124,7 @@ class _ProfileContent extends ConsumerWidget {
 
   PreferredSizeWidget _appBar(BuildContext context, WidgetRef ref, UserProfile? profile) {
     return AppBar(
-      title: const Text('Profile'),
+      title: const Text('Profil'),
       centerTitle: false,
       actions: [
         if (isOwnProfile && profile != null)
@@ -269,12 +269,12 @@ class _StatsRow extends StatelessWidget {
         )),
         const SizedBox(width: 8),
         Expanded(child: _StatBox(
-          label: 'Shares',
+          label: 'Verleihe',
           value: '${profile.shareCount ?? 0}',
         )),
         const SizedBox(width: 8),
         Expanded(child: _StatBox(
-          label: 'Follower',
+          label: 'Abonnenten',
           value: '${profile.followerCount ?? 0}',
         )),
         const SizedBox(width: 8),
@@ -475,7 +475,7 @@ class _ItemCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(width: 2),
-                    Icon(Icons.star, size: 14, color: starColor),
+                    const Icon(Icons.star, size: 14, color: starColor),
                   ],
                 ),
               ],

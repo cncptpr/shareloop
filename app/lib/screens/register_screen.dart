@@ -46,12 +46,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (mounted) Navigator.pop(context);
     } on ApiException catch (e) {
       if (e.code == 409) {
-        setState(() => _error = 'Email already registered.');
+        setState(() => _error = 'E-Mail bereits registriert.');
       } else {
-        setState(() => _error = 'Registration failed. Please try again.');
+        setState(() => _error = 'Registrierung fehlgeschlagen. Bitte versuche es erneut.');
       }
     } catch (_) {
-      setState(() => _error = 'Connection error. Please try again.');
+      setState(() => _error = 'Verbindungsfehler. Bitte versuche es erneut.');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -60,7 +60,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Account')),
+      appBar: AppBar(title: const Text('Konto erstellen')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -74,17 +74,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   decoration: const InputDecoration(labelText: 'Name'),
                   textCapitalization: TextCapitalization.words,
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                      (v == null || v.trim().isEmpty) ? 'Erforderlich' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
+                  decoration: const InputDecoration(labelText: 'E-Mail'),
                   keyboardType: TextInputType.emailAddress,
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Required';
+                    if (v == null || v.trim().isEmpty) return 'Erforderlich';
                     if (!_emailRegex.hasMatch(v.trim())) {
-                      return 'Enter a valid email address';
+                      return 'Gib eine gültige E-Mail-Adresse ein';
                     }
                     return null;
                   },
@@ -92,11 +92,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
+                  decoration: const InputDecoration(labelText: 'Passwort'),
                   obscureText: true,
                   validator: (v) {
-                    if (v == null || v.isEmpty) return 'Required';
-                    if (v.length < 6) return 'At least 6 characters';
+                    if (v == null || v.isEmpty) return 'Erforderlich';
+                    if (v.length < 6) return 'Mindestens 6 Zeichen';
                     return null;
                   },
                 ),
@@ -115,7 +115,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Create Account'),
+                      : const Text('Konto erstellen'),
                 ),
               ],
             ),

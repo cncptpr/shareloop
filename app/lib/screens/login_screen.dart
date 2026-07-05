@@ -61,11 +61,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ref.invalidate(authProvider);
       if (mounted) Navigator.pop(context);
     } on UnauthorizedException {
-      setState(() => _error = 'Invalid credentials.');
+      setState(() => _error = 'Ungültige Anmeldedaten.');
     } on ApiException catch (e) {
-      setState(() => _error = 'Server error (${e.code}). Please try again.');
+      setState(() => _error = 'Serverfehler (${e.code}). Bitte versuche es erneut.');
     } catch (e) {
-      setState(() => _error = 'Connection error. Please try again.');
+      setState(() => _error = 'Verbindungsfehler. Bitte versuche es erneut.');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -74,7 +74,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text('Anmelden')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -85,18 +85,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               children: [
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
+                  decoration: const InputDecoration(labelText: 'E-Mail'),
                   keyboardType: TextInputType.emailAddress,
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                      (v == null || v.trim().isEmpty) ? 'Erforderlich' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
+                  decoration: const InputDecoration(labelText: 'Passwort'),
                   obscureText: true,
                   validator: (v) =>
-                      (v == null || v.isEmpty) ? 'Required' : null,
+                      (v == null || v.isEmpty) ? 'Erforderlich' : null,
                 ),
                 const SizedBox(height: 24),
                 if (_error != null)
@@ -113,7 +113,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Login'),
+                      : const Text('Anmelden'),
                 ),
                 const SizedBox(height: 12),
                 TextButton(
@@ -123,7 +123,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       builder: (_) => const RegisterScreen(),
                     ),
                   ),
-                  child: const Text('Create account'),
+                  child: const Text('Konto erstellen'),
                 ),
               ],
             ),

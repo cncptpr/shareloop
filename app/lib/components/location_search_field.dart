@@ -71,7 +71,7 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
           Padding(
             padding: const EdgeInsets.only(top: 4, left: 12),
             child: Text(
-              'Press the search button to search for this location.',
+              'Drücke die Suche-Taste, um nach diesem Ort zu suchen.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -89,7 +89,7 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
       controller: _controller,
       focusNode: _focusNode,
       decoration: InputDecoration(
-        hintText: 'Search city or postal code...',
+        hintText: 'Stadt oder PLZ suchen...',
         prefixIcon: const Icon(Icons.location_on_outlined),
         suffixIcon: Row(
           mainAxisSize: MainAxisSize.min,
@@ -130,8 +130,8 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
           ),
           error: (e, _) {
             final msg = e is RateLimitException
-                ? 'Rate limit reached. Try again in a moment.'
-                : 'Could not load results. Check your connection.';
+                ? 'Ratenlimit erreicht. Versuche es gleich nochmal.'
+                : 'Ergebnisse konnten nicht geladen werden. Verbindung prüfen.';
             var style = Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.error,
                 );
@@ -159,7 +159,7 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
       return Padding(
         padding: const EdgeInsets.all(12),
         child: Text(
-          'No results found.',
+          'Keine Ergebnisse gefunden.',
           style: Theme.of(context).textTheme.bodySmall,
         ),
       );
@@ -184,7 +184,7 @@ class _LocationSearchFieldState extends ConsumerState<LocationSearchField> {
     final recentTitle = Padding(
       padding: const EdgeInsets.only(left: 12, top: 8),
       child: Text(
-        'Recent',
+        'Zuletzt verwendet',
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),

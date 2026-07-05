@@ -27,9 +27,9 @@ final GoRouter router = GoRouter(
           selectedIndex: navShell.currentIndex,
           onDestinationSelected: (index) => navShell.goBranch(index),
           destinations: const [
-            NavigationDestination(icon: Icon(Icons.search), label: "Explore"),
-            NavigationDestination(icon: Icon(Icons.message), label: "Messages"),
-            NavigationDestination(icon: Icon(Icons.person), label: "Profile"),
+            NavigationDestination(icon: Icon(Icons.search), label: "Entdecken"),
+            NavigationDestination(icon: Icon(Icons.message), label: "Nachrichten"),
+            NavigationDestination(icon: Icon(Icons.person), label: "Profil"),
           ],
         ),
       ),

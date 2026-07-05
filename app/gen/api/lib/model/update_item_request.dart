@@ -20,6 +20,7 @@ class UpdateItemRequest {
     required this.lat,
     required this.lng,
     required this.category,
+    required this.pricePerDay,
   });
 
   String title;
@@ -36,6 +37,8 @@ class UpdateItemRequest {
 
   String category;
 
+  double pricePerDay;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is UpdateItemRequest &&
     other.title == title &&
@@ -44,7 +47,8 @@ class UpdateItemRequest {
     other.postalCode == postalCode &&
     other.lat == lat &&
     other.lng == lng &&
-    other.category == category;
+    other.category == category &&
+    other.pricePerDay == pricePerDay;
 
   @override
   int get hashCode =>
@@ -55,10 +59,11 @@ class UpdateItemRequest {
     (postalCode.hashCode) +
     (lat.hashCode) +
     (lng.hashCode) +
-    (category.hashCode);
+    (category.hashCode) +
+    (pricePerDay.hashCode);
 
   @override
-  String toString() => 'UpdateItemRequest[title=$title, description=$description, city=$city, postalCode=$postalCode, lat=$lat, lng=$lng, category=$category]';
+  String toString() => 'UpdateItemRequest[title=$title, description=$description, city=$city, postalCode=$postalCode, lat=$lat, lng=$lng, category=$category, pricePerDay=$pricePerDay]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -69,6 +74,7 @@ class UpdateItemRequest {
       json[r'lat'] = this.lat;
       json[r'lng'] = this.lng;
       json[r'category'] = this.category;
+      json[r'pricePerDay'] = this.pricePerDay;
     return json;
   }
 
@@ -97,6 +103,8 @@ class UpdateItemRequest {
         assert(json[r'lng'] != null, 'Required key "UpdateItemRequest[lng]" has a null value in JSON.');
         assert(json.containsKey(r'category'), 'Required key "UpdateItemRequest[category]" is missing from JSON.');
         assert(json[r'category'] != null, 'Required key "UpdateItemRequest[category]" has a null value in JSON.');
+        assert(json.containsKey(r'pricePerDay'), 'Required key "UpdateItemRequest[pricePerDay]" is missing from JSON.');
+        assert(json[r'pricePerDay'] != null, 'Required key "UpdateItemRequest[pricePerDay]" has a null value in JSON.');
         return true;
       }());
 
@@ -108,6 +116,7 @@ class UpdateItemRequest {
         lat: mapValueOfType<double>(json, r'lat')!,
         lng: mapValueOfType<double>(json, r'lng')!,
         category: mapValueOfType<String>(json, r'category')!,
+        pricePerDay: mapValueOfType<double>(json, r'pricePerDay')!,
       );
     }
     return null;
@@ -162,6 +171,7 @@ class UpdateItemRequest {
     'lat',
     'lng',
     'category',
+    'pricePerDay',
   };
 }
 

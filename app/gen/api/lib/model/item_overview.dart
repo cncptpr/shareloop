@@ -23,6 +23,7 @@ class ItemOverview {
     required this.score,
     this.imageUuid,
     required this.category,
+    required this.pricePerDay,
   });
 
   int id;
@@ -63,6 +64,8 @@ class ItemOverview {
 
   String category;
 
+  double pricePerDay;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is ItemOverview &&
     other.id == id &&
@@ -74,7 +77,8 @@ class ItemOverview {
     other.postalCode == postalCode &&
     other.score == score &&
     other.imageUuid == imageUuid &&
-    other.category == category;
+    other.category == category &&
+    other.pricePerDay == pricePerDay;
 
   @override
   int get hashCode =>
@@ -88,10 +92,11 @@ class ItemOverview {
     (postalCode == null ? 0 : postalCode!.hashCode) +
     (score.hashCode) +
     (imageUuid == null ? 0 : imageUuid!.hashCode) +
-    (category.hashCode);
+    (category.hashCode) +
+    (pricePerDay.hashCode);
 
   @override
-  String toString() => 'ItemOverview[id=$id, title=$title, description=$description, author=$author, distance=$distance, city=$city, postalCode=$postalCode, score=$score, imageUuid=$imageUuid, category=$category]';
+  String toString() => 'ItemOverview[id=$id, title=$title, description=$description, author=$author, distance=$distance, city=$city, postalCode=$postalCode, score=$score, imageUuid=$imageUuid, category=$category, pricePerDay=$pricePerDay]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -121,6 +126,7 @@ class ItemOverview {
       json[r'imageUuid'] = null;
     }
       json[r'category'] = this.category;
+      json[r'pricePerDay'] = this.pricePerDay;
     return json;
   }
 
@@ -147,6 +153,8 @@ class ItemOverview {
         assert(json[r'score'] != null, 'Required key "ItemOverview[score]" has a null value in JSON.');
         assert(json.containsKey(r'category'), 'Required key "ItemOverview[category]" is missing from JSON.');
         assert(json[r'category'] != null, 'Required key "ItemOverview[category]" has a null value in JSON.');
+        assert(json.containsKey(r'pricePerDay'), 'Required key "ItemOverview[pricePerDay]" is missing from JSON.');
+        assert(json[r'pricePerDay'] != null, 'Required key "ItemOverview[pricePerDay]" has a null value in JSON.');
         return true;
       }());
 
@@ -161,6 +169,7 @@ class ItemOverview {
         score: mapValueOfType<double>(json, r'score')!,
         imageUuid: mapValueOfType<String>(json, r'imageUuid'),
         category: mapValueOfType<String>(json, r'category')!,
+        pricePerDay: mapValueOfType<double>(json, r'pricePerDay')!,
       );
     }
     return null;
@@ -214,6 +223,7 @@ class ItemOverview {
     'author',
     'score',
     'category',
+    'pricePerDay',
   };
 }
 

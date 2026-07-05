@@ -9,6 +9,7 @@ import 'package:shareloop/router.dart';
 import 'package:shareloop/services/notification_service.dart';
 import 'package:shareloop/state/seeding.dart';
 import 'package:shareloop/state/websocket.dart';
+import 'package:shareloop/theme/app_theme.dart';
 
 final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -40,6 +41,9 @@ class _MyAppState extends ConsumerState<MyApp> {
     return MaterialApp.router(
       scaffoldMessengerKey: scaffoldMessengerKey,
       title: _title,
+      theme: buildTheme(),
+      darkTheme: buildDarkTheme(),
+      themeMode: ThemeMode.system,
       routerConfig: router,
     );
   }

@@ -227,6 +227,7 @@ async def send_message(
 
     msg = Message(rent_request_id=request_id, author_id=user_id, content=content)
     db.add(msg)
+    rr.updated_at = datetime.now(UTC)
     await db.commit()
     await db.refresh(msg)
     return ApiMessage(

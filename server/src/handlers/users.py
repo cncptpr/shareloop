@@ -1,4 +1,5 @@
 import base64
+import binascii
 import os
 import uuid as uuid_mod
 
@@ -33,7 +34,6 @@ async def api_get_user_profile(
     result = await db.execute(
         select(
             User.id,
-            User.email,
             User.last_online_at,
             User.created_at,
             Profile.name,
@@ -104,7 +104,6 @@ async def api_get_user_profile(
     return UserProfile(
         id=row.id,
         name=row.name or "",
-        email=row.email,
         bio=row.bio,
         rating=avg_rating,
         created_at=row.created_at,
@@ -170,6 +169,7 @@ async def api_get_user_items(user_id: int, db: AsyncSession = Depends(get_db)):
             Item.city,
             Item.postal_code,
             Item.category,
+            Item.price_per_day,
             first_image.label("first_image_uuid"),
         )
         .select_from(Item)
@@ -189,6 +189,7 @@ async def api_get_user_items(user_id: int, db: AsyncSession = Depends(get_db)):
             score=row.score,
             image_uuid=str(row.first_image_uuid) if row.first_image_uuid else None,
             category=row.category,
+            price_per_day=row.price_per_day,
         )
         for row in rows
     ]
@@ -256,10 +257,12 @@ async def api_upload_user_avatar(
                     os.remove(os.path.join(settings.uploads_dir, fname))
                     break
 
+    if len(body.data) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
     try:
         raw = base64.b64decode(body.data)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR) from None
+    except (ValueError, binascii.Error):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST) from None
     ext = _detect_ext_mime(body.filename)[0]
     image_uuid = uuid_mod.uuid4()
     dest = os.path.join(settings.uploads_dir, f"{image_uuid}.{ext}")

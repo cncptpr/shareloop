@@ -15,7 +15,6 @@ class UserProfile {
   UserProfile({
     required this.id,
     required this.name,
-    required this.email,
     this.bio,
     this.rating,
     required this.createdAt,
@@ -31,8 +30,6 @@ class UserProfile {
   int id;
 
   String name;
-
-  String email;
 
   String? bio;
 
@@ -64,7 +61,6 @@ class UserProfile {
   bool operator ==(Object other) => identical(this, other) || other is UserProfile &&
     other.id == id &&
     other.name == name &&
-    other.email == email &&
     other.bio == bio &&
     other.rating == rating &&
     other.createdAt == createdAt &&
@@ -81,7 +77,6 @@ class UserProfile {
     // ignore: unnecessary_parenthesis
     (id.hashCode) +
     (name.hashCode) +
-    (email.hashCode) +
     (bio == null ? 0 : bio!.hashCode) +
     (rating == null ? 0 : rating!.hashCode) +
     (createdAt.hashCode) +
@@ -94,13 +89,12 @@ class UserProfile {
     (isFollowed == null ? 0 : isFollowed!.hashCode);
 
   @override
-  String toString() => 'UserProfile[id=$id, name=$name, email=$email, bio=$bio, rating=$rating, createdAt=$createdAt, lastOnlineAt=$lastOnlineAt, itemCount=$itemCount, ratingCount=$ratingCount, shareCount=$shareCount, avatarUuid=$avatarUuid, followerCount=$followerCount, isFollowed=$isFollowed]';
+  String toString() => 'UserProfile[id=$id, name=$name, bio=$bio, rating=$rating, createdAt=$createdAt, lastOnlineAt=$lastOnlineAt, itemCount=$itemCount, ratingCount=$ratingCount, shareCount=$shareCount, avatarUuid=$avatarUuid, followerCount=$followerCount, isFollowed=$isFollowed]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
       json[r'id'] = this.id;
       json[r'name'] = this.name;
-      json[r'email'] = this.email;
     if (this.bio != null) {
       json[r'bio'] = this.bio;
     } else {
@@ -153,8 +147,6 @@ class UserProfile {
         assert(json[r'id'] != null, 'Required key "UserProfile[id]" has a null value in JSON.');
         assert(json.containsKey(r'name'), 'Required key "UserProfile[name]" is missing from JSON.');
         assert(json[r'name'] != null, 'Required key "UserProfile[name]" has a null value in JSON.');
-        assert(json.containsKey(r'email'), 'Required key "UserProfile[email]" is missing from JSON.');
-        assert(json[r'email'] != null, 'Required key "UserProfile[email]" has a null value in JSON.');
         assert(json.containsKey(r'createdAt'), 'Required key "UserProfile[createdAt]" is missing from JSON.');
         assert(json[r'createdAt'] != null, 'Required key "UserProfile[createdAt]" has a null value in JSON.');
         assert(json.containsKey(r'lastOnlineAt'), 'Required key "UserProfile[lastOnlineAt]" is missing from JSON.');
@@ -169,7 +161,6 @@ class UserProfile {
       return UserProfile(
         id: mapValueOfType<int>(json, r'id')!,
         name: mapValueOfType<String>(json, r'name')!,
-        email: mapValueOfType<String>(json, r'email')!,
         bio: mapValueOfType<String>(json, r'bio'),
         rating: mapValueOfType<double>(json, r'rating'),
         createdAt: mapDateTime(json, r'createdAt', r'')!,
@@ -229,7 +220,6 @@ class UserProfile {
   static const requiredKeys = <String>{
     'id',
     'name',
-    'email',
     'createdAt',
     'lastOnlineAt',
     'itemCount',

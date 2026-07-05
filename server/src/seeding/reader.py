@@ -24,7 +24,7 @@ def load_and_validate(seeding_dir: str) -> dict[str, Any] | None:
         return None
 
     try:
-        with open(yaml_path) as f:
+        with open(yaml_path, encoding="utf-8") as f:
             data = yaml.safe_load(f)
     except Exception:
         return None
@@ -60,6 +60,9 @@ def load_and_validate(seeding_dir: str) -> dict[str, Any] | None:
         if not is_ref(author) or get_ref_id(author) not in user_ids:
             return None
 
+        if not isinstance(item.get("pricePerDay"), int | float):
+            return None
+
         for img in item.get("images", []):
             if not isinstance(img, dict) or "path" not in img:
                 return None
@@ -68,9 +71,13 @@ def load_and_validate(seeding_dir: str) -> dict[str, Any] | None:
                 return None
 
     requests = data.get("rent_requests", [])
+    rent_request_ids: set[str] = set()
     for req in requests:
         if not isinstance(req, dict) or "id" not in req:
             return None
+        if req["id"] in rent_request_ids:
+            return None
+        rent_request_ids.add(req["id"])
 
         item_ref = req.get("item", "")
         requester_ref = req.get("requester", "")
@@ -116,5 +123,29 @@ def load_and_validate(seeding_dir: str) -> dict[str, Any] | None:
             for field in ("condition", "cleanliness"):
                 if not isinstance(ir.get(field), int) or not 1 <= ir[field] <= 5:
                     return None
+
+    item_ratings = data.get("item_ratings", [])
+    for rat in item_ratings:
+        if not isinstance(rat, dict) or "id" not in rat:
+            return None
+        for field in ("rent_request", "item", "reviewer"):
+            val = rat.get(field, "")
+            if not is_ref(val):
+                return None
+        rid = get_ref_id(rat["rent_request"])
+        if rid not in rent_request_ids:
+            return None
+        for ref_field in ("item", "reviewer"):
+            ref_id = get_ref_id(rat[ref_field])
+            expected = item_ids if ref_field == "item" else user_ids
+            if ref_id not in expected:
+                return None
+        for score in ("condition", "cleanliness"):
+            v = rat.get(score)
+            if not isinstance(v, int) or not (1 <= v <= 5):
+                return None
+        overall = rat.get("overall")
+        if not isinstance(overall, int | float) or not (1 <= overall <= 5):
+            return None
 
     return data

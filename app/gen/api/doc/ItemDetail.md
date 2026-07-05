@@ -17,6 +17,7 @@ Name | Type | Description | Notes
 **postalCode** | **String** |  | [optional] 
 **imageUuids** | **List<String>** |  | [default to const []]
 **category** | **String** |  | 
+**pricePerDay** | **double** |  | 
 **createdAt** | [**DateTime**](DateTime.md) |  | 
 **itemRatingCount** | **int** |  | 
 **itemRatings** | [**List<ItemRating>**](ItemRating.md) |  | [default to const []]

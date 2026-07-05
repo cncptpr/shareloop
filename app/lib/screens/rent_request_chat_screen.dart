@@ -5,6 +5,7 @@ import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/state/auth.dart';
+import 'package:shareloop/state/item_detail.dart';
 import 'package:shareloop/screens/rating_dialogs.dart';
 import 'package:shareloop/state/renting.dart';
 import 'package:shareloop/state/websocket.dart';
@@ -34,6 +35,7 @@ class RentRequestChatScreen extends ConsumerStatefulWidget {
 class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
+  late final WebSocketService _webSocketService;
   int? _requestId;
   bool _creatingRequest = false;
   bool _showScrollToBottom = false;
@@ -44,6 +46,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
   void initState() {
     super.initState();
     _requestId = widget.requestId;
+    _webSocketService = ref.read(webSocketProvider);
     _scrollController.addListener(_onScrollChanged);
   }
 
@@ -51,13 +54,13 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_requestId != null && mounted) {
-      ref.read(webSocketProvider).currentChatRequestId = _requestId;
+      _webSocketService.currentChatRequestId = _requestId;
     }
   }
 
   @override
   void dispose() {
-    ref.read(webSocketProvider).currentChatRequestId = null;
+    _webSocketService.currentChatRequestId = null;
     _messageController.dispose();
     _scrollController.removeListener(_onScrollChanged);
     _scrollController.dispose();
@@ -99,9 +102,9 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     _creatingRequest = true;
     try {
       final request = await createRentRequest(widget.itemId!);
-      if (request != null && mounted) {
+      if (request != null && context.mounted) {
         setState(() => _requestId = request.id);
-        ref.read(webSocketProvider).currentChatRequestId = request.id;
+        _webSocketService.currentChatRequestId = request.id;
         ref.invalidate(rentRequestProvider(request.id));
         ref.invalidate(myRentRequestsProvider);
       }
@@ -121,6 +124,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
 
     _messageController.clear();
     await sendMessage(_requestId!, text);
+    if (!context.mounted) return;
     ref.invalidate(rentRequestProvider(_requestId!));
     _scrollToBottom();
   }
@@ -159,6 +163,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     );
     if (dates == null) return;
     await createOffer(_requestId!, dates.start, dates.end);
+    if (!context.mounted) return;
     ref.invalidate(rentRequestProvider(_requestId!));
     ref.invalidate(myRentRequestsProvider);
     _scrollToBottom();
@@ -202,6 +207,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     if (confirmed != true) return;
 
     await acceptOffer(offerId);
+    if (!context.mounted) return;
     ref.invalidate(rentRequestProvider(_requestId!));
     ref.invalidate(myRentRequestsProvider);
   }
@@ -236,7 +242,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange[50],
+                  color: Theme.of(ctx).colorScheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -244,7 +250,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                   children: [
                     Icon(
                       Icons.warning_amber,
-                      color: Colors.orange[700],
+                      color: Theme.of(ctx).colorScheme.onTertiaryContainer,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -252,9 +258,8 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                       child: Text(
                         'Der vereinbarte Ausleihzeitraum beginnt erst am '
                         '${_formatDateSimple(acceptedOffer.startDate)}.',
-                        style: TextStyle(
-                          color: Colors.orange[900],
-                          fontSize: 13,
+                        style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(ctx).colorScheme.onTertiaryContainer,
                         ),
                       ),
                     ),
@@ -279,6 +284,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     if (confirmed != true) return;
 
     await confirmBorrow(_requestId!);
+    if (!context.mounted) return;
     ref.invalidate(rentRequestProvider(_requestId!));
     ref.invalidate(myRentRequestsProvider);
   }
@@ -313,7 +319,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange[50],
+                  color: Theme.of(ctx).colorScheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -321,7 +327,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                   children: [
                     Icon(
                       Icons.warning_amber,
-                      color: Colors.orange[700],
+                      color: Theme.of(ctx).colorScheme.onTertiaryContainer,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -329,8 +335,10 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
                       child: Text(
                         'Der vereinbarte Ausleihzeitraum endet erst am '
                         '${_formatDateSimple(acceptedOffer.endDate)}.',
-                        style:
-                            TextStyle(color: Colors.orange[900], fontSize: 13),
+                        style: TextStyle(
+                          color: Theme.of(ctx).colorScheme.onTertiaryContainer,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
@@ -354,6 +362,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     if (confirmed != true) return;
 
     await confirmReturn(_requestId!);
+    if (!context.mounted) return;
     ref.invalidate(rentRequestProvider(_requestId!));
     ref.invalidate(myRentRequestsProvider);
   }
@@ -374,7 +383,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     ref.listen(authProvider, (prev, next) {
       final prevId = prev?.asData?.value?.id;
       final nextId = next.asData?.value?.id;
-      if (prevId != null && prevId != nextId && _requestId != null && mounted) {
+      if (prevId != null && prevId != nextId && _requestId != null && context.mounted) {
         ref.invalidate(rentRequestProvider(_requestId!));
       }
     });
@@ -416,24 +425,55 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
       _lastMessageCount = messages.length;
       Future.microtask(() {
         markRentRequestRead(_requestId!).then((_) {
-          ref.invalidate(myRentRequestsProvider);
+          if (mounted && context.mounted) {
+            ref.invalidate(myRentRequestsProvider);
+          }
         });
       });
     }
 
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    final personName = request != null
+        ? (isOwner ? request.requester.name : request.ownerName)
+        : '';
+
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        title: Row(
           children: [
-            Text(title),
             if (request != null)
-              Text(
-                isOwner
-                    ? 'Anfrage von ${request.requester.name}'
-                    : 'Anbieter: ${request.ownerName}',
-                style: const TextStyle(fontSize: 13),
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: CircleAvatar(
+                  radius: 16,
+                  backgroundColor: cs.primaryContainer,
+                  child: Text(
+                    personName.isNotEmpty ? personName[0].toUpperCase() : '?',
+                    style: TextStyle(
+                      color: cs.onPrimaryContainer,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(personName.isNotEmpty ? personName : title,
+                      style: tt.titleMedium),
+                  if (request != null)
+                    Text(
+                      request.itemTitle,
+                      style: tt.labelSmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
         actions: [
@@ -504,7 +544,7 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     bool isBorrowed,
     bool isReturned,
   ) {
-    final chatItems = <_ChatItem>[
+    final sorted = <_ChatItem>[
       for (final m in messages) _ChatItem.message(m),
       for (final o in offers) _ChatItem.offer(o),
       if (request?.borrowConfirmedAt != null)
@@ -513,15 +553,19 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
       if (request?.returnedAt != null)
         _ChatItem.system('Rückgabe bestätigt', createdAt: request!.returnedAt!),
     ];
-    chatItems.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    sorted.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
-    int actionCount = 0;
-    if (isOwner && !isReturned && !isBorrowed && hasAcceptedOffer) {
-      actionCount++;
+    final items = <_ListEntry>[];
+    DateTime? lastDate;
+    for (final item in sorted) {
+      final d = DateTime(item.createdAt.year, item.createdAt.month, item.createdAt.day);
+      if (lastDate == null || d != lastDate) {
+        items.add(_ListEntry.divider(d));
+        lastDate = d;
+      }
+      items.add(_ListEntry.chat(item));
     }
-    if (isOwner && !isReturned && isBorrowed) {
-      actionCount++;
-    }
+
     final canRateUser = request != null &&
         isReturned &&
         request.myUserRating == null &&
@@ -530,24 +574,58 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
         isReturned &&
         isRequester &&
         request.myItemRating == null;
+
+    if (isOwner && !isReturned && !isBorrowed && hasAcceptedOffer) {
+      items.add(_ListEntry.action(
+        Icons.check_circle_outline,
+        'Ausleihe bestätigen',
+        subtitle: 'Bestätige, dass der Artikel übergeben wurde',
+        onTap: _confirmBorrow,
+      ));
+    }
+    if (isOwner && !isReturned && isBorrowed) {
+      items.add(_ListEntry.action(
+        Icons.replay,
+        'Rückgabe bestätigen',
+        subtitle: 'Bestätige, dass der Artikel zurückgegeben wurde',
+        onTap: _confirmReturn,
+      ));
+    }
     if (canRateUser) {
-      actionCount++;
+      final revieweeName = isOwner ? request.requester.name : request.ownerName;
+      items.add(_ListEntry.action(
+        Icons.star_border,
+        '$revieweeName bewerten',
+        onTap: () => showUserRatingDialog(context, ref, _requestId!, request, isOwner),
+      ));
     }
     if (canRateItem) {
-      actionCount++;
+      items.add(_ListEntry.action(
+        Icons.star_border,
+        '${request.itemTitle} bewerten',
+        onTap: () => showItemRatingDialog(context, ref, _requestId!, request),
+      ));
+    }
+    if (request != null && request.myUserRating != null) {
+      final revieweeName = isOwner ? request.requester.name : request.ownerName;
+      items.add(_ListEntry.rated('$revieweeName bewertet'));
+    }
+    if (request != null && request.myItemRating != null) {
+      items.add(_ListEntry.rated('${request.itemTitle} bewertet'));
     }
 
-    if (chatItems.isEmpty && actionCount == 0 && _requestId == null) {
-      return const Center(
+    if (items.isEmpty && _requestId == null) {
+      final cs = Theme.of(context).colorScheme;
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.chat_bubble_outline, size: 48, color: Colors.grey),
-            SizedBox(height: 12),
+            Icon(Icons.chat_bubble_outline, size: 48, color: cs.onSurfaceVariant),
+            const SizedBox(height: 12),
             Text(
               'Schreibe eine Nachricht,\num die Anfrage zu starten.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 15),
+              style: TextStyle(color: cs.onSurfaceVariant, fontSize: 15),
             ),
           ],
         ),
@@ -557,82 +635,52 @@ class _RentRequestChatScreenState extends ConsumerState<RentRequestChatScreen> {
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(16),
-      itemCount: chatItems.length + actionCount,
+      itemCount: items.length,
       itemBuilder: (ctx, i) {
-        if (i < chatItems.length) {
-          final item = chatItems[i];
-          switch (item.type) {
-            case _ChatItemType.message:
-              final isMe = item.message!.authorId == userId;
-              return _MessageBubble(
-                message: item.message!,
-                isMe: isMe,
-              );
-            case _ChatItemType.offer:
-              final offer = item.offer!;
-              final isMyOffer = offer.senderId == userId;
-              final isAccepted = offer.id == request?.latestAcceptedOfferId;
-              final isLatestOpen = offer.id == request?.latestOpenOfferId;
-              return _OfferBubble(
-                offer: offer,
-                isMyOffer: isMyOffer,
-                isAccepted: isAccepted,
-                canAccept: !isMyOffer && isLatestOpen,
-                onAccept: () => _acceptOffer(offer.id),
-              );
-            case _ChatItemType.system:
-              return _SystemNoteBubble(
-                text: item.systemText!,
-                createdAt: item.createdAt,
-              );
-          }
-        }
-
-        var offset = i - chatItems.length;
-        if (isOwner && !isReturned && !isBorrowed && hasAcceptedOffer) {
-          if (offset == 0) {
+        final entry = items[i];
+        switch (entry.type) {
+          case _ListEntryType.divider:
+            return _DateDivider(date: entry.date!);
+          case _ListEntryType.chatItem:
+            final item = entry.chatItem!;
+            switch (item.type) {
+              case _ChatItemType.message:
+                final isMe = item.message!.authorId == userId;
+                return _MessageBubble(
+                  message: item.message!,
+                  isMe: isMe,
+                );
+              case _ChatItemType.offer:
+                final offer = item.offer!;
+                final isMyOffer = offer.senderId == userId;
+                final isAccepted = offer.id == request?.latestAcceptedOfferId;
+                final isLatestOpen = offer.id == request?.latestOpenOfferId;
+                return _OfferCard(
+                  offer: offer,
+                  isMyOffer: isMyOffer,
+                  isAccepted: isAccepted,
+                  canConfirm: !isMyOffer && isLatestOpen,
+                  onConfirm: () => _acceptOffer(offer.id),
+                  onReschedule: !isMyOffer && isLatestOpen ? _createOffer : null,
+                  itemId: request!.itemId,
+                );
+              case _ChatItemType.system:
+                return _SystemNoteBubble(
+                  text: item.systemText!,
+                  createdAt: item.createdAt,
+                );
+            }
+          case _ListEntryType.actionCard:
+            final a = entry.action!;
             return _SystemActionCard(
-              icon: Icons.check_circle_outline,
-              title: 'Ausleihe bestätigen',
-              subtitle: 'Bestätige, dass der Artikel übergeben wurde',
-              onTap: _confirmBorrow,
+              icon: a.icon,
+              title: a.title,
+              subtitle: a.subtitle,
+              onTap: a.onTap,
             );
-          }
-          offset--;
+          case _ListEntryType.rated:
+            return _RatedStatus(text: entry.ratedText!);
         }
-        if (isOwner && !isReturned && isBorrowed) {
-          if (offset == 0) {
-            return _SystemActionCard(
-              icon: Icons.replay,
-              title: 'Rückgabe bestätigen',
-              subtitle: 'Bestätige, dass der Artikel zurückgegeben wurde',
-              onTap: _confirmReturn,
-            );
-          }
-          offset--;
-        }
-        if (canRateUser) {
-          if (offset == 0) {
-            final revieweeName =
-                isOwner ? request.requester.name : request.ownerName;
-            return _SystemActionCard(
-              icon: Icons.star_border,
-              title: '$revieweeName bewerten',
-              onTap: () => showUserRatingDialog(
-                  context, ref, _requestId!, request, isOwner),
-            );
-          }
-          offset--;
-        }
-        if (canRateItem && offset == 0) {
-          return _SystemActionCard(
-            icon: Icons.star_border,
-            title: '${request.itemTitle} bewerten',
-            onTap: () => showItemRatingDialog(
-                context, ref, _requestId!, request),
-          );
-        }
-        return const SizedBox.shrink();
       },
     );
   }
@@ -642,6 +690,16 @@ String _formatDateSimple(DateTime dt) {
   final d = dt.toLocal();
   return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
 }
+
+String _formatDateGerman(DateTime dt) {
+  final d = dt.toLocal();
+  const wochentage = [
+    'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag',
+  ];
+  final wd = wochentage[d.weekday - 1];
+  return '$wd ${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
+}
+
 
 String _formatMessageTime(DateTime dt) {
   final local = dt.toLocal();
@@ -705,6 +763,99 @@ class _ChatItem {
         offer = null;
 }
 
+enum _ListEntryType { divider, chatItem, actionCard, rated }
+
+class _ActionCardData {
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final VoidCallback onTap;
+  _ActionCardData(this.icon, this.title, {this.subtitle, required this.onTap});
+}
+
+class _ListEntry {
+  final _ListEntryType type;
+  final DateTime? date;
+  final _ChatItem? chatItem;
+  final _ActionCardData? action;
+  final String? ratedText;
+
+  _ListEntry.divider(this.date)
+      : type = _ListEntryType.divider,
+        chatItem = null,
+        action = null,
+        ratedText = null;
+
+  _ListEntry.chat(this.chatItem)
+      : type = _ListEntryType.chatItem,
+        date = null,
+        action = null,
+        ratedText = null;
+
+  _ListEntry.action(IconData icon, String title, {String? subtitle, required VoidCallback onTap})
+      : type = _ListEntryType.actionCard,
+        date = null,
+        chatItem = null,
+        action = _ActionCardData(icon, title, subtitle: subtitle, onTap: onTap),
+        ratedText = null;
+
+  _ListEntry.rated(this.ratedText)
+      : type = _ListEntryType.rated,
+        date = null,
+        chatItem = null,
+        action = null;
+}
+
+class _RatedStatus extends StatelessWidget {
+  final String text;
+  const _RatedStatus({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check_circle, color: cs.primary, size: 18),
+          const SizedBox(width: 6),
+          Text(text, style: tt.bodyMedium?.copyWith(color: cs.primary)),
+        ],
+      ),
+    );
+  }
+}
+
+class _DateDivider extends StatelessWidget {
+  final DateTime date;
+  const _DateDivider({required this.date});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(
+        children: [
+          const Expanded(child: Divider()),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              _formatDateGerman(date),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+            ),
+          ),
+          const Expanded(child: Divider()),
+        ],
+      ),
+    );
+  }
+}
+
 class _StatusBanner extends StatelessWidget {
   final RentRequestDetail request;
   final bool isOwner;
@@ -716,117 +867,156 @@ class _StatusBanner extends StatelessWidget {
     final statusText = _statusText(request);
     final icon = _statusIcon(request);
 
+    final cs = Theme.of(context).colorScheme;
+    final color = _statusBannerColor(request, cs);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: Colors.blue[50],
+      color: color.withValues(alpha: 0.15),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.blue[700]),
+          Icon(icon, size: 20, color: color),
           const SizedBox(width: 8),
           Expanded(
-              child:
-                  Text(statusText, style: TextStyle(color: Colors.blue[700]))),
+              child: Text(statusText, style: TextStyle(color: color))),
         ],
       ),
     );
   }
 }
 
-class _OfferBubble extends StatelessWidget {
+Color _statusBannerColor(RentRequestDetail req, ColorScheme cs) {
+  if (req.returnedAt != null) return const Color(0xFF2E7D32);
+  if (req.borrowConfirmedAt != null) return cs.secondary;
+  if (req.latestAcceptedOfferId != null) return cs.primary;
+  if (req.latestOpenOfferId != null) return cs.tertiary;
+  return cs.outline;
+}
+
+class _OfferCard extends ConsumerWidget {
   final RentOffer offer;
   final bool isMyOffer;
   final bool isAccepted;
-  final bool canAccept;
-  final VoidCallback onAccept;
+  final bool canConfirm;
+  final VoidCallback onConfirm;
+  final VoidCallback? onReschedule;
+  final int itemId;
 
-  const _OfferBubble({
+  const _OfferCard({
     required this.offer,
     required this.isMyOffer,
     required this.isAccepted,
-    required this.canAccept,
-    required this.onAccept,
+    required this.canConfirm,
+    required this.onConfirm,
+    this.onReschedule,
+    required this.itemId,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final startStr = _formatDateSimple(offer.startDate);
-    final endStr = _formatDateSimple(offer.endDate);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    final asyncDetail = ref.watch(itemDetailProvider(itemId));
 
-    return Align(
-      alignment: isMyOffer ? Alignment.centerRight : Alignment.centerLeft,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isAccepted ? Colors.green[50] : Colors.amber[50],
+          color: cs.surfaceContainerLow,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isAccepted ? Colors.green : Colors.amber,
-            width: 1.5,
-          ),
+          border: Border.all(color: cs.outlineVariant),
         ),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.8,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.date_range,
-                  size: 16,
-                  color: isAccepted ? Colors.green[700] : Colors.amber[800],
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  'Angebot${isMyOffer ? ' (von dir)' : ''}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: isAccepted ? Colors.green[700] : Colors.amber[800],
-                  ),
-                ),
-                if (isAccepted) ...[
-                  const Spacer(),
-                  Icon(Icons.check_circle, size: 16, color: Colors.green[700]),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Akzeptiert',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.green[700],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '$startStr – $endStr',
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-            ),
-            if (canAccept) ...[
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: onAccept,
-                  icon: const Icon(Icons.thumb_up, size: 18),
-                  label: const Text('Akzeptieren'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Colors.green[600],
-                    foregroundColor: Colors.white,
-                  ),
-                ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: _buildThumbnail(asyncDetail, cs),
               ),
-            ],
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    asyncDetail.value?.title ?? '',
+                    style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'von ${_formatDateGerman(offer.startDate)}',
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                  Text(
+                    'bis ${_formatDateGerman(offer.endDate)}',
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                  if (isAccepted) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Icon(Icons.check_circle, color: cs.primary, size: 18),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Buchung akzeptiert',
+                          style: tt.bodyMedium?.copyWith(color: cs.primary),
+                        ),
+                      ],
+                    ),
+                  ] else if (!isMyOffer) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: canConfirm ? onConfirm : null,
+                            child: const Text('Buchung bestätigen'),
+                          ),
+                        ),
+                        if (onReschedule != null) ...[
+                          const SizedBox(width: 8),
+                          TextButton(
+                            onPressed: onReschedule,
+                            child: const Text('Verschieben'),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildThumbnail(AsyncValue<ItemDetail> asyncDetail, ColorScheme cs) {
+    final detail = asyncDetail.value;
+    final uuids = detail?.imageUuids;
+    if (uuids != null && uuids.isNotEmpty) {
+      return Image.network(
+        '${AppConfig.apiBaseUrl}/images/${uuids.first}',
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _imagePlaceholder(cs),
+      );
+    }
+    return _imagePlaceholder(cs);
+  }
+
+  Widget _imagePlaceholder(ColorScheme cs) {
+    return Container(
+      color: cs.surfaceContainerHigh,
+      child: Icon(Icons.image, color: cs.onSurfaceVariant),
     );
   }
 }
@@ -846,12 +1036,13 @@ class _SystemActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         child: Material(
-          color: Colors.grey[100],
+          color: cs.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
@@ -861,7 +1052,7 @@ class _SystemActionCard extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, size: 20, color: Colors.grey[700]),
+                  Icon(icon, size: 20, color: cs.onSurfaceVariant),
                   const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -869,23 +1060,19 @@ class _SystemActionCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
+                        style: Theme.of(context).textTheme.labelMedium,
                       ),
                       if (subtitle != null)
                         Text(
                           subtitle!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: cs.onSurfaceVariant,
                           ),
                         ),
                     ],
                   ),
                   const SizedBox(width: 12),
-                  Icon(Icons.chevron_right, size: 20, color: Colors.grey[500]),
+                  Icon(Icons.chevron_right, size: 20, color: cs.outline),
                 ],
               ),
             ),
@@ -904,33 +1091,33 @@ class _SystemNoteBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final ts = _formatMessageTime(createdAt);
     return Center(
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: cs.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.info_outline, size: 14, color: Colors.grey[600]),
+            Icon(Icons.info_outline, size: 14, color: cs.onSurfaceVariant),
             const SizedBox(width: 6),
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey[700],
-                fontStyle: FontStyle.italic,
+              Text(
+                text,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: cs.onSurfaceVariant,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              ts,
-              style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-            ),
+              const SizedBox(width: 8),
+              Text(
+                ts,
+                style: TextStyle(fontSize: 11, color: cs.outline),
+              ),
           ],
         ),
       ),
@@ -946,38 +1133,44 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isMe ? Colors.blue[100] : Colors.grey[200],
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: Radius.circular(isMe ? 16 : 4),
-            bottomRight: Radius.circular(isMe ? 4 : 16),
-          ),
-        ),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.7,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
+      child: Column(
+        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: isMe ? cs.primary : cs.surfaceContainerHigh,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(16),
+                topRight: const Radius.circular(16),
+                bottomLeft: Radius.circular(isMe ? 16 : 0),
+                bottomRight: Radius.circular(isMe ? 0 : 16),
+              ),
+            ),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.7,
+            ),
+            child: Text(
               message.content,
-              style: const TextStyle(fontSize: 15),
+              style: TextStyle(color: isMe ? cs.onPrimary : null),
             ),
-            const SizedBox(height: 4),
-            Text(
+          ),
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
               _formatMessageTime(message.createdAt),
-              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+              style: TextStyle(
+                fontSize: 11,
+                color: cs.onSurfaceVariant,
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -996,46 +1189,71 @@ class _MessageInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 4,
-            offset: const Offset(0, -2),
-          ),
-        ],
+        color: cs.surface.withValues(alpha: 0.8),
+        border: Border(top: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.4))),
       ),
       child: SafeArea(
         child: Row(
           children: [
             if (onCreateOffer != null) ...[
-              IconButton(
-                icon: const Icon(Icons.event),
-                tooltip: 'Angebot erstellen',
-                onPressed: onCreateOffer,
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: cs.surfaceContainer,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.add, color: cs.primary),
+                  tooltip: 'Angebot erstellen',
+                  onPressed: onCreateOffer,
+                  padding: EdgeInsets.zero,
+                ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 8),
             ],
             Expanded(
               child: TextField(
                 controller: controller,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Nachricht schreiben...',
-                  border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: cs.surfaceContainerLow,
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => onSend(),
               ),
             ),
             const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.send),
-              onPressed: onSend,
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: cs.primary,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: cs.shadow.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                icon: Icon(Icons.send, color: cs.onPrimary, size: 20),
+                onPressed: onSend,
+                padding: EdgeInsets.zero,
+              ),
             ),
           ],
         ),

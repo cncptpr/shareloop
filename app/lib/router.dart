@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shareloop/screens/home_screen.dart';
 import 'package:shareloop/screens/message_screen.dart';
 import 'package:shareloop/screens/profile_screen.dart';
 import 'package:shareloop/screens/explore_screen.dart';
 
 enum Routes {
-  home('/'),
   explore('/'),
   message('/message'),
-  profile('/profile'),
-  counter('/counter');
+  profile('/profile');
 
   final String route;
   const Routes(this.route);
@@ -26,16 +23,13 @@ final GoRouter router = GoRouter(
     StatefulShellRoute.indexedStack(
       builder: (ctx, state, navShell) => Scaffold(
         body: navShell,
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: navShell.currentIndex,
-          onTap: (index) => navShell.goBranch(index),
-          items: const [
-            BottomNavigationBarItem(label: "Explore", icon: Icon(Icons.search)),
-            BottomNavigationBarItem(
-              label: "Messages",
-              icon: Icon(Icons.message),
-            ),
-            BottomNavigationBarItem(label: "Profile", icon: Icon(Icons.person)),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: navShell.currentIndex,
+          onDestinationSelected: (index) => navShell.goBranch(index),
+          destinations: const [
+            NavigationDestination(icon: Icon(Icons.search), label: "Explore"),
+            NavigationDestination(icon: Icon(Icons.message), label: "Messages"),
+            NavigationDestination(icon: Icon(Icons.person), label: "Profile"),
           ],
         ),
       ),
@@ -45,12 +39,6 @@ final GoRouter router = GoRouter(
             GoRoute(
               path: Routes.explore.route,
               builder: (ctx, state) => const ExploreScreen(),
-              routes: [
-                GoRoute(
-                  path: Routes.counter.route,
-                  builder: (ctx, state) => const Homescreen(),
-                ),
-              ],
             ),
           ],
         ),

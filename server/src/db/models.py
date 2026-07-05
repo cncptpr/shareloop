@@ -90,6 +90,7 @@ class Item(Base):
     city: Mapped[str | None] = mapped_column(String, nullable=True)
     postal_code: Mapped[str | None] = mapped_column(String, nullable=True)
     category: Mapped[str] = mapped_column(String, nullable=False, server_default="Sonstiges")
+    price_per_day: Mapped[float] = mapped_column(Float, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -143,7 +144,7 @@ class RentRequest(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
     messages: Mapped[list["Message"]] = relationship(back_populates="rent_request")

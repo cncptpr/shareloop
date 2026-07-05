@@ -78,6 +78,7 @@ async def api_create_item(
         city=body.city,
         postal_code=body.postal_code,
         category=body.category,
+        price_per_day=body.price_per_day,
     )
     db.add(item)
     await db.commit()
@@ -98,6 +99,7 @@ async def api_get_item(item_id: int, db: AsyncSession = Depends(get_db)):
             Item.city,
             Item.postal_code,
             Item.category,
+            Item.price_per_day,
             sa_func.to_char(Item.created_at, "YYYY-MM-DDThh24:mi:ssZ").label("created_at"),
         )
         .select_from(Item)
@@ -146,6 +148,7 @@ async def api_get_item(item_id: int, db: AsyncSession = Depends(get_db)):
         postal_code=row.postal_code,
         image_uuids=image_uuids,
         category=row.category,
+        price_per_day=row.price_per_day,
         created_at=row.created_at,
         item_rating_count=len(item_ratings),
         item_ratings=item_ratings,
@@ -194,6 +197,7 @@ async def api_update_item(
     item.city = body.city
     item.postal_code = body.postal_code
     item.category = body.category
+    item.price_per_day = body.price_per_day
     item.location = sa_func.st_setsrid(sa_func.st_makepoint(body.lng, body.lat), 4326).cast(
         GeoAlchemyGeography(srid=4326)
     )
@@ -258,6 +262,7 @@ async def api_get_item_edit(
             Item.city,
             Item.postal_code,
             Item.category,
+            Item.price_per_day,
             sa_func.st_x(Item.location.cast(Geometry(srid=4326))).label("lng"),
             sa_func.st_y(Item.location.cast(Geometry(srid=4326))).label("lat"),
             sa_func.to_char(Item.created_at, "YYYY-MM-DDThh24:mi:ssZ").label("created_at"),
@@ -289,6 +294,7 @@ async def api_get_item_edit(
         postal_code=row.postal_code,
         image_uuids=image_uuids,
         category=row.category,
+        price_per_day=row.price_per_day,
         lat=row.lat,
         lng=row.lng,
         created_at=row.created_at,

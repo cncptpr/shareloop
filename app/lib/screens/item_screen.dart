@@ -6,10 +6,12 @@ import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/edit_item_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/screens/profile_screen.dart';
+import 'package:shareloop/theme/app_theme.dart';
 import 'package:shareloop/screens/rent_request_chat_screen.dart';
 import 'package:shareloop/state/auth.dart' show authProvider;
 import 'package:shareloop/state/booked_dates.dart';
 import 'package:shareloop/state/item_detail.dart';
+import 'package:shareloop/widgets/rating_stars.dart';
 import 'package:shareloop/state/items.dart' show featuredItemsProvider;
 
 class ItemScreen extends ConsumerWidget {
@@ -136,6 +138,18 @@ class _Content extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(item.description),
+                const SizedBox(height: 8),
+                Row(children: [
+                  Icon(Icons.euro, size: 16, color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${item.pricePerDay.toStringAsFixed(0)} €/Tag',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ]),
                 const SizedBox(height: 16),
                 _ProfileCard(author: item.author),
                 const SizedBox(height: 16),
@@ -149,7 +163,7 @@ class _Content extends ConsumerWidget {
                 Text(
                   item.category,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
                 const SizedBox(height: 16),
@@ -379,10 +393,14 @@ class _CalendarGrid extends StatelessWidget {
                   '$dayNumber',
                   style: TextStyle(
                     fontSize: 14,
-                    color: booked || isPast
-                        ? cs.onSurface.withValues(alpha: 0.3)
-                        : cs.onSurface,
+                    color: booked
+                        ? cs.error
+                        : isPast
+                            ? cs.onSurface.withValues(alpha: 0.3)
+                            : cs.onSurface,
                     fontWeight: isToday ? FontWeight.bold : null,
+                    decoration: booked ? TextDecoration.lineThrough : null,
+                    decorationColor: booked ? cs.error : null,
                   ),
                 ),
               );
@@ -418,7 +436,7 @@ class _ItemRatingsSection extends StatelessWidget {
               ),
             ),
             if (item.itemRatingCount > 0) ...[
-              Icon(Icons.star, size: 20, color: Colors.amber[700]),
+              Icon(Icons.star, size: 20, color: starColor),
               const SizedBox(width: 4),
               Text(
                 '${item.score.toStringAsFixed(1)} (${item.itemRatingCount})',
@@ -429,11 +447,11 @@ class _ItemRatingsSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         if (item.itemRatings.isEmpty)
-          const Row(
+          Row(
             children: [
-              Icon(Icons.star_border, color: Colors.grey),
-              SizedBox(width: 8),
-              Text('Noch keine Bewertungen'),
+              Icon(Icons.star_border, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              const SizedBox(width: 8),
+              const Text('Noch keine Bewertungen'),
             ],
           )
         else
@@ -478,7 +496,7 @@ class _ItemRatingEntry extends StatelessWidget {
                 children: [
                   Text(
                     rating.reviewer.name,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.labelMedium,
                   ),
                   Text(
                     MaterialLocalizations.of(context)
@@ -488,7 +506,7 @@ class _ItemRatingEntry extends StatelessWidget {
                 ],
               ),
             ),
-            _ReadOnlyStars(value: rating.overall),
+            ReadOnlyStars(value: rating.overall),
           ],
         ),
         const SizedBox(height: 14),
@@ -496,8 +514,8 @@ class _ItemRatingEntry extends StatelessWidget {
           spacing: 16,
           runSpacing: 8,
           children: [
-            _RatingMetric(label: 'Zustand', value: rating.condition),
-            _RatingMetric(
+            RatingMetric(label: 'Zustand', value: rating.condition),
+            RatingMetric(
               label: 'Sauberkeit',
               value: rating.cleanliness,
             ),
@@ -512,47 +530,6 @@ class _ItemRatingEntry extends StatelessWidget {
   }
 }
 
-class _ReadOnlyStars extends StatelessWidget {
-  final double value;
-
-  const _ReadOnlyStars({required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var star = 1; star <= 5; star++)
-          Icon(
-            star <= value.round() ? Icons.star : Icons.star_border,
-            size: 18,
-            color: Colors.amber[700],
-          ),
-      ],
-    );
-  }
-}
-
-class _RatingMetric extends StatelessWidget {
-  final String label;
-  final int value;
-
-  const _RatingMetric({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text('$label: '),
-        Icon(Icons.star, size: 16, color: Colors.amber[700]),
-        const SizedBox(width: 2),
-        Text('$value'),
-      ],
-    );
-  }
-}
-
 class _ImageGallery extends StatelessWidget {
   final List<String> imageUuids;
 
@@ -561,11 +538,12 @@ class _ImageGallery extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (imageUuids.isEmpty) {
+      final cs = Theme.of(context).colorScheme;
       return Container(
         height: 300,
-        color: Colors.grey[200],
-        child: const Center(
-            child: Icon(Icons.image, size: 64, color: Colors.grey)),
+        color: cs.surfaceContainerHigh,
+        child: Center(
+            child: Icon(Icons.image, size: 64, color: cs.onSurfaceVariant)),
       );
     }
 

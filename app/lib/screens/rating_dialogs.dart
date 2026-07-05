@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/state/item_detail.dart';
+import 'package:shareloop/state/profile.dart';
+import 'package:shareloop/theme/app_theme.dart';
 import 'package:shareloop/state/ratings.dart';
 import 'package:shareloop/state/renting.dart';
 
@@ -128,8 +130,11 @@ Future<void> showUserRatingDialog(
     return;
   }
 
+  final revieweeId = isOwner ? request.requester.id : request.ownerId;
   ref.invalidate(rentRequestProvider(requestId));
   ref.invalidate(myRentRequestsProvider);
+  ref.invalidate(userRatingsProvider(revieweeId));
+  ref.invalidate(userProfileProvider(revieweeId));
 }
 
 Future<void> showItemRatingDialog(
@@ -173,7 +178,6 @@ Future<void> showItemRatingDialog(
                     controller: commentController,
                     decoration: const InputDecoration(
                       labelText: 'Kommentar (optional)',
-                      border: OutlineInputBorder(),
                     ),
                     maxLines: 3,
                     textInputAction: TextInputAction.newline,
@@ -233,6 +237,8 @@ Future<void> showItemRatingDialog(
   ref.invalidate(rentRequestProvider(requestId));
   ref.invalidate(myRentRequestsProvider);
   ref.invalidate(itemDetailProvider(request.itemId));
+  ref.invalidate(userProfileProvider(request.ownerId));
+  ref.invalidate(userItemsProvider(request.ownerId));
 }
 
 class RatingStars extends StatelessWidget {
@@ -259,7 +265,7 @@ class RatingStars extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: Theme.of(context).textTheme.labelMedium,
                 ),
               ),
               Text('${value ?? 0}/5'),
@@ -280,7 +286,7 @@ class RatingStars extends StatelessWidget {
                     value != null && star <= value!
                         ? Icons.star
                         : Icons.star_border,
-                    color: Colors.amber[700],
+                    color: starColor,
                   ),
                 ),
             ],

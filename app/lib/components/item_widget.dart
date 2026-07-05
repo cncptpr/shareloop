@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/item_screen.dart';
+import 'package:shareloop/theme/app_theme.dart';
 
 class ItemWidget extends ConsumerWidget {
   final ItemOverview item;
@@ -11,12 +12,19 @@ class ItemWidget extends ConsumerWidget {
 
   @override
   Widget build(ctx, ref) {
+    final cs = Theme.of(ctx).colorScheme;
+    final tt = Theme.of(ctx).textTheme;
     return GestureDetector(
       onTap: () => Navigator.push(
         ctx,
         MaterialPageRoute(builder: (_) => ItemScreen(itemId: item.id)),
       ),
       child: Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(36),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -39,68 +47,82 @@ class ItemWidget extends ConsumerWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(item.title, textScaler: const TextScaler.linear(2)),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Expanded(
+                        child: RichText(
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(text: item.title, style: tt.titleMedium),
+                              TextSpan(
+                                text: ' · von ${item.author.name}',
+                                style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '${item.pricePerDay.toStringAsFixed(0)}€/Tag',
+                        style: tt.labelMedium?.copyWith(
+                          color: cs.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(height: 2),
                   Text(
-                    item.category,
-                    style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                    item.description,
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.star, size: 14, color: starColor),
+                      const SizedBox(width: 2),
+                      Text(item.score.toStringAsFixed(1), style: tt.labelSmall),
+                      const SizedBox(width: 16),
+                      if (item.distance != null) ...[
+                        Icon(Icons.location_on, size: 14, color: cs.onSurfaceVariant),
+                        const SizedBox(width: 2),
+                        Text(
+                          '${item.distance!.km.toStringAsFixed(0)} km',
+                          style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                        ),
+                      ],
+                      if (item.distance != null && item.city != null)
+                        Text(
+                          ' · ',
+                          style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                        ),
+                      if (item.city != null)
+                        Expanded(
+                          child: Text(
+                            item.city!,
+                            style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(item.description),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                person(item.author),
-                score(item.score),
-                locationWidget(item.city, item.distance),
-              ],
-            )
           ],
         ),
       ),
     );
-  }
-
-  Widget person(Person person) {
-    return Row(children: [
-      const Icon(Icons.person),
-      Text(person.name),
-    ]);
-  }
-
-  Widget score(double score) {
-    return Row(children: [
-      const Icon(Icons.star),
-      Text(score.toStringAsFixed(1)),
-    ]);
-  }
-
-  Widget locationWidget(String? city, Distance? distance) {
-    final parts = <String>[];
-    if (city != null && city.isNotEmpty) {
-      parts.add(city);
-    }
-    if (distance != null) {
-      parts.add('${distance.km.toStringAsFixed(0)} km');
-    }
-    if (parts.isEmpty) return const SizedBox.shrink();
-
-    return Row(children: [
-      const Icon(Icons.location_on, size: 16),
-      Text(parts.join(', ')),
-    ]);
   }
 }

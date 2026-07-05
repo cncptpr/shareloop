@@ -1000,7 +1000,7 @@ components:
 
     ItemOverview:
       type: object
-      required: [id, title, description, author, score, category]
+      required: [id, title, description, author, score, category, pricePerDay]
       properties:
         id:
           type: integer
@@ -1025,6 +1025,9 @@ components:
           nullable: true
         category:
           type: string
+        pricePerDay:
+          type: number
+          format: double
 
     Person:
       type: object
@@ -1102,13 +1105,11 @@ components:
 
     UserProfile:
       type: object
-      required: [id, name, email, createdAt, lastOnlineAt, itemCount, ratingCount]
+      required: [id, name, createdAt, lastOnlineAt, itemCount, ratingCount]
       properties:
         id:
           type: integer
         name:
-          type: string
-        email:
           type: string
         bio:
           type: string
@@ -1196,7 +1197,7 @@ components:
 
     CreateItemRequest:
       type: object
-      required: [title, description, city, postalCode, lat, lng, category]
+      required: [title, description, city, postalCode, lat, lng, category, pricePerDay]
       properties:
         title:
           type: string
@@ -1214,6 +1215,9 @@ components:
           format: double
         category:
           type: string
+        pricePerDay:
+          type: number
+          format: double
 
     CreateItemResponse:
       type: object
@@ -1224,7 +1228,7 @@ components:
 
     ItemDetail:
       type: object
-      required: [id, title, description, author, score, createdAt, imageUuids, category, itemRatingCount, itemRatings]
+      required: [id, title, description, author, score, createdAt, imageUuids, category, itemRatingCount, itemRatings, pricePerDay]
       properties:
         id:
           type: integer
@@ -1248,6 +1252,9 @@ components:
             format: uuid
         category:
           type: string
+        pricePerDay:
+          type: number
+          format: double
         createdAt:
           type: string
           format: date-time
@@ -1261,7 +1268,7 @@ components:
 
     ItemEditDetail:
       type: object
-      required: [id, title, description, author, score, createdAt, imageUuids, lat, lng, category]
+      required: [id, title, description, author, score, createdAt, imageUuids, lat, lng, category, pricePerDay]
       properties:
         id:
           type: integer
@@ -1285,6 +1292,9 @@ components:
             format: uuid
         category:
           type: string
+        pricePerDay:
+          type: number
+          format: double
         lat:
           type: number
           format: double
@@ -1319,7 +1329,7 @@ components:
 
     UpdateItemRequest:
       type: object
-      required: [title, description, city, postalCode, lat, lng, category]
+      required: [title, description, city, postalCode, lat, lng, category, pricePerDay]
       properties:
         title:
           type: string
@@ -1337,6 +1347,9 @@ components:
           format: double
         category:
           type: string
+        pricePerDay:
+          type: number
+          format: double
 
     ItemSearchRequest:
       type: object

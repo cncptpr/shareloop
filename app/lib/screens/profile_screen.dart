@@ -6,9 +6,11 @@ import 'package:shareloop/screens/edit_profile_screen.dart';
 import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/screens/settings_screen.dart';
+import 'package:shareloop/theme/app_theme.dart';
 import 'package:shareloop/state/auth.dart';
 import 'package:shareloop/state/profile.dart';
 import 'package:shareloop/state/seeding.dart';
+import 'package:shareloop/widgets/rating_stars.dart';
 
 class ProfileScreen extends ConsumerWidget {
   final int? userId;
@@ -81,7 +83,7 @@ class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(title: const Text('Profile'));
+    return AppBar(title: const Text('Profile'), centerTitle: false);
   }
 
   @override
@@ -123,6 +125,7 @@ class _ProfileContent extends ConsumerWidget {
   PreferredSizeWidget _appBar(BuildContext context, WidgetRef ref, UserProfile? profile) {
     return AppBar(
       title: const Text('Profile'),
+      centerTitle: false,
       actions: [
         if (isOwnProfile && profile != null)
           IconButton(
@@ -134,11 +137,12 @@ class _ProfileContent extends ConsumerWidget {
               }
             },
           ),
-        if (isOwnProfile)
+        if (isOwnProfile) ...[
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => SettingsScreen.push(context),
           ),
+        ],
       ],
     );
   }
@@ -204,7 +208,6 @@ class _ProfileContent extends ConsumerWidget {
               padding: EdgeInsets.only(bottom: 16),
               child: Text('Keine Bewertungen'),
             ),
-
         ],
       ),
     );
@@ -277,7 +280,7 @@ class _StatsRow extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(child: _StatBox(
           label: 'Mitglied',
-          value: '$months Monate',
+          value: '$months/M',
         )),
       ],
     );
@@ -464,9 +467,16 @@ class _ItemCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  '${item.score.toStringAsFixed(1)} \u2605',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      item.score.toStringAsFixed(1),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(Icons.star, size: 14, color: starColor),
+                  ],
                 ),
               ],
             ),
@@ -500,7 +510,7 @@ class _RatingCard extends StatelessWidget {
                   rating.reviewer.name,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
-                Text('${overall.toStringAsFixed(1)} / 5'),
+                ReadOnlyStars(value: overall),
               ],
             ),
             const SizedBox(height: 8),

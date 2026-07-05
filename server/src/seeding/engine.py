@@ -122,6 +122,7 @@ async def run_seed(db: AsyncSession) -> None:
             city=item_data["city"],
             postal_code=item_data.get("postalCode"),
             category=item_data.get("category", "Sonstiges"),
+            price_per_day=item_data.get("pricePerDay"),
         )
         db.add(item)
         await db.flush()
@@ -271,5 +272,20 @@ async def run_seed(db: AsyncSession) -> None:
 
         rr.updated_at = max(event_times) if event_times else datetime.now(UTC)
         db.add(rr)
+
+    await db.flush()
+
+    for rat_data in seed_data.get("item_ratings", []):
+        rating = ItemRating(
+            rent_request_id=_resolve(rat_data["rent_request"], resolved),
+            item_id=_resolve(rat_data["item"], resolved),
+            reviewer_id=_resolve(rat_data["reviewer"], resolved),
+            condition=rat_data["condition"],
+            cleanliness=rat_data["cleanliness"],
+            overall=rat_data["overall"],
+            comment=rat_data.get("comment"),
+            created_at=_parse_ts(rat_data.get("created_at", "now")),
+        )
+        db.add(rating)
 
     await db.flush()

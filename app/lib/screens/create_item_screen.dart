@@ -32,6 +32,7 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _priceController = TextEditingController();
   bool _loading = false;
   bool _redirectedToLoginScreen = false;
 
@@ -52,8 +53,12 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
     final saved = ref.read(createItemFormProvider);
     _titleController.text = saved.title;
     _descriptionController.text = saved.description;
+    if (saved.pricePerDay != null) {
+      _priceController.text = saved.pricePerDay.toString();
+    }
     _titleController.addListener(_onTitleChanged);
     _descriptionController.addListener(_onDescriptionChanged);
+    _priceController.addListener(_onPriceChanged);
     if (saved.selectedLocation == null || saved.selectedLocation is! SearchedLocation) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _initLocation());
     }
@@ -93,12 +98,21 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
         .setDescription(_descriptionController.text);
   }
 
+  void _onPriceChanged() {
+    final text = _priceController.text.trim();
+    ref.read(createItemFormProvider.notifier).setPricePerDay(
+      text.isEmpty ? null : double.tryParse(text),
+    );
+  }
+
   @override
   void dispose() {
     _titleController.removeListener(_onTitleChanged);
     _descriptionController.removeListener(_onDescriptionChanged);
+    _priceController.removeListener(_onPriceChanged);
     _titleController.dispose();
     _descriptionController.dispose();
+    _priceController.dispose();
     super.dispose();
   }
 
@@ -140,6 +154,7 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
         postalCode: selected.postalCode,
         lat: selected.lat,
         lng: selected.lng,
+        pricePerDay: formState.pricePerDay!,
       );
 
       debugPrint('[createItem] Creating item...');
@@ -253,6 +268,7 @@ class _CreateItemScreenState extends ConsumerState<CreateItemScreen>
             formKey: _formKey,
             titleController: _titleController,
             descriptionController: _descriptionController,
+            priceController: _priceController,
             category: formState.category,
             onCategoryChanged: (v) {
               ref.read(createItemFormProvider.notifier).setCategory(v);

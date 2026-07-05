@@ -10,6 +10,7 @@ class ItemFormBody extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController titleController;
   final TextEditingController descriptionController;
+  final TextEditingController priceController;
   final String? category;
   final ValueChanged<String?> onCategoryChanged;
   final String? locationLabel;
@@ -27,6 +28,7 @@ class ItemFormBody extends StatefulWidget {
     required this.formKey,
     required this.titleController,
     required this.descriptionController,
+    required this.priceController,
     required this.category,
     required this.onCategoryChanged,
     required this.locationLabel,
@@ -79,7 +81,6 @@ class _ItemFormBodyState extends State<ItemFormBody> {
             controller: widget.titleController,
             decoration: const InputDecoration(
               labelText: 'Titel',
-              border: OutlineInputBorder(),
             ),
             validator: (v) {
               return (v == null || v.trim().isEmpty) ? 'Erforderlich' : null;
@@ -90,7 +91,6 @@ class _ItemFormBodyState extends State<ItemFormBody> {
             controller: widget.descriptionController,
             decoration: const InputDecoration(
               labelText: 'Beschreibung',
-              border: OutlineInputBorder(),
               alignLabelWithHint: true,
             ),
             maxLines: 5,
@@ -103,7 +103,6 @@ class _ItemFormBodyState extends State<ItemFormBody> {
             initialValue: (widget.category ?? '').isEmpty ? null : widget.category,
             decoration: const InputDecoration(
               labelText: 'Kategorie',
-              border: OutlineInputBorder(),
             ),
             items: dummyCategories
                 .map((c) => DropdownMenuItem(value: c, child: Text(c)))
@@ -114,12 +113,25 @@ class _ItemFormBodyState extends State<ItemFormBody> {
             },
           ),
           const SizedBox(height: 16),
+          TextFormField(
+            controller: widget.priceController,
+            decoration: const InputDecoration(
+              labelText: 'Preis pro Tag (€)',
+              suffixText: '€/Tag',
+            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) return 'Erforderlich';
+              if (double.tryParse(v.trim()) == null) return 'Ungültige Zahl';
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
           InkWell(
             onTap: widget.onLocationTap,
             child: InputDecorator(
               decoration: const InputDecoration(
                 labelText: 'Standort',
-                border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.location_on),
               ),
               child: Text(

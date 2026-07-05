@@ -574,12 +574,6 @@ rent_requests:
         carefulHandling: 5
         comment: "Hat alles super geklappt!"
         created_at: "-11d 21:00"
-    item_ratings:
-      - reviewer: ref(user_dev)
-        condition: 4
-        cleanliness: 5
-        comment: "Auto war in einem Top-Zustand"
-        created_at: "-11d 21:00"
     read_at: "-11d 21:00"
     mark_read:
       - ref(user_dev)
@@ -836,12 +830,6 @@ rent_requests:
         punctuality: 5
         reliability: 5
         comment: "Sehr zuverlässig!"
-        created_at: "-13d 18:00"
-    item_ratings:
-      - reviewer: ref(user_lisa)
-        condition: 5
-        cleanliness: 4
-        comment: "Tolles Gerät, gerne wieder!"
         created_at: "-13d 18:00"
     read_at: "-13d 17:30"
     mark_read:

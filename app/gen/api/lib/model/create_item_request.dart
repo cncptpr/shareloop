@@ -174,3 +174,4 @@ class CreateItemRequest {
     'pricePerDay',
   };
 }
+

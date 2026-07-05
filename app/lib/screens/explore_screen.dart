@@ -5,6 +5,7 @@ import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/components/item_widget.dart';
 import 'package:shareloop/screens/create_item_screen.dart';
+import 'package:shareloop/theme/app_theme.dart';
 import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/screens/location_picker_screen.dart';
 import 'package:shareloop/state/item_search.dart';
@@ -244,7 +245,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           const PopupMenuItem(
                             value: 3,
                             child: ListTile(
-                              leading: Icon(Icons.star_half, size: 20, color: Colors.amber),
+                              leading: Icon(Icons.star_half, size: 20, color: starColor),
                               title: Text('3★ und mehr'),
                               dense: true,
                               contentPadding: EdgeInsets.zero,
@@ -253,7 +254,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           const PopupMenuItem(
                             value: 3.5,
                             child: ListTile(
-                              leading: Icon(Icons.star_half, size: 20, color: Colors.amber),
+                              leading: Icon(Icons.star_half, size: 20, color: starColor),
                               title: Text('3.5★ und mehr'),
                               dense: true,
                               contentPadding: EdgeInsets.zero,
@@ -262,7 +263,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           const PopupMenuItem(
                             value: 4,
                             child: ListTile(
-                              leading: Icon(Icons.star, size: 20, color: Colors.amber),
+                              leading: Icon(Icons.star, size: 20, color: starColor),
                               title: Text('4★ und mehr'),
                               dense: true,
                               contentPadding: EdgeInsets.zero,
@@ -271,7 +272,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           const PopupMenuItem(
                             value: 4.5,
                             child: ListTile(
-                              leading: Icon(Icons.star, size: 20, color: Colors.amber),
+                              leading: Icon(Icons.star, size: 20, color: starColor),
                               title: Text('4.5★ und mehr'),
                               dense: true,
                               contentPadding: EdgeInsets.zero,
@@ -306,7 +307,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           PopupMenuItem(
                             value: ItemSearchRequestSortByEnum.score,
                             child: ListTile(
-                              leading: const Icon(Icons.star, size: 20, color: Colors.amber),
+                              leading: const Icon(Icons.star, size: 20, color: starColor),
                               title: const Text('Bewertung'),
                               trailing: cur == ItemSearchRequestSortByEnum.score
                                   ? const Icon(Icons.check, size: 18)
@@ -652,7 +653,7 @@ class _FeaturedItemCard extends ConsumerWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.star, size: 14, color: Colors.amber[700]),
+                        Icon(Icons.star, size: 14, color: starColor),
                         const SizedBox(width: 2),
                         Text(item.score.toStringAsFixed(1), style: tt.labelSmall),
                         const Spacer(),

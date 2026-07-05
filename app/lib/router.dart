@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shareloop/screens/home_screen.dart';
 import 'package:shareloop/screens/message_screen.dart';
 import 'package:shareloop/screens/profile_screen.dart';
 import 'package:shareloop/screens/explore_screen.dart';
 
 enum Routes {
-  home('/'),
   explore('/'),
   message('/message'),
-  profile('/profile'),
-  counter('/counter');
+  profile('/profile');
 
   final String route;
   const Routes(this.route);
@@ -42,12 +39,6 @@ final GoRouter router = GoRouter(
             GoRoute(
               path: Routes.explore.route,
               builder: (ctx, state) => const ExploreScreen(),
-              routes: [
-                GoRoute(
-                  path: Routes.counter.route,
-                  builder: (ctx, state) => const Homescreen(),
-                ),
-              ],
             ),
           ],
         ),

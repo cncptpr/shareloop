@@ -1105,13 +1105,11 @@ components:
 
     UserProfile:
       type: object
-      required: [id, name, email, createdAt, lastOnlineAt, itemCount, ratingCount]
+      required: [id, name, createdAt, lastOnlineAt, itemCount, ratingCount]
       properties:
         id:
           type: integer
         name:
-          type: string
-        email:
           type: string
         bio:
           type: string

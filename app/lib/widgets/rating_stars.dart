@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shareloop/theme/app_theme.dart';
 
 class ReadOnlyStars extends StatelessWidget {
   final double value;
@@ -15,7 +16,7 @@ class ReadOnlyStars extends StatelessWidget {
           Icon(
             star <= value.round() ? Icons.star : Icons.star_border,
             size: size,
-            color: Colors.amber[700],
+            color: starColor,
           ),
       ],
     );
@@ -34,7 +35,7 @@ class RatingMetric extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text('$label: '),
-        Icon(Icons.star, size: 16, color: Colors.amber[700]),
+        Icon(Icons.star, size: 16, color: starColor),
         const SizedBox(width: 2),
         Text('$value'),
       ],

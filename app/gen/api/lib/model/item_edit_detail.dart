@@ -22,10 +22,10 @@ class ItemEditDetail {
     this.postalCode,
     this.imageUuids = const [],
     required this.category,
+    required this.pricePerDay,
     required this.lat,
     required this.lng,
     required this.createdAt,
-    required this.pricePerDay,
   });
 
   int id;
@@ -58,13 +58,13 @@ class ItemEditDetail {
 
   String category;
 
+  double pricePerDay;
+
   double lat;
 
   double lng;
 
   DateTime createdAt;
-
-  double pricePerDay;
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is ItemEditDetail &&
@@ -77,10 +77,10 @@ class ItemEditDetail {
     other.postalCode == postalCode &&
     _deepEquality.equals(other.imageUuids, imageUuids) &&
     other.category == category &&
+    other.pricePerDay == pricePerDay &&
     other.lat == lat &&
     other.lng == lng &&
-    other.createdAt == createdAt &&
-    other.pricePerDay == pricePerDay;
+    other.createdAt == createdAt;
 
   @override
   int get hashCode =>
@@ -94,13 +94,13 @@ class ItemEditDetail {
     (postalCode == null ? 0 : postalCode!.hashCode) +
     (imageUuids.hashCode) +
     (category.hashCode) +
+    (pricePerDay.hashCode) +
     (lat.hashCode) +
     (lng.hashCode) +
-    (createdAt.hashCode) +
-    (pricePerDay.hashCode);
+    (createdAt.hashCode);
 
   @override
-  String toString() => 'ItemEditDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, lat=$lat, lng=$lng, createdAt=$createdAt, pricePerDay=$pricePerDay]';
+  String toString() => 'ItemEditDetail[id=$id, title=$title, description=$description, author=$author, score=$score, city=$city, postalCode=$postalCode, imageUuids=$imageUuids, category=$category, pricePerDay=$pricePerDay, lat=$lat, lng=$lng, createdAt=$createdAt]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -121,10 +121,10 @@ class ItemEditDetail {
     }
       json[r'imageUuids'] = this.imageUuids;
       json[r'category'] = this.category;
+      json[r'pricePerDay'] = this.pricePerDay;
       json[r'lat'] = this.lat;
       json[r'lng'] = this.lng;
       json[r'createdAt'] = this.createdAt.toUtc().toIso8601String();
-      json[r'pricePerDay'] = this.pricePerDay;
     return json;
   }
 
@@ -153,14 +153,14 @@ class ItemEditDetail {
         assert(json[r'imageUuids'] != null, 'Required key "ItemEditDetail[imageUuids]" has a null value in JSON.');
         assert(json.containsKey(r'category'), 'Required key "ItemEditDetail[category]" is missing from JSON.');
         assert(json[r'category'] != null, 'Required key "ItemEditDetail[category]" has a null value in JSON.');
+        assert(json.containsKey(r'pricePerDay'), 'Required key "ItemEditDetail[pricePerDay]" is missing from JSON.');
+        assert(json[r'pricePerDay'] != null, 'Required key "ItemEditDetail[pricePerDay]" has a null value in JSON.');
         assert(json.containsKey(r'lat'), 'Required key "ItemEditDetail[lat]" is missing from JSON.');
         assert(json[r'lat'] != null, 'Required key "ItemEditDetail[lat]" has a null value in JSON.');
         assert(json.containsKey(r'lng'), 'Required key "ItemEditDetail[lng]" is missing from JSON.');
         assert(json[r'lng'] != null, 'Required key "ItemEditDetail[lng]" has a null value in JSON.');
         assert(json.containsKey(r'createdAt'), 'Required key "ItemEditDetail[createdAt]" is missing from JSON.');
         assert(json[r'createdAt'] != null, 'Required key "ItemEditDetail[createdAt]" has a null value in JSON.');
-        assert(json.containsKey(r'pricePerDay'), 'Required key "ItemEditDetail[pricePerDay]" is missing from JSON.');
-        assert(json[r'pricePerDay'] != null, 'Required key "ItemEditDetail[pricePerDay]" has a null value in JSON.');
         return true;
       }());
 
@@ -176,10 +176,10 @@ class ItemEditDetail {
             ? (json[r'imageUuids'] as Iterable).cast<String>().toList(growable: false)
             : const [],
         category: mapValueOfType<String>(json, r'category')!,
+        pricePerDay: mapValueOfType<double>(json, r'pricePerDay')!,
         lat: mapValueOfType<double>(json, r'lat')!,
         lng: mapValueOfType<double>(json, r'lng')!,
         createdAt: mapDateTime(json, r'createdAt', r'')!,
-        pricePerDay: mapValueOfType<double>(json, r'pricePerDay')!,
       );
     }
     return null;
@@ -234,9 +234,10 @@ class ItemEditDetail {
     'score',
     'imageUuids',
     'category',
+    'pricePerDay',
     'lat',
     'lng',
     'createdAt',
-    'pricePerDay',
   };
 }
+

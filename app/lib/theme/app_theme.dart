@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+const Color starColor = Colors.amber;
+
 ThemeData buildTheme() {
   const colorScheme = ColorScheme(
     brightness: Brightness.light,

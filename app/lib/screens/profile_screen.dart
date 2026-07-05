@@ -6,6 +6,7 @@ import 'package:shareloop/screens/edit_profile_screen.dart';
 import 'package:shareloop/screens/item_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/screens/settings_screen.dart';
+import 'package:shareloop/theme/app_theme.dart';
 import 'package:shareloop/state/auth.dart';
 import 'package:shareloop/state/profile.dart';
 import 'package:shareloop/state/seeding.dart';
@@ -136,14 +137,12 @@ class _ProfileContent extends ConsumerWidget {
               }
             },
           ),
-        if (isOwnProfile)
+        if (isOwnProfile) ...[
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await logout();
-              ref.invalidate(authProvider);
-            },
+            icon: const Icon(Icons.settings),
+            onPressed: () => SettingsScreen.push(context),
           ),
+        ],
       ],
     );
   }
@@ -179,8 +178,8 @@ class _ProfileContent extends ConsumerWidget {
           const SizedBox(height: 16),
           _StatsRow(profile: profile, months: months),
           const SizedBox(height: 16),
-          if (!isOwnProfile && profile.isFollowed != null) ... [
-            _FollowButton(userId: userId, isFollowed: profile.isFollowed!),
+          if (!isOwnProfile) ... [
+            _FollowButton(userId: userId, isFollowed: profile.isFollowed),
             const SizedBox(height: 16),
           ],
           if (profile.bio != null && profile.bio!.isNotEmpty) ... [
@@ -209,23 +208,6 @@ class _ProfileContent extends ConsumerWidget {
               padding: EdgeInsets.only(bottom: 16),
               child: Text('Keine Bewertungen'),
             ),
-          if (isOwnProfile) ... [
-            const SizedBox(height: 16),
-            Center(
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  await logout();
-                  ref.invalidate(authProvider);
-                },
-                icon: const Icon(Icons.logout),
-                label: const Text('Abmelden'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  foregroundColor: Theme.of(context).colorScheme.onError,
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );
@@ -493,7 +475,7 @@ class _ItemCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(width: 2),
-                    Icon(Icons.star, size: 14, color: Colors.amber[700]),
+                    Icon(Icons.star, size: 14, color: starColor),
                   ],
                 ),
               ],

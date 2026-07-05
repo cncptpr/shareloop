@@ -17,6 +17,7 @@ Name | Type | Description | Notes
 **postalCode** | **String** |  | [optional] 
 **imageUuids** | **List<String>** |  | [default to const []]
 **category** | **String** |  | 
+**pricePerDay** | **double** |  | 
 **lat** | **double** |  | 
 **lng** | **double** |  | 
 **createdAt** | [**DateTime**](DateTime.md) |  | 

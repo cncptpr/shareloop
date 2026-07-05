@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/state/item_detail.dart';
 import 'package:shareloop/state/profile.dart';
+import 'package:shareloop/theme/app_theme.dart';
 import 'package:shareloop/state/ratings.dart';
 import 'package:shareloop/state/renting.dart';
 
@@ -285,7 +286,7 @@ class RatingStars extends StatelessWidget {
                     value != null && star <= value!
                         ? Icons.star
                         : Icons.star_border,
-                    color: Colors.amber[700],
+                    color: starColor,
                   ),
                 ),
             ],

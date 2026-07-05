@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/item_screen.dart';
+import 'package:shareloop/theme/app_theme.dart';
 
 class ItemWidget extends ConsumerWidget {
   final ItemOverview item;
@@ -88,7 +89,7 @@ class ItemWidget extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.star, size: 14, color: Colors.amber[700]),
+                      Icon(Icons.star, size: 14, color: starColor),
                       const SizedBox(width: 2),
                       Text(item.score.toStringAsFixed(1), style: tt.labelSmall),
                       const SizedBox(width: 16),

@@ -10,7 +10,6 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **int** |  | 
 **name** | **String** |  | 
-**email** | **String** |  | 
 **bio** | **String** |  | [optional] 
 **rating** | **double** |  | [optional] 
 **createdAt** | [**DateTime**](DateTime.md) |  | 

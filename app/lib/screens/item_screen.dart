@@ -6,6 +6,7 @@ import 'package:shareloop/app_config.dart';
 import 'package:shareloop/screens/edit_item_screen.dart';
 import 'package:shareloop/screens/login_screen.dart';
 import 'package:shareloop/screens/profile_screen.dart';
+import 'package:shareloop/theme/app_theme.dart';
 import 'package:shareloop/screens/rent_request_chat_screen.dart';
 import 'package:shareloop/state/auth.dart' show authProvider;
 import 'package:shareloop/state/booked_dates.dart';
@@ -435,7 +436,7 @@ class _ItemRatingsSection extends StatelessWidget {
               ),
             ),
             if (item.itemRatingCount > 0) ...[
-              Icon(Icons.star, size: 20, color: Colors.amber[700]),
+              Icon(Icons.star, size: 20, color: starColor),
               const SizedBox(width: 4),
               Text(
                 '${item.score.toStringAsFixed(1)} (${item.itemRatingCount})',

@@ -21,6 +21,13 @@ Recommended is running the Database via **Docker Compose**, the server with [**m
 
 If you want to avoid using mise, refer to the READMEs in app and server and `mise.toml` for information about dependencies, versions and commands.
 
+## Seeding
+
+If seeding is setup (it is for both Quickstarts) there will be a popup in the app, asking whether to populate the database with the seeding/dummy data.
+See [`./docs/Seeding.md`](/docs/Seeding.md) for more information.
+
+This data includes multiple users. The Dev user has the email `dev@example.com` and password `dev`. These credentials are prefilled in the debug build. Other users follow the same pattern.
+
 ## Structure
 
 The project is divided into two main parts: [`./app`](/app/README.md) with the
@@ -30,7 +37,7 @@ Both communicate over an API generated from the OpenAPI spec
 located in `./api`.
 
 The server also exposes a **WebSocket** endpoint (`/ws`) for realtime chat and
-notification updates. See [`docs/WebSocket.md`](docs/WebSocket.md) for details.
+notification updates. See [`./docs/WebSocket.md`](/docs/WebSocket.md) for details.
 
 The different tools and commands to run the different parts of this project are
 documented in `mise.toml`. Either setup [mise-en-place](https://mise.jdx.dev/)

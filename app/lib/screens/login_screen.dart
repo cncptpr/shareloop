@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:openapi/api.dart' show ApiException;
 import 'package:shareloop/screens/register_screen.dart';
 import 'package:shareloop/state/auth.dart';
 import 'package:shareloop/state/token_storage.dart';
@@ -61,6 +62,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) Navigator.pop(context);
     } on UnauthorizedException {
       setState(() => _error = 'Invalid credentials.');
+    } on ApiException catch (e) {
+      setState(() => _error = 'Server error (${e.code}). Please try again.');
     } catch (e) {
       setState(() => _error = 'Connection error. Please try again.');
     } finally {

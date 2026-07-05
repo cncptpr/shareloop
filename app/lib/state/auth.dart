@@ -93,9 +93,8 @@ Future<User> login(String email, String password) async {
     authStatusNotifier.value = AuthStatus.authenticated;
 
     return result.user;
-  } on ApiException catch (e) {
-    if (e.code == 401) throw UnauthorizedException.loginFailed;
-    rethrow;
+  } on ApiException {
+    throw UnauthorizedException.loginFailed;
   }
 }
 

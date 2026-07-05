@@ -174,8 +174,8 @@ class _ProfileContent extends ConsumerWidget {
           const SizedBox(height: 16),
           _StatsRow(profile: profile, months: months),
           const SizedBox(height: 16),
-          if (!isOwnProfile && profile.isFollowed != null) ... [
-            _FollowButton(userId: userId, isFollowed: profile.isFollowed!),
+          if (!isOwnProfile) ... [
+            _FollowButton(userId: userId, isFollowed: profile.isFollowed),
             const SizedBox(height: 16),
           ],
           if (profile.bio != null && profile.bio!.isNotEmpty) ... [

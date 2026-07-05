@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/api.dart';
 import 'package:shareloop/state/item_detail.dart';
+import 'package:shareloop/state/profile.dart';
 import 'package:shareloop/state/ratings.dart';
 import 'package:shareloop/state/renting.dart';
 
@@ -128,8 +129,11 @@ Future<void> showUserRatingDialog(
     return;
   }
 
+  final revieweeId = isOwner ? request.requester.id : request.ownerId;
   ref.invalidate(rentRequestProvider(requestId));
   ref.invalidate(myRentRequestsProvider);
+  ref.invalidate(userRatingsProvider(revieweeId));
+  ref.invalidate(userProfileProvider(revieweeId));
 }
 
 Future<void> showItemRatingDialog(
@@ -232,6 +236,8 @@ Future<void> showItemRatingDialog(
   ref.invalidate(rentRequestProvider(requestId));
   ref.invalidate(myRentRequestsProvider);
   ref.invalidate(itemDetailProvider(request.itemId));
+  ref.invalidate(userProfileProvider(request.ownerId));
+  ref.invalidate(userItemsProvider(request.ownerId));
 }
 
 class RatingStars extends StatelessWidget {

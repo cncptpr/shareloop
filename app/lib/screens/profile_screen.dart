@@ -295,7 +295,7 @@ class _StatsRow extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(child: _StatBox(
           label: 'Mitglied',
-          value: '$months Monate',
+          value: '$months/M',
         )),
       ],
     );

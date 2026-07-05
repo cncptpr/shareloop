@@ -24,7 +24,7 @@ def load_and_validate(seeding_dir: str) -> dict[str, Any] | None:
         return None
 
     try:
-        with open(yaml_path) as f:
+        with open(yaml_path, encoding="utf-8") as f:
             data = yaml.safe_load(f)
     except Exception:
         return None

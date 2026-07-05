@@ -170,6 +170,7 @@ async def api_get_user_items(user_id: int, db: AsyncSession = Depends(get_db)):
             Item.city,
             Item.postal_code,
             Item.category,
+            Item.price_per_day,
             first_image.label("first_image_uuid"),
         )
         .select_from(Item)
@@ -189,6 +190,7 @@ async def api_get_user_items(user_id: int, db: AsyncSession = Depends(get_db)):
             score=row.score,
             image_uuid=str(row.first_image_uuid) if row.first_image_uuid else None,
             category=row.category,
+            price_per_day=row.price_per_day,
         )
         for row in rows
     ]

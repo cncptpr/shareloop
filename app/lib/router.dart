@@ -16,6 +16,12 @@ enum Routes {
 }
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> exploreBranchKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> messagesBranchKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> profileBranchKey = GlobalKey<NavigatorState>();
+final exploreReset = ValueNotifier(0);
+final messagesReset = ValueNotifier(0);
+final profileReset = ValueNotifier(0);
 
 final GoRouter router = GoRouter(
   navigatorKey: rootNavigatorKey,
@@ -25,7 +31,14 @@ final GoRouter router = GoRouter(
         body: navShell,
         bottomNavigationBar: NavigationBar(
           selectedIndex: navShell.currentIndex,
-          onDestinationSelected: (index) => navShell.goBranch(index),
+          onDestinationSelected: (index) {
+            if (navShell.currentIndex == index) {
+              final keys = [exploreBranchKey, messagesBranchKey, profileBranchKey];
+              keys[index].currentState?.popUntil((route) => route.isFirst);
+              [exploreReset, messagesReset, profileReset][index].value++;
+            }
+            navShell.goBranch(index);
+          },
           destinations: const [
             NavigationDestination(icon: Icon(Icons.search), label: "Explore"),
             NavigationDestination(icon: Icon(Icons.message), label: "Messages"),
@@ -35,26 +48,29 @@ final GoRouter router = GoRouter(
       ),
       branches: [
         StatefulShellBranch(
+          navigatorKey: exploreBranchKey,
           routes: [
             GoRoute(
               path: Routes.explore.route,
-              builder: (ctx, state) => const ExploreScreen(),
+              builder: (ctx, state) => ExploreScreen(resetNotifier: exploreReset),
             ),
           ],
         ),
         StatefulShellBranch(
+          navigatorKey: messagesBranchKey,
           routes: [
             GoRoute(
               path: Routes.message.route,
-              builder: (ctx, state) => const MessageScreen(),
+              builder: (ctx, state) => MessageScreen(resetNotifier: messagesReset),
             ),
           ],
         ),
         StatefulShellBranch(
+          navigatorKey: profileBranchKey,
           routes: [
             GoRoute(
               path: Routes.profile.route,
-              builder: (ctx, state) => const ProfileScreen(),
+              builder: (ctx, state) => ProfileScreen(resetNotifier: profileReset),
             ),
           ],
         ),

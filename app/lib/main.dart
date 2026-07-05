@@ -43,7 +43,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       title: _title,
       theme: buildTheme(),
       darkTheme: buildDarkTheme(),
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.dark,
       routerConfig: router,
     );
   }
